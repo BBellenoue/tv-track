@@ -1,0 +1,24 @@
+[
+  {
+    "id": { "tvdb": 2001, "imdb": "tt1000001" },
+    "uuid": "00000000-0000-0000-0000-000000000101",
+    "created_at": "2025-06-09T18:01:53Z",
+    "title": "Film Vu",
+    "year": 2024,
+    "watched_at": "2025-06-09T18:01:55Z",
+    "is_watched": true,
+    "is_favorite": false,
+    "rewatch_count": 0
+  },
+  {
+    "id": { "tvdb": 2002, "imdb": null },
+    "uuid": "00000000-0000-0000-0000-000000000102",
+    "created_at": "2025-07-01T08:00:00Z",
+    "title": "Film À Voir",
+    "year": 2023,
+    "watched_at": null,
+    "is_watched": false,
+    "is_favorite": true,
+    "rewatch_count": 0
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "uuid": "00000000-0000-0000-0000-000000000001",
+    "id": { "tvdb": 1001, "imdb": null },
+    "created_at": "2026-03-29T14:28:51.615105Z",
+    "title": "Série En Cours",
+    "status": "continuing",
+    "is_favorite": true,
+    "_noEpisodeData": false,
+    "seasons": [
+      {
+        "number": 1,
+        "is_specials": false,
+        "episodes": [
+          {
+            "id": { "tvdb": 90001, "imdb": null },
+            "number": 1,
+            "name": "Pilote",
+            "special": false,
+            "is_watched": true,
+            "watched_at": "2026-03-29 14:28:52",
+            "rewatch_count": 0,
+            "watched_count": 1
+          },
+          {
+            "id": { "tvdb": 90002, "imdb": null },
+            "number": 2,
+            "name": "Suite",
+            "special": false,
+            "is_watched": false,
+            "watched_at": null,
+            "rewatch_count": 0,
+            "watched_count": 0
+          }
+        ]
+      },
+      {
+        "number": 0,
+        "is_specials": true,
+        "episodes": [
+          {
+            "id": { "tvdb": 90003, "imdb": null },
+            "number": 1,
+            "name": "Bêtisier",
+            "special": true,
+            "is_watched": false,
+            "watched_at": null,
+            "rewatch_count": 0,
+            "watched_count": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "uuid": "00000000-0000-0000-0000-000000000002",
+    "id": { "tvdb": 1002, "imdb": "tt0000002" },
+    "created_at": "2026-01-10T10:00:00Z",
+    "title": "Série Pas Commencée",
+    "status": "not_started_yet",
+    "is_favorite": false,
+    "_noEpisodeData": false,
+    "seasons": [
+      {
+        "number": 1,
+        "is_specials": false,
+        "episodes": [
+          {
+            "id": { "tvdb": 90010, "imdb": null },
+            "number": 1,
+            "name": "Épisode 1",
+            "special": false,
+            "is_watched": false,
+            "watched_at": null,
+            "rewatch_count": 0,
+            "watched_count": 0
+          }
+        ]
+      }
+    ]
+  }
+]

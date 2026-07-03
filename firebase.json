@@ -1,0 +1,1 @@
+{"firestore":{"rules":"firestore.rules"},"flutter":{"platforms":{"android":{"default":{"projectId":"tv-track-perso","appId":"1:304761545305:android:76c0a85e1885a5ca870748","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"tv-track-perso","configurations":{"android":"1:304761545305:android:76c0a85e1885a5ca870748"}}}}}}
