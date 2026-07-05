@@ -16,6 +16,7 @@ abstract class Episode with _$Episode {
     @Default(false) bool watched,
     DateTime? watchedAt,
     DateTime? airDate,
+    String? overview,
   }) = _Episode;
 
   factory Episode.fromJson(Map<String, dynamic> json) =>
@@ -53,10 +54,13 @@ abstract class Show with _$Show {
     @Default(<Season>[]) List<Season> seasons,
     // Métadonnées TVmaze (enrichies hors app ou par pull-to-refresh).
     int? tvmazeId,
+    int? tmdbId,
     String? poster,
     String? posterLarge,
     String? airStatus,
     String? network,
+    String? overview,
+    @Default(<String>[]) List<String> providers,
     DateTime? metaRefreshedAt,
   }) = _Show;
 

@@ -44,6 +44,13 @@ Future<void> main(List<String> args) async {
 
 Future<void> _enrichShows(FirestoreRest db, String uid) async {
   final tvmaze = TvmazeApi();
+  // TMDB (optionnel) : plateformes de streaming FR où voir chaque série.
+  final tmdbKey = Platform.environment['TMDB_API_KEY'];
+  final tmdb = (tmdbKey != null && tmdbKey.isNotEmpty) ? TmdbApi(tmdbKey) : null;
+  if (tmdb == null) {
+    stdout.writeln('TMDB_API_KEY absent → pas de plateformes de streaming.');
+  }
+
   final docs = await db.listAll('users/$uid/shows');
   stdout.writeln('${docs.length} séries à enrichir via TVmaze…');
   var updated = 0, missing = 0, errors = 0;
@@ -60,12 +67,26 @@ Future<void> _enrichShows(FirestoreRest db, String uid) async {
       }
       final episodes = await tvmaze.episodes(meta.id);
       await Future.delayed(const Duration(milliseconds: 600));
-      final merged = mergeTvmaze(show, meta, episodes, now: DateTime.now());
+      var merged = mergeTvmaze(show, meta, episodes, now: DateTime.now());
+
+      if (tmdb != null) {
+        try {
+          final tmdbId = await tmdb.tvIdByTvdb(show.tvdbId);
+          if (tmdbId != null) {
+            final providers = await tmdb.tvProviders(tmdbId);
+            merged = merged.copyWith(tmdbId: tmdbId, providers: providers);
+          }
+        } catch (_) {
+          // Providers best-effort : on garde le reste de l'enrichissement.
+        }
+      }
+
       await db.patch('users/$uid/shows/$id', merged.toJson());
       updated++;
       final added = merged.totalEpisodes - show.totalEpisodes;
+      final prov = merged.providers.isEmpty ? '' : ' [${merged.providers.join(', ')}]';
       stdout.writeln(
-          '  [${i + 1}/${docs.length}] ${show.title}${added > 0 ? ' (+$added épisodes)' : ''}');
+          '  [${i + 1}/${docs.length}] ${show.title}${added > 0 ? ' (+$added ép.)' : ''}$prov');
     } catch (e) {
       errors++;
       stdout.writeln('  [${i + 1}/${docs.length}] ERREUR ${show.title}: $e');

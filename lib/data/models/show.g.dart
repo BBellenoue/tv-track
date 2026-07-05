@@ -18,6 +18,7 @@ _Episode _$EpisodeFromJson(Map<String, dynamic> json) => _Episode(
   airDate: json['airDate'] == null
       ? null
       : DateTime.parse(json['airDate'] as String),
+  overview: json['overview'] as String?,
 );
 
 Map<String, dynamic> _$EpisodeToJson(_Episode instance) => <String, dynamic>{
@@ -28,6 +29,7 @@ Map<String, dynamic> _$EpisodeToJson(_Episode instance) => <String, dynamic>{
   'watched': instance.watched,
   'watchedAt': instance.watchedAt?.toIso8601String(),
   'airDate': instance.airDate?.toIso8601String(),
+  'overview': instance.overview,
 };
 
 _Season _$SeasonFromJson(Map<String, dynamic> json) => _Season(
@@ -59,10 +61,15 @@ _Show _$ShowFromJson(Map<String, dynamic> json) => _Show(
           .toList() ??
       const <Season>[],
   tvmazeId: (json['tvmazeId'] as num?)?.toInt(),
+  tmdbId: (json['tmdbId'] as num?)?.toInt(),
   poster: json['poster'] as String?,
   posterLarge: json['posterLarge'] as String?,
   airStatus: json['airStatus'] as String?,
   network: json['network'] as String?,
+  overview: json['overview'] as String?,
+  providers:
+      (json['providers'] as List<dynamic>?)?.map((e) => e as String).toList() ??
+      const <String>[],
   metaRefreshedAt: json['metaRefreshedAt'] == null
       ? null
       : DateTime.parse(json['metaRefreshedAt'] as String),
@@ -75,9 +82,12 @@ Map<String, dynamic> _$ShowToJson(_Show instance) => <String, dynamic>{
   'addedAt': instance.addedAt?.toIso8601String(),
   'seasons': instance.seasons.map((e) => e.toJson()).toList(),
   'tvmazeId': instance.tvmazeId,
+  'tmdbId': instance.tmdbId,
   'poster': instance.poster,
   'posterLarge': instance.posterLarge,
   'airStatus': instance.airStatus,
   'network': instance.network,
+  'overview': instance.overview,
+  'providers': instance.providers,
   'metaRefreshedAt': instance.metaRefreshedAt?.toIso8601String(),
 };

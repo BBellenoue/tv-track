@@ -47,6 +47,7 @@ class TvmazeShow {
     this.network,
     this.imageMedium,
     this.imageOriginal,
+    this.summary,
   });
 
   factory TvmazeShow.fromJson(Map<String, dynamic> json) {
@@ -59,6 +60,7 @@ class TvmazeShow {
       network: network?['name'] as String?,
       imageMedium: image?['medium'] as String?,
       imageOriginal: image?['original'] as String?,
+      summary: stripHtml(json['summary'] as String?),
     );
   }
 
@@ -68,6 +70,23 @@ class TvmazeShow {
   final String? network;
   final String? imageMedium;
   final String? imageOriginal;
+  final String? summary;
+}
+
+/// Retire les balises HTML des résumés TVmaze et décode les entités
+/// courantes. Retourne null pour une entrée vide.
+String? stripHtml(String? html) {
+  if (html == null) return null;
+  final text = html
+      .replaceAll(RegExp(r'<[^>]*>'), '')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&agrave;', 'à')
+      .replaceAll('&eacute;', 'é')
+      .replaceAll('&nbsp;', ' ')
+      .trim();
+  return text.isEmpty ? null : text;
 }
 
 class TvmazeEpisode {
@@ -77,6 +96,7 @@ class TvmazeEpisode {
     required this.name,
     this.type,
     this.airstamp,
+    this.summary,
   });
 
   factory TvmazeEpisode.fromJson(Map<String, dynamic> json) => TvmazeEpisode(
@@ -88,6 +108,7 @@ class TvmazeEpisode {
         airstamp: json['airstamp'] != null
             ? DateTime.tryParse(json['airstamp'] as String)
             : null,
+        summary: stripHtml(json['summary'] as String?),
       );
 
   final int season;
@@ -95,6 +116,7 @@ class TvmazeEpisode {
   final String name;
   final String? type; // regular / significant_special / insignificant_special
   final DateTime? airstamp;
+  final String? summary;
 
   bool get isSpecial => type != null && type != 'regular';
 }

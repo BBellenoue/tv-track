@@ -7,7 +7,9 @@ import 'package:intl/intl.dart';
 
 import '../../core/providers.dart';
 import '../../core/theme.dart';
+import '../../core/widgets/expandable_text.dart';
 import '../../core/widgets/season_progress_bar.dart';
+import '../../core/widgets/section_label.dart';
 import '../../data/models/show.dart';
 
 class ShowDetailScreen extends ConsumerWidget {
@@ -32,6 +34,8 @@ class ShowDetailScreen extends ConsumerWidget {
       body: CustomScrollView(
         slivers: [
           _Header(show: show),
+          if (show.providers.isNotEmpty || (show.overview?.isNotEmpty ?? false))
+            SliverToBoxAdapter(child: _Overview(show: show)),
           SliverPadding(
             padding: const EdgeInsets.only(bottom: 24),
             sliver: SliverList.list(children: [
@@ -135,6 +139,61 @@ class _Header extends StatelessWidget {
   }
 }
 
+class _Overview extends StatelessWidget {
+  const _Overview({required this.show});
+
+  final Show show;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (show.providers.isNotEmpty) ...[
+            const SectionLabel('Où regarder'),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final p in show.providers) _ProviderChip(p),
+              ],
+            ),
+            const SizedBox(height: 18),
+          ],
+          if (show.overview?.isNotEmpty ?? false) ...[
+            const SectionLabel('Synopsis'),
+            const SizedBox(height: 8),
+            ExpandableText(show.overview!),
+            const SizedBox(height: 8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProviderChip extends StatelessWidget {
+  const _ProviderChip(this.name);
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: charcoal,
+        border: Border.all(color: tungsten.withValues(alpha: .4)),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(name, style: condensed(size: 13.5, letterSpacing: .3)),
+    );
+  }
+}
+
 class _SeasonTile extends ConsumerWidget {
   const _SeasonTile({
     super.key,
@@ -187,55 +246,138 @@ class _SeasonTile extends ConsumerWidget {
   }
 }
 
-class _EpisodeRow extends ConsumerWidget {
+class _EpisodeRow extends ConsumerStatefulWidget {
   const _EpisodeRow({required this.show, required this.episode});
 
   final Show show;
   final Episode episode;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_EpisodeRow> createState() => _EpisodeRowState();
+}
+
+class _EpisodeRowState extends ConsumerState<_EpisodeRow> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final episode = widget.episode;
     final airDate = episode.airDate;
     final unaired = airDate != null && airDate.isAfter(DateTime.now());
+    final hasOverview = episode.overview?.isNotEmpty ?? false;
 
-    return CheckboxListTile(
-      dense: true,
-      controlAffinity: ListTileControlAffinity.leading,
-      activeColor: tungsten,
-      checkColor: const Color(0xFF221603),
-      value: episode.watched,
-      onChanged: unaired
-          ? null
-          : (v) {
-              HapticFeedback.selectionClick();
-              ref.read(trackingRepositoryProvider)?.saveShow(
-                  show.withEpisodeWatched(episode.tvdbId, v ?? false));
-            },
-      title: Row(
-        children: [
-          Text('E${episode.number.toString().padLeft(2, '0')}',
-              style: mono(size: 12, color: unaired ? dust : linen)),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              episode.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: unaired ? dust : linen, height: 1.2),
-            ),
-          ),
-        ],
-      ),
-      subtitle: unaired
-          ? Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(
-                'diffusé le ${DateFormat('d MMMM', 'fr_FR').format(airDate.toLocal())}',
-                style: mono(size: 10.5, color: tungsten),
+    void toggleWatched() {
+      if (unaired) return;
+      HapticFeedback.selectionClick();
+      ref.read(trackingRepositoryProvider)?.saveShow(
+          widget.show.withEpisodeWatched(episode.tvdbId, !episode.watched));
+    }
+
+    // Ligne d'au moins 56px de haut ; case à cocher dans une cible de 44px.
+    return InkWell(
+      onTap: hasOverview ? () => setState(() => _expanded = !_expanded) : null,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 56),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _Check(
+                      watched: episode.watched,
+                      enabled: !unaired,
+                      onTap: toggleWatched),
+                  Text('E${episode.number.toString().padLeft(2, '0')}',
+                      style: mono(size: 12.5, color: unaired ? dust : linen)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          episode.name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                  color: unaired ? dust : linen, height: 1.25),
+                        ),
+                        if (unaired)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Text(
+                              'diffusé le ${DateFormat('d MMMM', 'fr_FR').format(airDate.toLocal())}',
+                              style: mono(size: 10.5, color: tungsten),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (hasOverview)
+                    Icon(_expanded ? Icons.expand_less : Icons.expand_more,
+                        size: 20, color: dust),
+                ],
               ),
-            )
-          : null,
+            ),
+            if (hasOverview && _expanded)
+              Padding(
+                padding: const EdgeInsets.only(left: 44, top: 2, bottom: 12),
+                child: Text(
+                  episode.overview!,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: linen.withValues(alpha: .78), height: 1.4),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Case à cocher tungstène dans une cible tactile de 44px (case visuelle
+/// de 24px centrée). Désactivée pour les épisodes non diffusés.
+class _Check extends StatelessWidget {
+  const _Check(
+      {required this.watched, required this.enabled, required this.onTap});
+
+  final bool watched;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkResponse(
+      onTap: enabled ? onTap : null,
+      radius: 26,
+      child: SizedBox(
+        width: 44,
+        height: 44,
+        child: Center(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 140),
+            curve: Curves.easeOutCubic,
+            width: 24,
+            height: 24,
+            decoration: BoxDecoration(
+              color: watched ? tungsten : Colors.transparent,
+              border: Border.all(
+                  color: enabled ? (watched ? tungsten : dust) : outlineDim,
+                  width: 1.6),
+              borderRadius: BorderRadius.circular(7),
+            ),
+            child: watched
+                ? const Icon(Icons.check, size: 16, color: Color(0xFF221603))
+                : null,
+          ),
+        ),
+      ),
     );
   }
 }

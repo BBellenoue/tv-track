@@ -5,6 +5,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../data/models/movie.dart';
 import '../data/models/show.dart';
 import '../data/repositories/tracking_repository.dart';
+import '../data/tmdb/tmdb_api.dart';
+import '../data/tvmaze/tvmaze_api.dart';
+import 'config.dart';
 
 part 'providers.g.dart';
 
@@ -34,5 +37,20 @@ Stream<List<Movie>> movies(Ref ref) {
   final repo = ref.watch(trackingRepositoryProvider);
   if (repo == null) return Stream.value(const []);
   return repo.watchMovies();
+}
+
+@Riverpod(keepAlive: true)
+TvmazeApi tvmazeApi(Ref ref) => TvmazeApi();
+
+/// Client TMDB si une clé est configurée (sinon null → Découverte désactivée).
+@Riverpod(keepAlive: true)
+TmdbApi? tmdbApi(Ref ref) =>
+    tmdbApiKey.isEmpty ? null : TmdbApi(tmdbApiKey);
+
+@riverpod
+Stream<Set<int>> discoverSeenIds(Ref ref) {
+  final repo = ref.watch(trackingRepositoryProvider);
+  if (repo == null) return Stream.value(const {});
+  return repo.watchSeenTmdbIds();
 }
 

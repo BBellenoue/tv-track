@@ -24,11 +24,17 @@ void main() {
     network: 'HBO',
     imageMedium: 'https://img.example/m.jpg',
     imageOriginal: 'https://img.example/o.jpg',
+    summary: 'Le synopsis de la série.',
   );
 
   final episodes = [
     TvmazeEpisode(season: 1, number: 1, name: 'Pilot', airstamp: DateTime(2020, 1, 1)),
-    TvmazeEpisode(season: 1, number: 2, name: 'Deux', airstamp: DateTime(2020, 1, 8)),
+    TvmazeEpisode(
+        season: 1,
+        number: 2,
+        name: 'Deux',
+        airstamp: DateTime(2020, 1, 8),
+        summary: 'Résumé de l\'épisode deux.'),
     TvmazeEpisode(season: 2, number: 1, name: 'Reprise', airstamp: DateTime(2026, 9, 1)),
     TvmazeEpisode(
         season: 0, number: 1, name: 'Special', type: 'significant_special'),
@@ -42,8 +48,14 @@ void main() {
       expect(merged.poster, 'https://img.example/m.jpg');
       expect(merged.airStatus, 'Running');
       expect(merged.network, 'HBO');
+      expect(merged.overview, 'Le synopsis de la série.');
       expect(merged.metaRefreshedAt, now);
       expect(merged.isEnded, isFalse);
+    });
+
+    test('résumés d\'épisodes fusionnés', () {
+      final s1e2 = merged.regularSeasons.first.episodes[1];
+      expect(s1e2.overview, 'Résumé de l\'épisode deux.');
     });
 
     test('état de visionnage préservé, nom local prioritaire', () {
@@ -90,6 +102,15 @@ void main() {
 
     test('round-trip Firestore avec les nouveaux champs', () {
       expect(Show.fromJson(merged.toJson()), equals(merged));
+    });
+  });
+
+  group('stripHtml', () {
+    test('retire les balises et décode les entités', () {
+      expect(stripHtml('<p>Bonjour &amp; bienvenue.</p>'),
+          'Bonjour & bienvenue.');
+      expect(stripHtml('<p></p>'), isNull);
+      expect(stripHtml(null), isNull);
     });
   });
 }

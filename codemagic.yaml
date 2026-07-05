@@ -45,7 +45,10 @@ workflows:
       - name: Tests
         script: flutter test
       - name: Build APK release
-        script: flutter build apk --release --build-number=$PROJECT_BUILD_NUMBER
+        script: |
+          flutter build apk --release \
+            --build-number=$PROJECT_BUILD_NUMBER \
+            --dart-define=TMDB_API_KEY=$TMDB_API_KEY
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
     publishing:

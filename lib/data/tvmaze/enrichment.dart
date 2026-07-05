@@ -41,6 +41,7 @@ Show mergeTvmaze(
         merged.add(local.copyWith(
           name: local.name.isEmpty ? remote.name : local.name,
           airDate: remote.airstamp ?? local.airDate,
+          overview: remote.summary ?? local.overview,
         ));
       } else {
         merged.add(Episode(
@@ -48,6 +49,7 @@ Show mergeTvmaze(
           number: remote.number,
           name: remote.name,
           airDate: remote.airstamp,
+          overview: remote.summary,
         ));
       }
     }
@@ -72,6 +74,7 @@ Show mergeTvmaze(
     posterLarge: meta.imageOriginal ?? show.posterLarge,
     airStatus: meta.status ?? show.airStatus,
     network: meta.network ?? show.network,
+    overview: meta.summary ?? show.overview,
     metaRefreshedAt: now,
   );
 }

@@ -6,8 +6,9 @@ import '../models/show.dart';
 /// Accès Firestore au suivi de l'utilisateur.
 ///
 /// Structure :
-///   users/{uid}/shows/{tvdbId}   — un doc par série, saisons/épisodes inclus
-///   users/{uid}/movies/{tvdbId}  — un doc par film
+///   users/{uid}/shows/{tvdbId}       — un doc par série, saisons/épisodes
+///   users/{uid}/movies/{tvdbId}      — un doc par film
+///   users/{uid}/discover_seen/{id}   — carte Découverte déjà swipée (id TMDB)
 class TrackingRepository {
   TrackingRepository(this._db, this.uid);
 
@@ -19,6 +20,9 @@ class TrackingRepository {
 
   CollectionReference<Map<String, dynamic>> get _movies =>
       _db.collection('users').doc(uid).collection('movies');
+
+  CollectionReference<Map<String, dynamic>> get _discoverSeen =>
+      _db.collection('users').doc(uid).collection('discover_seen');
 
   Stream<List<Show>> watchShows() => _shows.snapshots().map(
       (snap) => snap.docs.map((d) => Show.fromJson(d.data())).toList());
@@ -35,6 +39,17 @@ class TrackingRepository {
   Future<void> deleteShow(int tvdbId) => _shows.doc('$tvdbId').delete();
 
   Future<void> deleteMovie(int tvdbId) => _movies.doc('$tvdbId').delete();
+
+  /// IDs TMDB des cartes Découverte déjà swipées (like ou pass), pour ne pas
+  /// les reproposer.
+  Stream<Set<int>> watchSeenTmdbIds() => _discoverSeen.snapshots().map(
+      (snap) => snap.docs.map((d) => int.parse(d.id)).toSet());
+
+  Future<void> markDiscoverSeen(int tmdbId, {required bool liked}) =>
+      _discoverSeen.doc('$tmdbId').set({
+        'liked': liked,
+        'at': FieldValue.serverTimestamp(),
+      });
 
   /// Import initial : écrit tout par batches (limite Firestore : 500 ops).
   Future<void> importAll(

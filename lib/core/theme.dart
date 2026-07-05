@@ -11,6 +11,7 @@ const charcoalHigh = Color(0xFF2B2620);
 const tungsten = Color(0xFFE7A33C);
 const linen = Color(0xFFEFE9DD);
 const dust = Color(0xFF9C9284);
+const outlineDim = Color(0xFF3A342B);
 
 /// Style des données de suivi : S02E05, 123/250, dates de diffusion.
 TextStyle mono({

@@ -13,3 +13,11 @@ const googleServerClientId = String.fromEnvironment(
   defaultValue:
       '304761545305-k0bnp3g6d936uumapchmfii110fri6o2.apps.googleusercontent.com',
 );
+
+/// Clé API TMDB (v3), utilisée par le deck Découverte pour lister les séries
+/// populaires/tendances. Injectée au build :
+///   flutter run --dart-define=TMDB_API_KEY=xxxxx
+/// En CI, fournie par la variable sécurisée Codemagic du même nom.
+/// Clé en lecture seule et à faible sensibilité — l'onglet Découverte se
+/// désactive proprement si elle est absente.
+const tmdbApiKey = String.fromEnvironment('TMDB_API_KEY');

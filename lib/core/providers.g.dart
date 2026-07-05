@@ -207,3 +207,124 @@ final class MoviesProvider
 }
 
 String _$moviesHash() => r'e6ead94bc7fb43e0f148b5d2a13b41237512ba5e';
+
+@ProviderFor(tvmazeApi)
+final tvmazeApiProvider = TvmazeApiProvider._();
+
+final class TvmazeApiProvider
+    extends $FunctionalProvider<TvmazeApi, TvmazeApi, TvmazeApi>
+    with $Provider<TvmazeApi> {
+  TvmazeApiProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tvmazeApiProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tvmazeApiHash();
+
+  @$internal
+  @override
+  $ProviderElement<TvmazeApi> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TvmazeApi create(Ref ref) {
+    return tvmazeApi(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TvmazeApi value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TvmazeApi>(value),
+    );
+  }
+}
+
+String _$tvmazeApiHash() => r'0d803ce39312d4d471352ee9c2e500c169049749';
+
+/// Client TMDB si une clé est configurée (sinon null → Découverte désactivée).
+
+@ProviderFor(tmdbApi)
+final tmdbApiProvider = TmdbApiProvider._();
+
+/// Client TMDB si une clé est configurée (sinon null → Découverte désactivée).
+
+final class TmdbApiProvider
+    extends $FunctionalProvider<TmdbApi?, TmdbApi?, TmdbApi?>
+    with $Provider<TmdbApi?> {
+  /// Client TMDB si une clé est configurée (sinon null → Découverte désactivée).
+  TmdbApiProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tmdbApiProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tmdbApiHash();
+
+  @$internal
+  @override
+  $ProviderElement<TmdbApi?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  TmdbApi? create(Ref ref) {
+    return tmdbApi(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TmdbApi? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TmdbApi?>(value),
+    );
+  }
+}
+
+String _$tmdbApiHash() => r'e3b74015eaa88123c58f676ec0b36f6ae8259379';
+
+@ProviderFor(discoverSeenIds)
+final discoverSeenIdsProvider = DiscoverSeenIdsProvider._();
+
+final class DiscoverSeenIdsProvider
+    extends
+        $FunctionalProvider<AsyncValue<Set<int>>, Set<int>, Stream<Set<int>>>
+    with $FutureModifier<Set<int>>, $StreamProvider<Set<int>> {
+  DiscoverSeenIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'discoverSeenIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$discoverSeenIdsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<Set<int>> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<Set<int>> create(Ref ref) {
+    return discoverSeenIds(ref);
+  }
+}
+
+String _$discoverSeenIdsHash() => r'9fa502df9a5faef08366e07dda3a3420b431ebd0';

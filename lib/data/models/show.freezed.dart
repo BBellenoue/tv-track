@@ -17,7 +17,7 @@ mixin _$Episode {
 
 /// ID externe : TVDB pour les épisodes issus de l'export TV Time,
 /// négatif (-(saison*1000+numéro)) pour ceux ajoutés depuis TVmaze.
- int get tvdbId; int get number; String get name; bool get special; bool get watched; DateTime? get watchedAt; DateTime? get airDate;
+ int get tvdbId; int get number; String get name; bool get special; bool get watched; DateTime? get watchedAt; DateTime? get airDate; String? get overview;
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,16 +30,16 @@ $EpisodeCopyWith<Episode> get copyWith => _$EpisodeCopyWithImpl<Episode>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate);
+int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview);
 
 @override
 String toString() {
-  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate)';
+  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview)';
 }
 
 
@@ -50,7 +50,7 @@ abstract mixin class $EpisodeCopyWith<$Res>  {
   factory $EpisodeCopyWith(Episode value, $Res Function(Episode) _then) = _$EpisodeCopyWithImpl;
 @useResult
 $Res call({
- int tvdbId, int number, String name, bool special, bool watched, DateTime? watchedAt, DateTime? airDate
+ int tvdbId, int number, String name, bool special, bool watched, DateTime? watchedAt, DateTime? airDate, String? overview
 });
 
 
@@ -67,7 +67,7 @@ class _$EpisodeCopyWithImpl<$Res>
 
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,Object? overview = freezed,}) {
   return _then(_self.copyWith(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,8 @@ as String,special: null == special ? _self.special : special // ignore: cast_nul
 as bool,watched: null == watched ? _self.watched : watched // ignore: cast_nullable_to_non_nullable
 as bool,watchedAt: freezed == watchedAt ? _self.watchedAt : watchedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,airDate: freezed == airDate ? _self.airDate : airDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,overview: freezed == overview ? _self.overview : overview // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -161,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Episode() when $default != null:
-return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate);case _:
+return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview);case _:
   return orElse();
 
 }
@@ -182,10 +183,10 @@ return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview)  $default,) {final _that = this;
 switch (_that) {
 case _Episode():
-return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate);case _:
+return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +203,10 @@ return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview)?  $default,) {final _that = this;
 switch (_that) {
 case _Episode() when $default != null:
-return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate);case _:
+return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview);case _:
   return null;
 
 }
@@ -217,7 +218,7 @@ return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched
 @JsonSerializable()
 
 class _Episode implements Episode {
-  const _Episode({required this.tvdbId, required this.number, this.name = '', this.special = false, this.watched = false, this.watchedAt, this.airDate});
+  const _Episode({required this.tvdbId, required this.number, this.name = '', this.special = false, this.watched = false, this.watchedAt, this.airDate, this.overview});
   factory _Episode.fromJson(Map<String, dynamic> json) => _$EpisodeFromJson(json);
 
 /// ID externe : TVDB pour les épisodes issus de l'export TV Time,
@@ -229,6 +230,7 @@ class _Episode implements Episode {
 @override@JsonKey() final  bool watched;
 @override final  DateTime? watchedAt;
 @override final  DateTime? airDate;
+@override final  String? overview;
 
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate);
+int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview);
 
 @override
 String toString() {
-  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate)';
+  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$EpisodeCopyWith<$Res> implements $EpisodeCopyWith<$Res> {
   factory _$EpisodeCopyWith(_Episode value, $Res Function(_Episode) _then) = __$EpisodeCopyWithImpl;
 @override @useResult
 $Res call({
- int tvdbId, int number, String name, bool special, bool watched, DateTime? watchedAt, DateTime? airDate
+ int tvdbId, int number, String name, bool special, bool watched, DateTime? watchedAt, DateTime? airDate, String? overview
 });
 
 
@@ -280,7 +282,7 @@ class __$EpisodeCopyWithImpl<$Res>
 
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,Object? overview = freezed,}) {
   return _then(_Episode(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
@@ -289,7 +291,8 @@ as String,special: null == special ? _self.special : special // ignore: cast_nul
 as bool,watched: null == watched ? _self.watched : watched // ignore: cast_nullable_to_non_nullable
 as bool,watchedAt: freezed == watchedAt ? _self.watchedAt : watchedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,airDate: freezed == airDate ? _self.airDate : airDate // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,overview: freezed == overview ? _self.overview : overview // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -575,7 +578,7 @@ as List<Episode>,
 /// @nodoc
 mixin _$Show {
 
- int get tvdbId; String get title; bool get isFavorite; DateTime? get addedAt; List<Season> get seasons; int? get tvmazeId; String? get poster; String? get posterLarge; String? get airStatus; String? get network; DateTime? get metaRefreshedAt;
+ int get tvdbId; String get title; bool get isFavorite; DateTime? get addedAt; List<Season> get seasons; int? get tvmazeId; int? get tmdbId; String? get poster; String? get posterLarge; String? get airStatus; String? get network; String? get overview; List<String> get providers; DateTime? get metaRefreshedAt;
 /// Create a copy of Show
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -588,16 +591,16 @@ $ShowCopyWith<Show> get copyWith => _$ShowCopyWithImpl<Show>(this as Show, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Show&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&const DeepCollectionEquality().equals(other.seasons, seasons)&&(identical(other.tvmazeId, tvmazeId) || other.tvmazeId == tvmazeId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.posterLarge, posterLarge) || other.posterLarge == posterLarge)&&(identical(other.airStatus, airStatus) || other.airStatus == airStatus)&&(identical(other.network, network) || other.network == network)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Show&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&const DeepCollectionEquality().equals(other.seasons, seasons)&&(identical(other.tvmazeId, tvmazeId) || other.tvmazeId == tvmazeId)&&(identical(other.tmdbId, tmdbId) || other.tmdbId == tmdbId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.posterLarge, posterLarge) || other.posterLarge == posterLarge)&&(identical(other.airStatus, airStatus) || other.airStatus == airStatus)&&(identical(other.network, network) || other.network == network)&&(identical(other.overview, overview) || other.overview == overview)&&const DeepCollectionEquality().equals(other.providers, providers)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,title,isFavorite,addedAt,const DeepCollectionEquality().hash(seasons),tvmazeId,poster,posterLarge,airStatus,network,metaRefreshedAt);
+int get hashCode => Object.hash(runtimeType,tvdbId,title,isFavorite,addedAt,const DeepCollectionEquality().hash(seasons),tvmazeId,tmdbId,poster,posterLarge,airStatus,network,overview,const DeepCollectionEquality().hash(providers),metaRefreshedAt);
 
 @override
 String toString() {
-  return 'Show(tvdbId: $tvdbId, title: $title, isFavorite: $isFavorite, addedAt: $addedAt, seasons: $seasons, tvmazeId: $tvmazeId, poster: $poster, posterLarge: $posterLarge, airStatus: $airStatus, network: $network, metaRefreshedAt: $metaRefreshedAt)';
+  return 'Show(tvdbId: $tvdbId, title: $title, isFavorite: $isFavorite, addedAt: $addedAt, seasons: $seasons, tvmazeId: $tvmazeId, tmdbId: $tmdbId, poster: $poster, posterLarge: $posterLarge, airStatus: $airStatus, network: $network, overview: $overview, providers: $providers, metaRefreshedAt: $metaRefreshedAt)';
 }
 
 
@@ -608,7 +611,7 @@ abstract mixin class $ShowCopyWith<$Res>  {
   factory $ShowCopyWith(Show value, $Res Function(Show) _then) = _$ShowCopyWithImpl;
 @useResult
 $Res call({
- int tvdbId, String title, bool isFavorite, DateTime? addedAt, List<Season> seasons, int? tvmazeId, String? poster, String? posterLarge, String? airStatus, String? network, DateTime? metaRefreshedAt
+ int tvdbId, String title, bool isFavorite, DateTime? addedAt, List<Season> seasons, int? tvmazeId, int? tmdbId, String? poster, String? posterLarge, String? airStatus, String? network, String? overview, List<String> providers, DateTime? metaRefreshedAt
 });
 
 
@@ -625,7 +628,7 @@ class _$ShowCopyWithImpl<$Res>
 
 /// Create a copy of Show
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? title = null,Object? isFavorite = null,Object? addedAt = freezed,Object? seasons = null,Object? tvmazeId = freezed,Object? poster = freezed,Object? posterLarge = freezed,Object? airStatus = freezed,Object? network = freezed,Object? metaRefreshedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? title = null,Object? isFavorite = null,Object? addedAt = freezed,Object? seasons = null,Object? tvmazeId = freezed,Object? tmdbId = freezed,Object? poster = freezed,Object? posterLarge = freezed,Object? airStatus = freezed,Object? network = freezed,Object? overview = freezed,Object? providers = null,Object? metaRefreshedAt = freezed,}) {
   return _then(_self.copyWith(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -633,11 +636,14 @@ as String,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // igno
 as bool,addedAt: freezed == addedAt ? _self.addedAt : addedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,seasons: null == seasons ? _self.seasons : seasons // ignore: cast_nullable_to_non_nullable
 as List<Season>,tvmazeId: freezed == tvmazeId ? _self.tvmazeId : tvmazeId // ignore: cast_nullable_to_non_nullable
+as int?,tmdbId: freezed == tmdbId ? _self.tmdbId : tmdbId // ignore: cast_nullable_to_non_nullable
 as int?,poster: freezed == poster ? _self.poster : poster // ignore: cast_nullable_to_non_nullable
 as String?,posterLarge: freezed == posterLarge ? _self.posterLarge : posterLarge // ignore: cast_nullable_to_non_nullable
 as String?,airStatus: freezed == airStatus ? _self.airStatus : airStatus // ignore: cast_nullable_to_non_nullable
 as String?,network: freezed == network ? _self.network : network // ignore: cast_nullable_to_non_nullable
-as String?,metaRefreshedAt: freezed == metaRefreshedAt ? _self.metaRefreshedAt : metaRefreshedAt // ignore: cast_nullable_to_non_nullable
+as String?,overview: freezed == overview ? _self.overview : overview // ignore: cast_nullable_to_non_nullable
+as String?,providers: null == providers ? _self.providers : providers // ignore: cast_nullable_to_non_nullable
+as List<String>,metaRefreshedAt: freezed == metaRefreshedAt ? _self.metaRefreshedAt : metaRefreshedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -723,10 +729,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int tvdbId,  String title,  bool isFavorite,  DateTime? addedAt,  List<Season> seasons,  int? tvmazeId,  String? poster,  String? posterLarge,  String? airStatus,  String? network,  DateTime? metaRefreshedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int tvdbId,  String title,  bool isFavorite,  DateTime? addedAt,  List<Season> seasons,  int? tvmazeId,  int? tmdbId,  String? poster,  String? posterLarge,  String? airStatus,  String? network,  String? overview,  List<String> providers,  DateTime? metaRefreshedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Show() when $default != null:
-return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.seasons,_that.tvmazeId,_that.poster,_that.posterLarge,_that.airStatus,_that.network,_that.metaRefreshedAt);case _:
+return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.seasons,_that.tvmazeId,_that.tmdbId,_that.poster,_that.posterLarge,_that.airStatus,_that.network,_that.overview,_that.providers,_that.metaRefreshedAt);case _:
   return orElse();
 
 }
@@ -744,10 +750,10 @@ return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.se
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int tvdbId,  String title,  bool isFavorite,  DateTime? addedAt,  List<Season> seasons,  int? tvmazeId,  String? poster,  String? posterLarge,  String? airStatus,  String? network,  DateTime? metaRefreshedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int tvdbId,  String title,  bool isFavorite,  DateTime? addedAt,  List<Season> seasons,  int? tvmazeId,  int? tmdbId,  String? poster,  String? posterLarge,  String? airStatus,  String? network,  String? overview,  List<String> providers,  DateTime? metaRefreshedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Show():
-return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.seasons,_that.tvmazeId,_that.poster,_that.posterLarge,_that.airStatus,_that.network,_that.metaRefreshedAt);case _:
+return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.seasons,_that.tvmazeId,_that.tmdbId,_that.poster,_that.posterLarge,_that.airStatus,_that.network,_that.overview,_that.providers,_that.metaRefreshedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -764,10 +770,10 @@ return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.se
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int tvdbId,  String title,  bool isFavorite,  DateTime? addedAt,  List<Season> seasons,  int? tvmazeId,  String? poster,  String? posterLarge,  String? airStatus,  String? network,  DateTime? metaRefreshedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int tvdbId,  String title,  bool isFavorite,  DateTime? addedAt,  List<Season> seasons,  int? tvmazeId,  int? tmdbId,  String? poster,  String? posterLarge,  String? airStatus,  String? network,  String? overview,  List<String> providers,  DateTime? metaRefreshedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Show() when $default != null:
-return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.seasons,_that.tvmazeId,_that.poster,_that.posterLarge,_that.airStatus,_that.network,_that.metaRefreshedAt);case _:
+return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.seasons,_that.tvmazeId,_that.tmdbId,_that.poster,_that.posterLarge,_that.airStatus,_that.network,_that.overview,_that.providers,_that.metaRefreshedAt);case _:
   return null;
 
 }
@@ -779,7 +785,7 @@ return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.se
 @JsonSerializable()
 
 class _Show extends Show {
-  const _Show({required this.tvdbId, required this.title, this.isFavorite = false, this.addedAt, final  List<Season> seasons = const <Season>[], this.tvmazeId, this.poster, this.posterLarge, this.airStatus, this.network, this.metaRefreshedAt}): _seasons = seasons,super._();
+  const _Show({required this.tvdbId, required this.title, this.isFavorite = false, this.addedAt, final  List<Season> seasons = const <Season>[], this.tvmazeId, this.tmdbId, this.poster, this.posterLarge, this.airStatus, this.network, this.overview, final  List<String> providers = const <String>[], this.metaRefreshedAt}): _seasons = seasons,_providers = providers,super._();
   factory _Show.fromJson(Map<String, dynamic> json) => _$ShowFromJson(json);
 
 @override final  int tvdbId;
@@ -794,10 +800,19 @@ class _Show extends Show {
 }
 
 @override final  int? tvmazeId;
+@override final  int? tmdbId;
 @override final  String? poster;
 @override final  String? posterLarge;
 @override final  String? airStatus;
 @override final  String? network;
+@override final  String? overview;
+ final  List<String> _providers;
+@override@JsonKey() List<String> get providers {
+  if (_providers is EqualUnmodifiableListView) return _providers;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_providers);
+}
+
 @override final  DateTime? metaRefreshedAt;
 
 /// Create a copy of Show
@@ -813,16 +828,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Show&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&const DeepCollectionEquality().equals(other._seasons, _seasons)&&(identical(other.tvmazeId, tvmazeId) || other.tvmazeId == tvmazeId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.posterLarge, posterLarge) || other.posterLarge == posterLarge)&&(identical(other.airStatus, airStatus) || other.airStatus == airStatus)&&(identical(other.network, network) || other.network == network)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Show&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&const DeepCollectionEquality().equals(other._seasons, _seasons)&&(identical(other.tvmazeId, tvmazeId) || other.tvmazeId == tvmazeId)&&(identical(other.tmdbId, tmdbId) || other.tmdbId == tmdbId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.posterLarge, posterLarge) || other.posterLarge == posterLarge)&&(identical(other.airStatus, airStatus) || other.airStatus == airStatus)&&(identical(other.network, network) || other.network == network)&&(identical(other.overview, overview) || other.overview == overview)&&const DeepCollectionEquality().equals(other._providers, _providers)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,title,isFavorite,addedAt,const DeepCollectionEquality().hash(_seasons),tvmazeId,poster,posterLarge,airStatus,network,metaRefreshedAt);
+int get hashCode => Object.hash(runtimeType,tvdbId,title,isFavorite,addedAt,const DeepCollectionEquality().hash(_seasons),tvmazeId,tmdbId,poster,posterLarge,airStatus,network,overview,const DeepCollectionEquality().hash(_providers),metaRefreshedAt);
 
 @override
 String toString() {
-  return 'Show(tvdbId: $tvdbId, title: $title, isFavorite: $isFavorite, addedAt: $addedAt, seasons: $seasons, tvmazeId: $tvmazeId, poster: $poster, posterLarge: $posterLarge, airStatus: $airStatus, network: $network, metaRefreshedAt: $metaRefreshedAt)';
+  return 'Show(tvdbId: $tvdbId, title: $title, isFavorite: $isFavorite, addedAt: $addedAt, seasons: $seasons, tvmazeId: $tvmazeId, tmdbId: $tmdbId, poster: $poster, posterLarge: $posterLarge, airStatus: $airStatus, network: $network, overview: $overview, providers: $providers, metaRefreshedAt: $metaRefreshedAt)';
 }
 
 
@@ -833,7 +848,7 @@ abstract mixin class _$ShowCopyWith<$Res> implements $ShowCopyWith<$Res> {
   factory _$ShowCopyWith(_Show value, $Res Function(_Show) _then) = __$ShowCopyWithImpl;
 @override @useResult
 $Res call({
- int tvdbId, String title, bool isFavorite, DateTime? addedAt, List<Season> seasons, int? tvmazeId, String? poster, String? posterLarge, String? airStatus, String? network, DateTime? metaRefreshedAt
+ int tvdbId, String title, bool isFavorite, DateTime? addedAt, List<Season> seasons, int? tvmazeId, int? tmdbId, String? poster, String? posterLarge, String? airStatus, String? network, String? overview, List<String> providers, DateTime? metaRefreshedAt
 });
 
 
@@ -850,7 +865,7 @@ class __$ShowCopyWithImpl<$Res>
 
 /// Create a copy of Show
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? tvdbId = null,Object? title = null,Object? isFavorite = null,Object? addedAt = freezed,Object? seasons = null,Object? tvmazeId = freezed,Object? poster = freezed,Object? posterLarge = freezed,Object? airStatus = freezed,Object? network = freezed,Object? metaRefreshedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? tvdbId = null,Object? title = null,Object? isFavorite = null,Object? addedAt = freezed,Object? seasons = null,Object? tvmazeId = freezed,Object? tmdbId = freezed,Object? poster = freezed,Object? posterLarge = freezed,Object? airStatus = freezed,Object? network = freezed,Object? overview = freezed,Object? providers = null,Object? metaRefreshedAt = freezed,}) {
   return _then(_Show(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -858,11 +873,14 @@ as String,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // igno
 as bool,addedAt: freezed == addedAt ? _self.addedAt : addedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,seasons: null == seasons ? _self._seasons : seasons // ignore: cast_nullable_to_non_nullable
 as List<Season>,tvmazeId: freezed == tvmazeId ? _self.tvmazeId : tvmazeId // ignore: cast_nullable_to_non_nullable
+as int?,tmdbId: freezed == tmdbId ? _self.tmdbId : tmdbId // ignore: cast_nullable_to_non_nullable
 as int?,poster: freezed == poster ? _self.poster : poster // ignore: cast_nullable_to_non_nullable
 as String?,posterLarge: freezed == posterLarge ? _self.posterLarge : posterLarge // ignore: cast_nullable_to_non_nullable
 as String?,airStatus: freezed == airStatus ? _self.airStatus : airStatus // ignore: cast_nullable_to_non_nullable
 as String?,network: freezed == network ? _self.network : network // ignore: cast_nullable_to_non_nullable
-as String?,metaRefreshedAt: freezed == metaRefreshedAt ? _self.metaRefreshedAt : metaRefreshedAt // ignore: cast_nullable_to_non_nullable
+as String?,overview: freezed == overview ? _self.overview : overview // ignore: cast_nullable_to_non_nullable
+as String?,providers: null == providers ? _self._providers : providers // ignore: cast_nullable_to_non_nullable
+as List<String>,metaRefreshedAt: freezed == metaRefreshedAt ? _self.metaRefreshedAt : metaRefreshedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

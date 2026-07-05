@@ -3,9 +3,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../auth/auth_controller.dart';
+import '../discover/discover_tab.dart';
 import '../movies/movies_tab.dart';
 import '../shows/refresh_controller.dart';
 import '../shows/shows_tab.dart';
+import '../upcoming/upcoming_tab.dart';
+
+const _titles = ['SÉRIES', 'FILMS', 'À VENIR', 'DÉCOUVERTE'];
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
@@ -24,7 +28,7 @@ class HomeScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(tab.value == 0 ? 'SÉRIES' : 'FILMS'),
+        title: Text(_titles[tab.value]),
         actions: [
           if (refreshing)
             const Padding(
@@ -55,7 +59,12 @@ class HomeScreen extends HookConsumerWidget {
       ),
       body: IndexedStack(
         index: tab.value,
-        children: const [ShowsTab(), MoviesTab()],
+        children: const [
+          ShowsTab(),
+          MoviesTab(),
+          UpcomingTab(),
+          DiscoverTab(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: tab.value,
@@ -63,6 +72,10 @@ class HomeScreen extends HookConsumerWidget {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.tv), label: 'Séries'),
           NavigationDestination(icon: Icon(Icons.movie), label: 'Films'),
+          NavigationDestination(
+              icon: Icon(Icons.calendar_month_outlined), label: 'À venir'),
+          NavigationDestination(
+              icon: Icon(Icons.explore_outlined), label: 'Découverte'),
         ],
       ),
     );
