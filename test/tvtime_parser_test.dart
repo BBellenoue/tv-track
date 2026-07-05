@@ -80,6 +80,47 @@ void main() {
     });
   });
 
+  group('rattrapage des épisodes précédents (multi-saison)', () {
+    // S1: 2 épisodes vus ; S2: E1 vu, E2 et E3 non vus.
+    final show = Show(
+      tvdbId: 42,
+      title: 'Multi',
+      seasons: [
+        const Season(number: 1, episodes: [
+          Episode(tvdbId: 1, number: 1, watched: true),
+          Episode(tvdbId: 2, number: 2, watched: false),
+        ]),
+        const Season(number: 2, episodes: [
+          Episode(tvdbId: 3, number: 1, watched: true),
+          Episode(tvdbId: 4, number: 2, watched: false),
+          Episode(tvdbId: 5, number: 3, watched: false),
+        ]),
+      ],
+    );
+
+    test('unwatchedBefore compte à travers les saisons', () {
+      // Avant S2E3 : S1E2 (non vu) + S2E2 (non vu) = 2.
+      expect(show.unwatchedBefore(2, 3), 2);
+      // Avant S1E1 : aucun.
+      expect(show.unwatchedBefore(1, 1), 0);
+    });
+
+    test('markWatchedUpTo marque tout jusqu\'à la cible incluse', () {
+      final updated = show.markWatchedUpTo(2, 3);
+      expect(updated.watchedEpisodes, 5); // tout vu
+      expect(updated.unwatchedBefore(2, 3), 0);
+      expect(updated.isUpToDate, isTrue);
+    });
+
+    test('markWatchedUpTo laisse les épisodes suivants intacts', () {
+      final updated = show.markWatchedUpTo(1, 2); // jusqu'à S1E2
+      expect(updated.seasons[0].isCompleted, isTrue);
+      // S2E2/E3 restent non vus.
+      expect(updated.seasons[1].episodes[1].watched, isFalse);
+      expect(updated.seasons[1].episodes[2].watched, isFalse);
+    });
+  });
+
   // Validation optionnelle sur un vrai export TV Time (données perso, non
   // commité) : déposer les fichiers dans assets/tvtime/ pour l'exécuter.
   group('export TV Time réel', () {

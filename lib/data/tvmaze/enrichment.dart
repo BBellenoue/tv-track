@@ -42,6 +42,7 @@ Show mergeTvmaze(
           name: local.name.isEmpty ? remote.name : local.name,
           airDate: remote.airstamp ?? local.airDate,
           overview: remote.summary ?? local.overview,
+          still: remote.image ?? local.still,
         ));
       } else {
         merged.add(Episode(
@@ -50,6 +51,7 @@ Show mergeTvmaze(
           name: remote.name,
           airDate: remote.airstamp,
           overview: remote.summary,
+          still: remote.image,
         ));
       }
     }

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import '../../core/providers.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/episode_tag.dart';
+import '../../core/widgets/featured_card.dart';
 import '../../core/widgets/poster.dart';
 import '../../data/models/show.dart';
 
@@ -44,25 +45,22 @@ class UpcomingTab extends ConsumerWidget {
       return _empty(context);
     }
 
-    // Regroupe par jour calendaire.
-    final byDay = groupBy(upcoming,
+    // Hero = la diffusion la plus imminente. Le reste part dans l'agenda.
+    final hero = upcoming.first;
+    final rest = upcoming.skip(1).toList();
+    final byDay = groupBy(rest,
         (Upcoming u) => DateTime(u.airDate.year, u.airDate.month, u.airDate.day));
     final days = byDay.keys.sorted((a, b) => a.compareTo(b));
 
-    return ListView.builder(
-      padding: const EdgeInsets.only(top: 8, bottom: 16),
-      itemCount: days.length,
-      itemBuilder: (context, i) {
-        final day = days[i];
-        final entries = byDay[day]!;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _DayHeader(day: day),
-            for (final u in entries) _UpcomingRow(item: u),
-          ],
-        );
-      },
+    return ListView(
+      padding: const EdgeInsets.only(top: 4, bottom: 16),
+      children: [
+        _Hero(item: hero),
+        for (final day in days) ...[
+          _DayHeader(day: day),
+          for (final u in byDay[day]!) _UpcomingRow(item: u),
+        ],
+      ],
     );
   }
 
@@ -88,6 +86,44 @@ class UpcomingTab extends ConsumerWidget {
           ],
         ),
       );
+}
+
+/// Grande carte de la prochaine diffusion, en tête de l'écran.
+class _Hero extends StatelessWidget {
+  const _Hero({required this.item});
+
+  final Upcoming item;
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final day = DateTime(
+        item.airDate.year, item.airDate.month, item.airDate.day);
+    final diff = day.difference(today).inDays;
+    final when = diff == 0
+        ? 'Ce soir'
+        : diff == 1
+            ? 'Demain'
+            : DateFormat('EEEE d MMMM', 'fr_FR').format(day);
+
+    final ep = item.episode;
+    final line = [
+      'S${_pad(item.season.number)}E${_pad(ep.number)}',
+      if (ep.name.isNotEmpty) ep.name,
+      DateFormat('HH:mm').format(item.airDate.toLocal()),
+    ].join('  ·  ');
+
+    return FeaturedCard(
+      overline: 'Prochaine diffusion · $when',
+      title: item.show.title,
+      line: line,
+      seed: item.show.tvdbId,
+      backdropUrl: item.show.posterLarge ?? item.show.poster,
+      height: 244,
+      onTap: () => context.push('/show/${item.show.tvdbId}'),
+    );
+  }
 }
 
 class _DayHeader extends StatelessWidget {
@@ -140,7 +176,7 @@ class _UpcomingRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final ep = item.episode;
     return InkWell(
-      onTap: () => context.go('/show/${item.show.tvdbId}'),
+      onTap: () => context.push('/show/${item.show.tvdbId}'),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
         child: Row(

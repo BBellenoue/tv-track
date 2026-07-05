@@ -97,6 +97,7 @@ class TvmazeEpisode {
     this.type,
     this.airstamp,
     this.summary,
+    this.image,
   });
 
   factory TvmazeEpisode.fromJson(Map<String, dynamic> json) => TvmazeEpisode(
@@ -109,6 +110,7 @@ class TvmazeEpisode {
             ? DateTime.tryParse(json['airstamp'] as String)
             : null,
         summary: stripHtml(json['summary'] as String?),
+        image: (json['image'] as Map<String, dynamic>?)?['medium'] as String?,
       );
 
   final int season;
@@ -117,6 +119,7 @@ class TvmazeEpisode {
   final String? type; // regular / significant_special / insignificant_special
   final DateTime? airstamp;
   final String? summary;
+  final String? image;
 
   bool get isSpecial => type != null && type != 'regular';
 }

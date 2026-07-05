@@ -9,7 +9,7 @@ import '../shows/refresh_controller.dart';
 import '../shows/shows_tab.dart';
 import '../upcoming/upcoming_tab.dart';
 
-const _titles = ['SÉRIES', 'FILMS', 'À VENIR', 'DÉCOUVERTE'];
+const _titles = ['À VENIR', 'SÉRIES', 'FILMS', 'DÉCOUVERTE'];
 
 class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
@@ -60,9 +60,9 @@ class HomeScreen extends HookConsumerWidget {
       body: IndexedStack(
         index: tab.value,
         children: const [
+          UpcomingTab(),
           ShowsTab(),
           MoviesTab(),
-          UpcomingTab(),
           DiscoverTab(),
         ],
       ),
@@ -70,10 +70,10 @@ class HomeScreen extends HookConsumerWidget {
         selectedIndex: tab.value,
         onDestinationSelected: (i) => tab.value = i,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.tv), label: 'Séries'),
-          NavigationDestination(icon: Icon(Icons.movie), label: 'Films'),
           NavigationDestination(
               icon: Icon(Icons.calendar_month_outlined), label: 'À venir'),
+          NavigationDestination(icon: Icon(Icons.tv), label: 'Séries'),
+          NavigationDestination(icon: Icon(Icons.movie), label: 'Films'),
           NavigationDestination(
               icon: Icon(Icons.explore_outlined), label: 'Découverte'),
         ],

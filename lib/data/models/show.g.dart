@@ -19,6 +19,7 @@ _Episode _$EpisodeFromJson(Map<String, dynamic> json) => _Episode(
       ? null
       : DateTime.parse(json['airDate'] as String),
   overview: json['overview'] as String?,
+  still: json['still'] as String?,
 );
 
 Map<String, dynamic> _$EpisodeToJson(_Episode instance) => <String, dynamic>{
@@ -30,6 +31,7 @@ Map<String, dynamic> _$EpisodeToJson(_Episode instance) => <String, dynamic>{
   'watchedAt': instance.watchedAt?.toIso8601String(),
   'airDate': instance.airDate?.toIso8601String(),
   'overview': instance.overview,
+  'still': instance.still,
 };
 
 _Season _$SeasonFromJson(Map<String, dynamic> json) => _Season(

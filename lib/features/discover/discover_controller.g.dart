@@ -39,7 +39,7 @@ final class DiscoverDeckProvider
   DiscoverDeck create() => DiscoverDeck();
 }
 
-String _$discoverDeckHash() => r'4a8e454e7525e25104be6c3a2bbd0c875525898c';
+String _$discoverDeckHash() => r'0abf05e1b7812703303b3bdfcc07f7c663a0c8b5';
 
 /// File de cartes du deck Découverte : séries populaires / tendances / en
 /// diffusion (TMDB, FR), débarrassées de celles déjà suivies ou déjà swipées.

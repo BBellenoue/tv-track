@@ -240,105 +240,171 @@ class _SeasonTile extends ConsumerWidget {
       children: [
         for (final episode
             in season.episodes.sorted((a, b) => a.number - b.number))
-          _EpisodeRow(show: show, episode: episode),
+          _EpisodeTile(show: show, season: season, episode: episode),
       ],
     );
   }
 }
 
-class _EpisodeRow extends ConsumerStatefulWidget {
-  const _EpisodeRow({required this.show, required this.episode});
+/// Tuile d'épisode : vignette 16:9, code + titre, date/résumé, case à cocher.
+/// Cocher un épisode alors que des précédents sont non vus propose de tout
+/// marquer avant (multi-saison).
+class _EpisodeTile extends ConsumerStatefulWidget {
+  const _EpisodeTile(
+      {required this.show, required this.season, required this.episode});
 
   final Show show;
+  final Season season;
   final Episode episode;
 
   @override
-  ConsumerState<_EpisodeRow> createState() => _EpisodeRowState();
+  ConsumerState<_EpisodeTile> createState() => _EpisodeTileState();
 }
 
-class _EpisodeRowState extends ConsumerState<_EpisodeRow> {
+class _EpisodeTileState extends ConsumerState<_EpisodeTile> {
   bool _expanded = false;
+
+  void _toggle() {
+    final ep = widget.episode;
+    final repo = ref.read(trackingRepositoryProvider);
+    if (repo == null) return;
+    HapticFeedback.selectionClick();
+    repo.saveShow(widget.show.withEpisodeWatched(ep.tvdbId, !ep.watched));
+
+    // En cochant : proposer de rattraper les épisodes précédents non vus.
+    if (!ep.watched) {
+      final before =
+          widget.show.unwatchedBefore(widget.season.number, ep.number);
+      if (before > 0) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(
+            content: Text(
+                '$before épisode${before > 1 ? 's' : ''} non vu${before > 1 ? 's' : ''} avant celui-ci'),
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'Tout marquer',
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                repo.saveShow(widget.show
+                    .markWatchedUpTo(widget.season.number, ep.number));
+              },
+            ),
+          ));
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final episode = widget.episode;
-    final airDate = episode.airDate;
+    final ep = widget.episode;
+    final airDate = ep.airDate;
     final unaired = airDate != null && airDate.isAfter(DateTime.now());
-    final hasOverview = episode.overview?.isNotEmpty ?? false;
+    final hasOverview = ep.overview?.isNotEmpty ?? false;
 
-    void toggleWatched() {
-      if (unaired) return;
-      HapticFeedback.selectionClick();
-      ref.read(trackingRepositoryProvider)?.saveShow(
-          widget.show.withEpisodeWatched(episode.tvdbId, !episode.watched));
-    }
+    final secondary = unaired
+        ? 'diffusé le ${DateFormat('d MMMM', 'fr_FR').format(airDate.toLocal())}'
+        : ep.overview;
 
-    // Ligne d'au moins 56px de haut ; case à cocher dans une cible de 44px.
     return InkWell(
-      onTap: hasOverview ? () => setState(() => _expanded = !_expanded) : null,
+      onTap: hasOverview && !unaired
+          ? () => setState(() => _expanded = !_expanded)
+          : null,
       child: Padding(
-        padding: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.fromLTRB(16, 6, 12, 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 56),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _Check(
-                      watched: episode.watched,
-                      enabled: !unaired,
-                      onTap: toggleWatched),
-                  Text('E${episode.number.toString().padLeft(2, '0')}',
-                      style: mono(size: 12.5, color: unaired ? dust : linen)),
-                  const SizedBox(width: 12),
-                  Expanded(
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _Still(episode: ep, dimmed: unaired),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Text('E${ep.number.toString().padLeft(2, '0')}',
+                            style: mono(
+                                size: 11, color: unaired ? dust : tungsten)),
+                        const SizedBox(height: 3),
                         Text(
-                          episode.name,
+                          ep.name.isEmpty ? 'Épisode ${ep.number}' : ep.name,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(
-                                  color: unaired ? dust : linen, height: 1.25),
+                          style: condensed(
+                              size: 15, color: unaired ? dust : linen),
                         ),
-                        if (unaired)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 3),
-                            child: Text(
-                              'diffusé le ${DateFormat('d MMMM', 'fr_FR').format(airDate.toLocal())}',
-                              style: mono(size: 10.5, color: tungsten),
-                            ),
+                        if (secondary != null && secondary.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            secondary,
+                            maxLines: _expanded ? null : 2,
+                            overflow: _expanded
+                                ? TextOverflow.visible
+                                : TextOverflow.ellipsis,
+                            style: unaired
+                                ? mono(size: 10.5, color: tungsten)
+                                : Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(color: dust, height: 1.35),
                           ),
+                        ],
                       ],
                     ),
                   ),
-                  if (hasOverview)
-                    Icon(_expanded ? Icons.expand_less : Icons.expand_more,
-                        size: 20, color: dust),
-                ],
-              ),
-            ),
-            if (hasOverview && _expanded)
-              Padding(
-                padding: const EdgeInsets.only(left: 44, top: 2, bottom: 12),
-                child: Text(
-                  episode.overview!,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: linen.withValues(alpha: .78), height: 1.4),
                 ),
-              ),
+                _Check(
+                    watched: ep.watched, enabled: !unaired, onTap: _toggle),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
+}
+
+/// Vignette 16:9 d'un épisode (112×63) avec repli teinté si absente.
+class _Still extends StatelessWidget {
+  const _Still({required this.episode, required this.dimmed});
+
+  final Episode episode;
+  final bool dimmed;
+
+  @override
+  Widget build(BuildContext context) {
+    const w = 112.0, h = 63.0;
+    final child = episode.still != null
+        ? CachedNetworkImage(
+            imageUrl: episode.still!,
+            fit: BoxFit.cover,
+            placeholder: (_, _) => const ColoredBox(color: charcoal),
+            errorWidget: (_, _, _) => _fallback(),
+          )
+        : _fallback();
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: SizedBox(
+        width: w,
+        height: h,
+        child: dimmed
+            ? Opacity(opacity: 0.5, child: child)
+            : child,
+      ),
+    );
+  }
+
+  Widget _fallback() => DecoratedBox(
+        decoration: const BoxDecoration(color: charcoalHigh),
+        child: Center(
+          child: Icon(Icons.movie_outlined,
+              color: dust.withValues(alpha: .5), size: 22),
+        ),
+      );
 }
 
 /// Case à cocher tungstène dans une cible tactile de 44px (case visuelle

@@ -17,7 +17,7 @@ mixin _$Episode {
 
 /// ID externe : TVDB pour les épisodes issus de l'export TV Time,
 /// négatif (-(saison*1000+numéro)) pour ceux ajoutés depuis TVmaze.
- int get tvdbId; int get number; String get name; bool get special; bool get watched; DateTime? get watchedAt; DateTime? get airDate; String? get overview;
+ int get tvdbId; int get number; String get name; bool get special; bool get watched; DateTime? get watchedAt; DateTime? get airDate; String? get overview; String? get still;
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,16 +30,16 @@ $EpisodeCopyWith<Episode> get copyWith => _$EpisodeCopyWithImpl<Episode>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview)&&(identical(other.still, still) || other.still == still));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview);
+int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview,still);
 
 @override
 String toString() {
-  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview)';
+  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview, still: $still)';
 }
 
 
@@ -50,7 +50,7 @@ abstract mixin class $EpisodeCopyWith<$Res>  {
   factory $EpisodeCopyWith(Episode value, $Res Function(Episode) _then) = _$EpisodeCopyWithImpl;
 @useResult
 $Res call({
- int tvdbId, int number, String name, bool special, bool watched, DateTime? watchedAt, DateTime? airDate, String? overview
+ int tvdbId, int number, String name, bool special, bool watched, DateTime? watchedAt, DateTime? airDate, String? overview, String? still
 });
 
 
@@ -67,7 +67,7 @@ class _$EpisodeCopyWithImpl<$Res>
 
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,Object? overview = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,Object? overview = freezed,Object? still = freezed,}) {
   return _then(_self.copyWith(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
@@ -77,6 +77,7 @@ as bool,watched: null == watched ? _self.watched : watched // ignore: cast_nulla
 as bool,watchedAt: freezed == watchedAt ? _self.watchedAt : watchedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,airDate: freezed == airDate ? _self.airDate : airDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,overview: freezed == overview ? _self.overview : overview // ignore: cast_nullable_to_non_nullable
+as String?,still: freezed == still ? _self.still : still // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview,  String? still)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Episode() when $default != null:
-return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview);case _:
+return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview,_that.still);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview,  String? still)  $default,) {final _that = this;
 switch (_that) {
 case _Episode():
-return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview);case _:
+return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview,_that.still);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int tvdbId,  int number,  String name,  bool special,  bool watched,  DateTime? watchedAt,  DateTime? airDate,  String? overview,  String? still)?  $default,) {final _that = this;
 switch (_that) {
 case _Episode() when $default != null:
-return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview);case _:
+return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched,_that.watchedAt,_that.airDate,_that.overview,_that.still);case _:
   return null;
 
 }
@@ -218,7 +219,7 @@ return $default(_that.tvdbId,_that.number,_that.name,_that.special,_that.watched
 @JsonSerializable()
 
 class _Episode implements Episode {
-  const _Episode({required this.tvdbId, required this.number, this.name = '', this.special = false, this.watched = false, this.watchedAt, this.airDate, this.overview});
+  const _Episode({required this.tvdbId, required this.number, this.name = '', this.special = false, this.watched = false, this.watchedAt, this.airDate, this.overview, this.still});
   factory _Episode.fromJson(Map<String, dynamic> json) => _$EpisodeFromJson(json);
 
 /// ID externe : TVDB pour les épisodes issus de l'export TV Time,
@@ -231,6 +232,7 @@ class _Episode implements Episode {
 @override final  DateTime? watchedAt;
 @override final  DateTime? airDate;
 @override final  String? overview;
+@override final  String? still;
 
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview)&&(identical(other.still, still) || other.still == still));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview);
+int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview,still);
 
 @override
 String toString() {
-  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview)';
+  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview, still: $still)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$EpisodeCopyWith<$Res> implements $EpisodeCopyWith<$Res> {
   factory _$EpisodeCopyWith(_Episode value, $Res Function(_Episode) _then) = __$EpisodeCopyWithImpl;
 @override @useResult
 $Res call({
- int tvdbId, int number, String name, bool special, bool watched, DateTime? watchedAt, DateTime? airDate, String? overview
+ int tvdbId, int number, String name, bool special, bool watched, DateTime? watchedAt, DateTime? airDate, String? overview, String? still
 });
 
 
@@ -282,7 +284,7 @@ class __$EpisodeCopyWithImpl<$Res>
 
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,Object? overview = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,Object? overview = freezed,Object? still = freezed,}) {
   return _then(_Episode(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
@@ -292,6 +294,7 @@ as bool,watched: null == watched ? _self.watched : watched // ignore: cast_nulla
 as bool,watchedAt: freezed == watchedAt ? _self.watchedAt : watchedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,airDate: freezed == airDate ? _self.airDate : airDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,overview: freezed == overview ? _self.overview : overview // ignore: cast_nullable_to_non_nullable
+as String?,still: freezed == still ? _self.still : still // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

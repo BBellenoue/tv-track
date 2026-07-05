@@ -17,6 +17,7 @@ abstract class Episode with _$Episode {
     DateTime? watchedAt,
     DateTime? airDate,
     String? overview,
+    String? still,
   }) = _Episode;
 
   factory Episode.fromJson(Map<String, dynamic> json) =>
@@ -151,6 +152,44 @@ abstract class Show with _$Show {
             )
           else
             season,
+      ],
+    );
+  }
+
+  /// Nombre d'épisodes réguliers non vus strictement avant (saison, numéro).
+  int unwatchedBefore(int seasonNumber, int episodeNumber) {
+    var count = 0;
+    for (final season in regularSeasons) {
+      for (final episode in season.episodes) {
+        final before = season.number < seasonNumber ||
+            (season.number == seasonNumber && episode.number < episodeNumber);
+        if (before && !episode.watched) count++;
+      }
+    }
+    return count;
+  }
+
+  /// Marque vus tous les épisodes réguliers jusqu'à (saison, numéro) inclus.
+  Show markWatchedUpTo(int seasonNumber, int episodeNumber) {
+    final now = DateTime.now();
+    return copyWith(
+      seasons: [
+        for (final season in seasons)
+          if (season.isSpecials)
+            season
+          else
+            season.copyWith(
+              episodes: [
+                for (final episode in season.episodes)
+                  if (!episode.watched &&
+                      (season.number < seasonNumber ||
+                          (season.number == seasonNumber &&
+                              episode.number <= episodeNumber)))
+                    episode.copyWith(watched: true, watchedAt: now)
+                  else
+                    episode,
+              ],
+            ),
       ],
     );
   }

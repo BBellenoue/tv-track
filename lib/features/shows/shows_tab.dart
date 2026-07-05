@@ -103,7 +103,7 @@ class _ShowTile extends ConsumerWidget {
         show.totalEpisodes == 0 ? 0.0 : show.watchedEpisodes / show.totalEpisodes;
 
     return InkWell(
-      onTap: () => context.go('/show/${show.tvdbId}'),
+      onTap: () => context.push('/show/${show.tvdbId}'),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
         child: Row(
