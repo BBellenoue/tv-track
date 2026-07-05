@@ -295,36 +295,135 @@ final class TmdbApiProvider
 
 String _$tmdbApiHash() => r'e3b74015eaa88123c58f676ec0b36f6ae8259379';
 
-@ProviderFor(discoverSeenIds)
-final discoverSeenIdsProvider = DiscoverSeenIdsProvider._();
+@ProviderFor(discoverSeenKeys)
+final discoverSeenKeysProvider = DiscoverSeenKeysProvider._();
 
-final class DiscoverSeenIdsProvider
+final class DiscoverSeenKeysProvider
     extends
-        $FunctionalProvider<AsyncValue<Set<int>>, Set<int>, Stream<Set<int>>>
-    with $FutureModifier<Set<int>>, $StreamProvider<Set<int>> {
-  DiscoverSeenIdsProvider._()
+        $FunctionalProvider<
+          AsyncValue<Set<String>>,
+          Set<String>,
+          Stream<Set<String>>
+        >
+    with $FutureModifier<Set<String>>, $StreamProvider<Set<String>> {
+  DiscoverSeenKeysProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'discoverSeenIdsProvider',
+        name: r'discoverSeenKeysProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$discoverSeenIdsHash();
+  String debugGetCreateSourceHash() => _$discoverSeenKeysHash();
 
   @$internal
   @override
-  $StreamProviderElement<Set<int>> $createElement($ProviderPointer pointer) =>
-      $StreamProviderElement(pointer);
+  $StreamProviderElement<Set<String>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
 
   @override
-  Stream<Set<int>> create(Ref ref) {
-    return discoverSeenIds(ref);
+  Stream<Set<String>> create(Ref ref) {
+    return discoverSeenKeys(ref);
   }
 }
 
-String _$discoverSeenIdsHash() => r'9fa502df9a5faef08366e07dda3a3420b431ebd0';
+String _$discoverSeenKeysHash() => r'b79470ef6f7bf8236c4925f3168e5811a1950e4a';
+
+/// IDs TMDB des séries suivies (pour dédoublonner / griser dans Découverte).
+
+@ProviderFor(trackedShowTmdbIds)
+final trackedShowTmdbIdsProvider = TrackedShowTmdbIdsProvider._();
+
+/// IDs TMDB des séries suivies (pour dédoublonner / griser dans Découverte).
+
+final class TrackedShowTmdbIdsProvider
+    extends $FunctionalProvider<Set<int>, Set<int>, Set<int>>
+    with $Provider<Set<int>> {
+  /// IDs TMDB des séries suivies (pour dédoublonner / griser dans Découverte).
+  TrackedShowTmdbIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'trackedShowTmdbIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$trackedShowTmdbIdsHash();
+
+  @$internal
+  @override
+  $ProviderElement<Set<int>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Set<int> create(Ref ref) {
+    return trackedShowTmdbIds(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Set<int> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Set<int>>(value),
+    );
+  }
+}
+
+String _$trackedShowTmdbIdsHash() =>
+    r'69a12f276928e2c31f3730eed12192353cc69621';
+
+/// IDs TMDB des films de la liste (suivis ou vus).
+
+@ProviderFor(trackedMovieTmdbIds)
+final trackedMovieTmdbIdsProvider = TrackedMovieTmdbIdsProvider._();
+
+/// IDs TMDB des films de la liste (suivis ou vus).
+
+final class TrackedMovieTmdbIdsProvider
+    extends $FunctionalProvider<Set<int>, Set<int>, Set<int>>
+    with $Provider<Set<int>> {
+  /// IDs TMDB des films de la liste (suivis ou vus).
+  TrackedMovieTmdbIdsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'trackedMovieTmdbIdsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$trackedMovieTmdbIdsHash();
+
+  @$internal
+  @override
+  $ProviderElement<Set<int>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  Set<int> create(Ref ref) {
+    return trackedMovieTmdbIds(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Set<int> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Set<int>>(value),
+    );
+  }
+}
+
+String _$trackedMovieTmdbIdsHash() =>
+    r'77cd99727062c31c674efbbd3dff258d6c50402d';

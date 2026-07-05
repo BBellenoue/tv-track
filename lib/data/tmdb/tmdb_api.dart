@@ -1,5 +1,22 @@
 import 'package:dio/dio.dart';
 
+import 'catalog_item.dart';
+
+/// Tri disponible dans le mode Parcourir.
+enum CatalogSort {
+  popular('Populaires', 'popularity.desc'),
+  recent('Récentes', null), // date desc, dépend du type (voir _dateSortKey)
+  topRated('Mieux notées', 'vote_average.desc');
+
+  const CatalogSort(this.label, this._fixedKey);
+  final String label;
+  final String? _fixedKey;
+
+  String sortKey(MediaKind kind) =>
+      _fixedKey ??
+      (kind.isTv ? 'first_air_date.desc' : 'primary_release_date.desc');
+}
+
 /// Client TMDB minimal (https://developer.themoviedb.org) — gratuit pour un
 /// usage personnel, nécessite une clé API (v3).
 class TmdbApi {
@@ -134,6 +151,87 @@ class TmdbApi {
       );
     }
     return out;
+  }
+
+  // ---- Catalogue unifié (séries + films) pour Découverte v2 ----
+
+  /// Liste des genres d'un type (tv|film), en français.
+  Future<List<Genre>> genres(MediaKind kind) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/genre/${kind.path}/list',
+      queryParameters: {'api_key': _apiKey, 'language': 'fr-FR'},
+    );
+    final list = response.data?['genres'] as List? ?? const [];
+    return [
+      for (final g in list.cast<Map<String, dynamic>>())
+        (id: g['id'] as int, name: g['name'] as String),
+    ];
+  }
+
+  /// /discover : filtrable par genre, triable, paginé. FR.
+  Future<List<CatalogItem>> discover(
+    MediaKind kind, {
+    CatalogSort sort = CatalogSort.popular,
+    int? genreId,
+    int page = 1,
+  }) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/discover/${kind.path}',
+      queryParameters: {
+        'api_key': _apiKey,
+        'language': 'fr-FR',
+        'watch_region': 'FR',
+        'sort_by': sort.sortKey(kind),
+        'page': page,
+        if (genreId != null) 'with_genres': '$genreId',
+        // Évite le bruit : un minimum de votes pour "mieux notées".
+        if (sort == CatalogSort.topRated) 'vote_count.gte': 200,
+      },
+    );
+    return _items(response.data, kind);
+  }
+
+  /// Tendances de la semaine (tv ou film), FR.
+  Future<List<CatalogItem>> trending(MediaKind kind, {int page = 1}) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/trending/${kind.path}/week',
+      queryParameters: {'api_key': _apiKey, 'language': 'fr-FR', 'page': page},
+    );
+    return _items(response.data, kind);
+  }
+
+  /// Recherche par titre (tv ou film), FR.
+  Future<List<CatalogItem>> search(MediaKind kind, String query,
+      {int page = 1}) async {
+    if (query.trim().isEmpty) return const [];
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/search/${kind.path}',
+      queryParameters: {
+        'api_key': _apiKey,
+        'language': 'fr-FR',
+        'query': query,
+        'page': page,
+      },
+    );
+    return _items(response.data, kind);
+  }
+
+  List<CatalogItem> _items(Map<String, dynamic>? data, MediaKind kind) {
+    final results = data?['results'] as List? ?? const [];
+    return [
+      for (final r in results.cast<Map<String, dynamic>>())
+        CatalogItem.fromJson(r, kind),
+    ];
+  }
+
+  /// IMDB id d'un film TMDB (pour le rattacher au suivi).
+  Future<String?> movieImdbId(int tmdbMovieId) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/movie/$tmdbMovieId/external_ids',
+      queryParameters: {'api_key': _apiKey},
+    );
+    final id = response.data?['imdb_id'] as String?;
+    return (id == null || id.isEmpty) ? null : id;
   }
 
   /// Séries populaires (page 1..n), localisées en français, région FR.

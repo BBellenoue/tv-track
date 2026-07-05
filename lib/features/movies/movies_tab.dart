@@ -77,12 +77,22 @@ class _MovieTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: () => context.push('/movie/${movie.tvdbId}'),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-        child: Row(
-        children: [
+    return Dismissible(
+      key: ValueKey('movie-${movie.tvdbId}'),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        color: const Color(0xFF3A211C),
+        padding: const EdgeInsets.only(right: 24),
+        child: const Icon(Icons.delete_outline, color: Color(0xFFE07A6B)),
+      ),
+      onDismissed: (_) => _delete(context, ref),
+      child: InkWell(
+        onTap: () => context.push('/movie/${movie.tvdbId}'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+          child: Row(
+          children: [
           Poster(
               title: movie.title,
               seed: movie.tvdbId,
@@ -117,9 +127,28 @@ class _MovieTile extends ConsumerWidget {
             onPressed: () => _toggle(context, ref),
           ),
         ],
+          ),
         ),
       ),
     );
+  }
+
+  void _delete(BuildContext context, WidgetRef ref) {
+    final repo = ref.read(trackingRepositoryProvider);
+    if (repo == null) return;
+    HapticFeedback.mediumImpact();
+    repo.deleteMovie(movie.tvdbId);
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text('${movie.title} retiré de ta liste'),
+        duration: const Duration(seconds: 4),
+        action: SnackBarAction(
+          label: 'Annuler',
+          onPressed: () => repo.saveMovie(movie),
+        ),
+      ));
   }
 
   void _toggle(BuildContext context, WidgetRef ref) {

@@ -1,35 +1,56 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../core/providers.dart';
 import '../../core/theme.dart';
-import '../../data/tmdb/tmdb_api.dart';
+import '../../data/tmdb/catalog_item.dart';
+import 'browse_tab.dart';
 import 'discover_controller.dart';
 
-class DiscoverTab extends ConsumerWidget {
+/// Onglet Découverte : deux réglages (Séries/Films + Swipe/Parcourir).
+class DiscoverTab extends HookConsumerWidget {
   const DiscoverTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final kind = useState(MediaKind.tv);
+    final browse = useState(false);
+
     if (ref.watch(tmdbApiProvider) == null) {
       return _message(context, Icons.explore_off_outlined,
           'Découverte indisponible', 'Aucune clé TMDB configurée.');
     }
 
-    final deck = ref.watch(discoverDeckProvider);
-    return deck.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => _message(context, Icons.wifi_off_rounded,
-          'Chargement impossible', 'Vérifie ta connexion et réessaie.'),
-      data: (cards) {
-        if (cards.isEmpty) {
-          return _message(context, Icons.done_all_rounded, 'Tu as tout vu',
-              'Reviens plus tard pour de nouvelles séries à découvrir.');
-        }
-        return _Deck(cards: cards);
-      },
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+          child: Row(
+            children: [
+              _Seg(label: 'Séries', selected: kind.value == MediaKind.tv,
+                  onTap: () => kind.value = MediaKind.tv),
+              const SizedBox(width: 8),
+              _Seg(label: 'Films', selected: kind.value == MediaKind.movie,
+                  onTap: () => kind.value = MediaKind.movie),
+              const Spacer(),
+              IconButton(
+                icon: Icon(browse.value ? Icons.style_outlined : Icons.grid_view_rounded,
+                    color: dust),
+                tooltip: browse.value ? 'Swipe' : 'Parcourir',
+                onPressed: () => browse.value = !browse.value,
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: browse.value
+              ? BrowseTab(key: ValueKey('browse-${kind.value}'), kind: kind.value)
+              : _DeckView(key: ValueKey('deck-${kind.value}'), kind: kind.value),
+        ),
+      ],
     );
   }
 
@@ -38,30 +59,71 @@ class DiscoverTab extends ConsumerWidget {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 48),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 56, color: dust),
-            const SizedBox(height: 12),
-            Text(title, style: condensed(size: 17)),
-            const SizedBox(height: 6),
-            Text(body,
-                textAlign: TextAlign.center,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: dust)),
-          ],
-        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Icon(icon, size: 56, color: dust),
+          const SizedBox(height: 12),
+          Text(title, style: condensed(size: 17)),
+          const SizedBox(height: 6),
+          Text(body,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: dust)),
+        ]),
       ),
     );
   }
 }
 
-class _Deck extends ConsumerStatefulWidget {
-  const _Deck({required this.cards});
+class _Seg extends StatelessWidget {
+  const _Seg({required this.label, required this.selected, required this.onTap});
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
 
-  final List<TmdbTv> cards;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? tungsten : charcoal,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: selected ? tungsten : outlineDim),
+        ),
+        child: Text(label,
+            style: condensed(
+                size: 13.5,
+                color: selected ? const Color(0xFF221603) : dust,
+                weight: FontWeight.w600)),
+      ),
+    );
+  }
+}
+
+class _DeckView extends ConsumerWidget {
+  const _DeckView({super.key, required this.kind});
+  final MediaKind kind;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final deck = ref.watch(discoverDeckProvider(kind));
+    return deck.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(
+          child: Text('Chargement impossible.', style: TextStyle(color: dust))),
+      data: (cards) => cards.isEmpty
+          ? Center(
+              child: Text('Plus rien à découvrir pour l\'instant.',
+                  style: TextStyle(color: dust)))
+          : _Deck(kind: kind, cards: cards),
+    );
+  }
+}
+
+class _Deck extends ConsumerStatefulWidget {
+  const _Deck({required this.kind, required this.cards});
+  final MediaKind kind;
+  final List<CatalogItem> cards;
 
   @override
   ConsumerState<_Deck> createState() => _DeckState();
@@ -79,8 +141,7 @@ class _DeckState extends ConsumerState<_Deck>
   bool _loadingMore = false;
 
   static const _flyThreshold = 110.0;
-  static const _stampFull = 60.0; // intention à pleine opacité dès ~60px
-
+  static const _stampFull = 60.0;
   static const _likeColor = Color(0xFF6BD08A);
 
   @override
@@ -90,10 +151,8 @@ class _DeckState extends ConsumerState<_Deck>
         vsync: this, duration: const Duration(milliseconds: 240));
     _curve = CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic);
     _anim
-      ..addListener(() {
-        setState(() =>
-            _drag = Offset.lerp(_animFrom, _animTo, _curve.value) ?? _drag);
-      })
+      ..addListener(() => setState(
+          () => _drag = Offset.lerp(_animFrom, _animTo, _curve.value) ?? _drag))
       ..addStatusListener((s) {
         if (s == AnimationStatus.completed) _onAnimComplete();
       });
@@ -106,19 +165,17 @@ class _DeckState extends ConsumerState<_Deck>
     super.dispose();
   }
 
-  TmdbTv? get _top =>
+  CatalogItem? get _top =>
       _index < widget.cards.length ? widget.cards[_index] : null;
 
   void _onAnimComplete() {
     if (_flyingOut) {
-      // Avancement ATOMIQUE : on commit et on passe à la carte suivante dans
-      // le même setState — pas de frame où l'ancienne carte réapparaît.
       final card = _top;
       final liked = _animTo.dx > 0;
       if (card != null) {
         liked
-            ? ref.read(discoverDeckProvider.notifier).like(card)
-            : ref.read(discoverDeckProvider.notifier).pass(card);
+            ? ref.read(discoverDeckProvider(widget.kind).notifier).like(card)
+            : ref.read(discoverDeckProvider(widget.kind).notifier).pass(card);
       }
       setState(() {
         _index++;
@@ -127,16 +184,15 @@ class _DeckState extends ConsumerState<_Deck>
       });
       _maybeLoadMore();
     } else {
-      setState(() => _drag = Offset.zero); // fin du ressort de retour
+      setState(() => _drag = Offset.zero);
     }
   }
 
   void _maybeLoadMore() {
-    if (_loadingMore) return;
-    if (widget.cards.length - _index > 4) return;
+    if (_loadingMore || widget.cards.length - _index > 4) return;
     _loadingMore = true;
     ref
-        .read(discoverDeckProvider.notifier)
+        .read(discoverDeckProvider(widget.kind).notifier)
         .loadMore()
         .whenComplete(() => _loadingMore = false);
   }
@@ -153,12 +209,10 @@ class _DeckState extends ConsumerState<_Deck>
     final card = _top;
     if (card == null) return;
     HapticFeedback.mediumImpact();
-
-    // Motion réduite : validation immédiate, sans animation de sortie.
     if (MediaQuery.of(context).disableAnimations) {
       liked
-          ? ref.read(discoverDeckProvider.notifier).like(card)
-          : ref.read(discoverDeckProvider.notifier).pass(card);
+          ? ref.read(discoverDeckProvider(widget.kind).notifier).like(card)
+          : ref.read(discoverDeckProvider(widget.kind).notifier).pass(card);
       setState(() {
         _index++;
         _drag = Offset.zero;
@@ -166,7 +220,6 @@ class _DeckState extends ConsumerState<_Deck>
       _maybeLoadMore();
       return;
     }
-
     final width = MediaQuery.of(context).size.width;
     _flyingOut = true;
     _animFrom = _drag;
@@ -179,91 +232,62 @@ class _DeckState extends ConsumerState<_Deck>
   Widget build(BuildContext context) {
     final cards = widget.cards;
     final top = _top;
-
-    // Plus de cartes chargées : on en redemande et on patiente.
     if (top == null) {
       _maybeLoadMore();
       return const Center(child: CircularProgressIndicator());
     }
-
     final behind = _index + 1 < cards.length ? cards[_index + 1] : null;
     final busy = _anim.isAnimating;
-
     final likeT = (_drag.dx / _stampFull).clamp(0.0, 1.0);
     final passT = (-_drag.dx / _stampFull).clamp(0.0, 1.0);
     final dragProgress = (_drag.dx.abs() / _flyThreshold).clamp(0.0, 1.0);
 
-    return Column(
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                if (behind != null)
-                  _CardFrame(
-                    key: ValueKey('behind-${behind.id}'),
-                    card: behind,
-                    scale: 0.94 + 0.06 * dragProgress,
-                  ),
-                GestureDetector(
-                  onPanUpdate: busy
-                      ? null
-                      : (d) => setState(() => _drag += d.delta),
-                  onPanEnd: busy
-                      ? null
-                      : (_) {
-                          if (_drag.dx.abs() > _flyThreshold) {
-                            _flyOut(_drag.dx > 0);
-                          } else {
-                            _springBack();
-                          }
-                        },
-                  child: Transform.translate(
-                    offset: _drag,
-                    child: Transform.rotate(
-                      angle: _drag.dx / 1400,
-                      child: _CardFrame(
-                        key: ValueKey('top-${top.id}'),
-                        card: top,
-                        tint: likeT > passT ? likeT : passT,
-                        tintColor: _drag.dx >= 0 ? _likeColor : dust,
-                      ),
-                    ),
+    return Column(children: [
+      Expanded(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+          child: Stack(alignment: Alignment.center, children: [
+            if (behind != null)
+              _CardFrame(
+                  key: ValueKey('behind-${behind.tmdbId}'),
+                  card: behind,
+                  scale: 0.94 + 0.06 * dragProgress),
+            GestureDetector(
+              onPanUpdate: busy ? null : (d) => setState(() => _drag += d.delta),
+              onPanEnd: busy
+                  ? null
+                  : (_) => _drag.dx.abs() > _flyThreshold
+                      ? _flyOut(_drag.dx > 0)
+                      : _springBack(),
+              child: Transform.translate(
+                offset: _drag,
+                child: Transform.rotate(
+                  angle: _drag.dx / 1400,
+                  child: _CardFrame(
+                    key: ValueKey('top-${top.tmdbId}'),
+                    card: top,
+                    tint: likeT > passT ? likeT : passT,
+                    tintColor: _drag.dx >= 0 ? _likeColor : dust,
                   ),
                 ),
-                // Tampons d'intention FIXES (hors de la carte), donc toujours
-                // visibles pendant le swipe même quand la carte s'en va.
-                Positioned(
-                  top: 16,
-                  left: 8,
-                  child: _Stamp(
-                      text: 'PLUS TARD',
-                      color: linen,
-                      opacity: passT,
-                      angle: 0.16),
-                ),
-                Positioned(
-                  top: 16,
-                  right: 8,
-                  child: _Stamp(
-                      text: 'ENVIE',
-                      color: _likeColorConst,
-                      opacity: likeT,
-                      angle: -0.16),
-                ),
-              ],
+              ),
             ),
-          ),
+            Positioned(
+                top: 16,
+                left: 8,
+                child: _Stamp(text: 'PLUS TARD', color: linen, opacity: passT, angle: 0.16)),
+            Positioned(
+                top: 16,
+                right: 8,
+                child: _Stamp(text: 'ENVIE', color: _likeColor, opacity: likeT, angle: -0.16)),
+          ]),
         ),
-        _Actions(
+      ),
+      _Actions(
           onPass: busy ? null : () => _flyOut(false),
-          onLike: busy ? null : () => _flyOut(true),
-        ),
-        const SizedBox(height: 8),
-      ],
-    );
+          onLike: busy ? null : () => _flyOut(true)),
+      const SizedBox(height: 8),
+    ]);
   }
 }
 
@@ -275,8 +299,7 @@ class _CardFrame extends StatelessWidget {
     this.tint = 0,
     this.tintColor = const Color(0xFF6BD08A),
   });
-
-  final TmdbTv card;
+  final CatalogItem card;
   final double scale;
   final double tint;
   final Color tintColor;
@@ -287,59 +310,41 @@ class _CardFrame extends StatelessWidget {
       scale: scale,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(18),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (card.posterUrl != null)
-              CachedNetworkImage(
+        child: Stack(fit: StackFit.expand, children: [
+          if (card.posterUrl != null)
+            CachedNetworkImage(
                 imageUrl: card.posterUrl!,
                 fit: BoxFit.cover,
                 placeholder: (_, _) => const ColoredBox(color: charcoal),
-                errorWidget: (_, _, _) => const ColoredBox(color: charcoal),
-              )
-            else
-              const ColoredBox(color: charcoal),
-            // Dégradé bas pour la lisibilité du texte.
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
+                errorWidget: (_, _, _) => const ColoredBox(color: charcoal))
+          else
+            const ColoredBox(color: charcoal),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
                   begin: Alignment.center,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Color(0xF0100E0B)],
-                ),
+                  colors: [Colors.transparent, Color(0xF0100E0B)]),
+            ),
+          ),
+          if (tint > 0) ColoredBox(color: tintColor.withValues(alpha: 0.28 * tint)),
+          if (tint > 0)
+            DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: tintColor.withValues(alpha: tint), width: 3),
               ),
             ),
-            // Teinte d'intention sur toute la carte pendant le drag.
-            if (tint > 0)
-              ColoredBox(color: tintColor.withValues(alpha: 0.28 * tint)),
-            // Bordure colorée d'intention.
-            if (tint > 0)
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                      color: tintColor.withValues(alpha: tint), width: 3),
-                ),
-              ),
-            Positioned(
-              left: 20,
-              right: 20,
-              bottom: 22,
-              child: _CardInfo(card: card),
-            ),
-          ],
-        ),
+          Positioned(left: 20, right: 20, bottom: 22, child: _CardInfo(card: card)),
+        ]),
       ),
     );
   }
 }
 
-const _likeColorConst = Color(0xFF6BD08A);
-
 class _CardInfo extends StatelessWidget {
   const _CardInfo({required this.card});
-
-  final TmdbTv card;
+  final CatalogItem card;
 
   @override
   Widget build(BuildContext context) {
@@ -348,12 +353,11 @@ class _CardInfo extends StatelessWidget {
       if (card.voteAverage != null && card.voteAverage! > 0)
         '★ ${card.voteAverage!.toStringAsFixed(1)}',
     ].join('   ');
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(card.name,
+        Text(card.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: condensed(size: 26, weight: FontWeight.w700)),
@@ -377,13 +381,11 @@ class _CardInfo extends StatelessWidget {
 }
 
 class _Stamp extends StatelessWidget {
-  const _Stamp({
-    required this.text,
-    required this.color,
-    required this.opacity,
-    required this.angle,
-  });
-
+  const _Stamp(
+      {required this.text,
+      required this.color,
+      required this.opacity,
+      required this.angle});
   final String text;
   final Color color;
   final double opacity;
@@ -415,43 +417,31 @@ class _Stamp extends StatelessWidget {
 
 class _Actions extends StatelessWidget {
   const _Actions({required this.onPass, required this.onLike});
-
   final VoidCallback? onPass;
   final VoidCallback? onLike;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _RoundButton(
-          onTap: onPass,
-          icon: Icons.close_rounded,
-          color: dust,
-          size: 58,
-        ),
-        const SizedBox(width: 36),
-        _RoundButton(
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      _RoundButton(onTap: onPass, icon: Icons.close_rounded, color: dust, size: 58),
+      const SizedBox(width: 36),
+      _RoundButton(
           onTap: onLike,
           icon: Icons.favorite_rounded,
           color: tungsten,
           size: 68,
-          filled: true,
-        ),
-      ],
-    );
+          filled: true),
+    ]);
   }
 }
 
 class _RoundButton extends StatefulWidget {
-  const _RoundButton({
-    required this.onTap,
-    required this.icon,
-    required this.color,
-    required this.size,
-    this.filled = false,
-  });
-
+  const _RoundButton(
+      {required this.onTap,
+      required this.icon,
+      required this.color,
+      required this.size,
+      this.filled = false});
   final VoidCallback? onTap;
   final IconData icon;
   final Color color;
@@ -491,8 +481,7 @@ class _RoundButtonState extends State<_RoundButton> {
               color: widget.filled ? widget.color : charcoal,
               shape: BoxShape.circle,
               border: Border.all(
-                  color: widget.color
-                      .withValues(alpha: widget.filled ? 1 : .5),
+                  color: widget.color.withValues(alpha: widget.filled ? 1 : .5),
                   width: 1.5),
             ),
             child: Icon(widget.icon,

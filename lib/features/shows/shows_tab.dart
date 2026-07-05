@@ -102,12 +102,22 @@ class _ShowTile extends ConsumerWidget {
     final progress =
         show.totalEpisodes == 0 ? 0.0 : show.watchedEpisodes / show.totalEpisodes;
 
-    return InkWell(
-      onTap: () => context.push('/show/${show.tvdbId}'),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-        child: Row(
-          children: [
+    return Dismissible(
+      key: ValueKey('show-${show.tvdbId}'),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        color: const Color(0xFF3A211C),
+        padding: const EdgeInsets.only(right: 24),
+        child: const Icon(Icons.delete_outline, color: Color(0xFFE07A6B)),
+      ),
+      onDismissed: (_) => _delete(context, ref),
+      child: InkWell(
+        onTap: () => context.push('/show/${show.tvdbId}'),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+          child: Row(
+            children: [
             Poster(
                 title: show.title,
                 seed: show.tvdbId,
@@ -164,9 +174,28 @@ class _ShowTile extends ConsumerWidget {
                 onPressed: () => _checkNext(context, ref),
               ),
           ],
+          ),
         ),
       ),
     );
+  }
+
+  void _delete(BuildContext context, WidgetRef ref) {
+    final repo = ref.read(trackingRepositoryProvider);
+    if (repo == null) return;
+    HapticFeedback.mediumImpact();
+    repo.deleteShow(show.tvdbId);
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text('${show.title} retirée de ta liste'),
+        duration: const Duration(seconds: 4),
+        action: SnackBarAction(
+          label: 'Annuler',
+          onPressed: () => repo.saveShow(show),
+        ),
+      ));
   }
 
   void _checkNext(BuildContext context, WidgetRef ref) {

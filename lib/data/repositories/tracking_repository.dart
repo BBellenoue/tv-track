@@ -40,13 +40,13 @@ class TrackingRepository {
 
   Future<void> deleteMovie(int tvdbId) => _movies.doc('$tvdbId').delete();
 
-  /// IDs TMDB des cartes Découverte déjà swipées (like ou pass), pour ne pas
-  /// les reproposer.
-  Stream<Set<int>> watchSeenTmdbIds() => _discoverSeen.snapshots().map(
-      (snap) => snap.docs.map((d) => int.parse(d.id)).toSet());
+  /// Clés des cartes Découverte déjà swipées, namespacées par type
+  /// ("tv_123" / "movie_123") car les IDs TMDB séries et films se chevauchent.
+  Stream<Set<String>> watchSeenKeys() => _discoverSeen.snapshots().map(
+      (snap) => snap.docs.map((d) => d.id).toSet());
 
-  Future<void> markDiscoverSeen(int tmdbId, {required bool liked}) =>
-      _discoverSeen.doc('$tmdbId').set({
+  Future<void> markDiscoverSeen(String key, {required bool liked}) =>
+      _discoverSeen.doc(key).set({
         'liked': liked,
         'at': FieldValue.serverTimestamp(),
       });

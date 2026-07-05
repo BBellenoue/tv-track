@@ -1,111 +1,80 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../core/providers.dart';
-import '../../data/models/show.dart';
+import '../../data/tmdb/catalog_item.dart';
 import '../../data/tmdb/tmdb_api.dart';
-import '../../data/tvmaze/enrichment.dart';
+import 'library_add.dart';
 
 part 'discover_controller.g.dart';
 
-/// File de cartes du deck Découverte : séries populaires / tendances / en
-/// diffusion (TMDB, FR), débarrassées de celles déjà suivies ou déjà swipées.
+/// File de cartes du deck Découverte pour un type (séries OU films) : populaires
+/// / tendances / à venir (TMDB, FR), sans celles déjà suivies ou déjà swipées.
 ///
 /// La file ne se reconstruit PAS à chaque swipe : l'avancement est piloté par
-/// un curseur local dans l'UI. Ici on ne fait qu'alimenter la file (pagination)
-/// et persister l'historique de swipe. Cela évite tout clignotement au moment
-/// où une carte quitte l'écran.
+/// un curseur local dans l'UI (évite tout clignotement au départ d'une carte).
 @riverpod
 class DiscoverDeck extends _$DiscoverDeck {
   int _page = 0;
   final _loadedIds = <int>{};
-  final _excluded = <int>{};
+  final _excluded = <int>{}; // tmdbIds exclus (suivis + swipés) pour ce type
 
   @override
-  Future<List<TmdbTv>> build() async {
+  Future<List<CatalogItem>> build(MediaKind kind) async {
     // Lu une seule fois (pas `watch`) pour ne pas se reconstruire au swipe.
-    final tracked = (ref.read(showsProvider).value ?? const [])
-        .map((s) => s.tmdbId)
+    final tracked = kind.isTv
+        ? ref.read(trackedShowTmdbIdsProvider)
+        : ref.read(trackedMovieTmdbIdsProvider);
+    final prefix = '${kind.path}_';
+    final seen = (ref.read(discoverSeenKeysProvider).value ?? const <String>{})
+        .where((k) => k.startsWith(prefix))
+        .map((k) => int.tryParse(k.substring(prefix.length)))
         .whereType<int>();
-    final seen = ref.read(discoverSeenIdsProvider).value ?? const <int>{};
     _excluded
       ..addAll(tracked)
       ..addAll(seen);
-    return _fetch();
+    return _fetch(kind);
   }
 
-  Future<List<TmdbTv>> _fetch() async {
+  Future<List<CatalogItem>> _fetch(MediaKind kind) async {
     final tmdb = ref.read(tmdbApiProvider);
     if (tmdb == null) return const [];
-
     _page++;
-    // Mélange trois sources : populaires (volume), tendances (fraîcheur),
-    // en diffusion (séries du moment).
     final batches = await Future.wait([
-      tmdb.trendingTv(page: _page),
-      tmdb.popularTv(page: _page),
-      tmdb.onTheAirTv(page: _page),
+      tmdb.trending(kind, page: _page),
+      tmdb.discover(kind, sort: CatalogSort.popular, page: _page),
     ]);
-
-    final fresh = <TmdbTv>[];
+    final fresh = <CatalogItem>[];
     for (final card in [
       for (var i = 0; i < 20; i++)
         for (final b in batches)
-          if (i < b.length) b[i], // interleave par rang
+          if (i < b.length) b[i], // interleave
     ]) {
-      if (_excluded.contains(card.id) || !_loadedIds.add(card.id)) continue;
+      if (_excluded.contains(card.tmdbId) || !_loadedIds.add(card.tmdbId)) {
+        continue;
+      }
       fresh.add(card);
     }
     return fresh;
   }
 
-  /// Alimente la file quand le curseur approche de la fin. Ajoute en queue
-  /// sans jamais toucher aux cartes déjà présentes.
   Future<void> loadMore() async {
     try {
-      final more = await _fetch();
-      if (more.isNotEmpty) {
-        state = AsyncData([...?state.value, ...more]);
-      }
-    } catch (_) {
-      // Réseau : on réessaiera au prochain appel.
-    }
+      final more = await _fetch(kind);
+      if (more.isNotEmpty) state = AsyncData([...?state.value, ...more]);
+    } catch (_) {}
   }
 
-  /// « Envie » : marque vu et rattache la série au suivi (via TVmaze).
-  Future<void> like(TmdbTv card) async {
+  Future<void> like(CatalogItem card) async {
     _markSeen(card, liked: true);
-    final repo = ref.read(trackingRepositoryProvider);
-    final tmdb = ref.read(tmdbApiProvider);
-    if (repo == null || tmdb == null) return;
-
-    try {
-      final tvdbId = await tmdb.tvdbIdByTmdb(card.id);
-      if (tvdbId == null) return; // pas rattachable à TVmaze
-      final existing = (ref.read(showsProvider).value ?? const [])
-          .any((s) => s.tvdbId == tvdbId);
-      if (existing) return;
-
-      var show = Show(tvdbId: tvdbId, title: card.name, tmdbId: card.id);
-      final tvmaze = ref.read(tvmazeApiProvider);
-      final meta = await tvmaze.lookupByTvdb(tvdbId);
-      if (meta != null) {
-        final episodes = await tvmaze.episodes(meta.id);
-        show = mergeTvmaze(show, meta, episodes, now: DateTime.now());
-      }
-      show = show.copyWith(
-        providers: await tmdb.tvProviders(card.id).catchError((_) => <String>[]),
-      );
-      await repo.saveShow(show);
-    } catch (_) {
-      // Rattachement best-effort ; la carte reste marquée vue quoi qu'il arrive.
-    }
+    await ref.read(libraryAddProvider.notifier).add(card);
   }
 
-  /// « Passer » : marque vu, sans autre effet.
-  Future<void> pass(TmdbTv card) async => _markSeen(card, liked: false);
+  Future<void> pass(CatalogItem card) async => _markSeen(card, liked: false);
 
-  void _markSeen(TmdbTv card, {required bool liked}) {
-    _excluded.add(card.id);
-    ref.read(trackingRepositoryProvider)?.markDiscoverSeen(card.id, liked: liked);
+  void _markSeen(CatalogItem card, {required bool liked}) {
+    _excluded.add(card.tmdbId);
+    ref
+        .read(trackingRepositoryProvider)
+        ?.markDiscoverSeen('${card.kind.path}_${card.tmdbId}', liked: liked);
   }
 }

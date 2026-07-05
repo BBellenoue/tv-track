@@ -28,7 +28,7 @@ Future<void> main() async {
       trackingRepositoryProvider.overrideWithValue(null),
       showsProvider.overrideWith((ref) => Stream.value(_sampleShows)),
       moviesProvider.overrideWith((ref) => Stream.value(_sampleMovies)),
-      discoverSeenIdsProvider.overrideWith((ref) => Stream.value(<int>{})),
+      discoverSeenKeysProvider.overrideWith((ref) => Stream.value(<String>{})),
     ],
     child: MaterialApp(
       title: 'TV Track — preview',

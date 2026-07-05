@@ -48,9 +48,25 @@ TmdbApi? tmdbApi(Ref ref) =>
     tmdbApiKey.isEmpty ? null : TmdbApi(tmdbApiKey);
 
 @riverpod
-Stream<Set<int>> discoverSeenIds(Ref ref) {
+Stream<Set<String>> discoverSeenKeys(Ref ref) {
   final repo = ref.watch(trackingRepositoryProvider);
   if (repo == null) return Stream.value(const {});
-  return repo.watchSeenTmdbIds();
+  return repo.watchSeenKeys();
 }
+
+/// IDs TMDB des séries suivies (pour dédoublonner / griser dans Découverte).
+@riverpod
+Set<int> trackedShowTmdbIds(Ref ref) =>
+    (ref.watch(showsProvider).value ?? const [])
+        .map((s) => s.tmdbId)
+        .whereType<int>()
+        .toSet();
+
+/// IDs TMDB des films de la liste (suivis ou vus).
+@riverpod
+Set<int> trackedMovieTmdbIds(Ref ref) =>
+    (ref.watch(moviesProvider).value ?? const [])
+        .map((m) => m.tmdbId)
+        .whereType<int>()
+        .toSet();
 
