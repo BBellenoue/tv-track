@@ -19,6 +19,10 @@ _Movie _$MovieFromJson(Map<String, dynamic> json) => _Movie(
   addedAt: json['addedAt'] == null
       ? null
       : DateTime.parse(json['addedAt'] as String),
+  poster: json['poster'] as String?,
+  metaRefreshedAt: json['metaRefreshedAt'] == null
+      ? null
+      : DateTime.parse(json['metaRefreshedAt'] as String),
 );
 
 Map<String, dynamic> _$MovieToJson(_Movie instance) => <String, dynamic>{
@@ -30,4 +34,6 @@ Map<String, dynamic> _$MovieToJson(_Movie instance) => <String, dynamic>{
   'watchedAt': instance.watchedAt?.toIso8601String(),
   'isFavorite': instance.isFavorite,
   'addedAt': instance.addedAt?.toIso8601String(),
+  'poster': instance.poster,
+  'metaRefreshedAt': instance.metaRefreshedAt?.toIso8601String(),
 };

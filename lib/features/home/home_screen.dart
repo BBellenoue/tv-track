@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../auth/auth_controller.dart';
 import '../movies/movies_tab.dart';
+import '../shows/refresh_controller.dart';
 import '../shows/shows_tab.dart';
 
 class HomeScreen extends HookConsumerWidget {
@@ -12,11 +13,28 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tab = useState(0);
+    final refreshing = ref.watch(metadataRefreshProvider);
+
+    // Rafraîchit les métadonnées périmées à l'ouverture (fire-and-forget).
+    useEffect(() {
+      Future.microtask(
+          () => ref.read(metadataRefreshProvider.notifier).run());
+      return null;
+    }, const []);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(tab.value == 0 ? 'Séries' : 'Films'),
         actions: [
+          if (refreshing)
+            const Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'signout') {

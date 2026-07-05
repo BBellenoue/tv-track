@@ -7,12 +7,15 @@ part 'show.g.dart';
 @freezed
 abstract class Episode with _$Episode {
   const factory Episode({
+    /// ID externe : TVDB pour les épisodes issus de l'export TV Time,
+    /// négatif (-(saison*1000+numéro)) pour ceux ajoutés depuis TVmaze.
     required int tvdbId,
     required int number,
     @Default('') String name,
     @Default(false) bool special,
     @Default(false) bool watched,
     DateTime? watchedAt,
+    DateTime? airDate,
   }) = _Episode;
 
   factory Episode.fromJson(Map<String, dynamic> json) =>
@@ -48,6 +51,13 @@ abstract class Show with _$Show {
     @Default(false) bool isFavorite,
     DateTime? addedAt,
     @Default(<Season>[]) List<Season> seasons,
+    // Métadonnées TVmaze (enrichies hors app ou par pull-to-refresh).
+    int? tvmazeId,
+    String? poster,
+    String? posterLarge,
+    String? airStatus,
+    String? network,
+    DateTime? metaRefreshedAt,
   }) = _Show;
 
   factory Show.fromJson(Map<String, dynamic> json) => _$ShowFromJson(json);
@@ -82,6 +92,19 @@ abstract class Show with _$Show {
       .map((e) => e.watchedAt)
       .whereType<DateTime>()
       .maxOrNull;
+
+  bool get isEnded => airStatus == 'Ended';
+
+  /// Prochaine diffusion connue (épisode avec une date dans le futur).
+  DateTime? get nextAirDate {
+    final now = DateTime.now();
+    return regularSeasons
+        .expand((s) => s.episodes)
+        .map((e) => e.airDate)
+        .whereType<DateTime>()
+        .where((d) => d.isAfter(now))
+        .minOrNull;
+  }
 
   /// Retourne une copie avec l'épisode [episodeTvdbId] marqué vu/non vu.
   Show withEpisodeWatched(int episodeTvdbId, bool watched) {

@@ -14,6 +14,9 @@ abstract class Movie with _$Movie {
     DateTime? watchedAt,
     @Default(false) bool isFavorite,
     DateTime? addedAt,
+    // Métadonnées TMDB (enrichies hors app).
+    String? poster,
+    DateTime? metaRefreshedAt,
   }) = _Movie;
 
   factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
