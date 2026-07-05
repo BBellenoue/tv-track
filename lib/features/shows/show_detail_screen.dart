@@ -12,23 +12,51 @@ import '../../core/widgets/season_progress_bar.dart';
 import '../../core/widgets/section_label.dart';
 import '../../data/models/show.dart';
 
-class ShowDetailScreen extends ConsumerWidget {
+class ShowDetailScreen extends ConsumerStatefulWidget {
   const ShowDetailScreen({super.key, required this.tvdbId});
 
   final int tvdbId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ShowDetailScreen> createState() => _ShowDetailScreenState();
+}
+
+class _ShowDetailScreenState extends ConsumerState<ShowDetailScreen> {
+  // Clé posée sur le prochain épisode à voir, pour s'y positionner à l'ouverture.
+  final _nextEpisodeKey = GlobalKey();
+  bool _scrolled = false;
+
+  @override
+  Widget build(BuildContext context) {
     final show = ref
         .watch(showsProvider)
         .value
-        ?.firstWhereOrNull((s) => s.tvdbId == tvdbId);
+        ?.firstWhereOrNull((s) => s.tvdbId == widget.tvdbId);
 
     if (show == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final nextSeasonNumber = show.nextEpisode?.season.number;
+    final next = show.nextEpisode;
+    final nextSeasonNumber = next?.season.number;
+    final nextEpisodeTvdb = next?.episode.tvdbId;
+
+    // Une seule fois : amener le prochain épisode dans le champ de vision
+    // (évite de scroller jusqu'au fond d'une saison bien entamée).
+    if (!_scrolled && nextEpisodeTvdb != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final ctx = _nextEpisodeKey.currentContext;
+        if (!_scrolled && ctx != null && mounted) {
+          _scrolled = true;
+          Scrollable.ensureVisible(
+            ctx,
+            alignment: 0.28,
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.easeOutCubic,
+          );
+        }
+      });
+    }
 
     return Scaffold(
       body: CustomScrollView(
@@ -45,6 +73,8 @@ class ShowDetailScreen extends ConsumerWidget {
                   show: show,
                   season: season,
                   initiallyExpanded: season.number == nextSeasonNumber,
+                  highlightEpisodeTvdb: nextEpisodeTvdb,
+                  highlightKey: _nextEpisodeKey,
                 ),
             ]),
           ),
@@ -200,11 +230,15 @@ class _SeasonTile extends ConsumerWidget {
     required this.show,
     required this.season,
     required this.initiallyExpanded,
+    this.highlightEpisodeTvdb,
+    this.highlightKey,
   });
 
   final Show show;
   final Season season;
   final bool initiallyExpanded;
+  final int? highlightEpisodeTvdb;
+  final Key? highlightKey;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -240,7 +274,12 @@ class _SeasonTile extends ConsumerWidget {
       children: [
         for (final episode
             in season.episodes.sorted((a, b) => a.number - b.number))
-          _EpisodeTile(show: show, season: season, episode: episode),
+          _EpisodeTile(
+            key: episode.tvdbId == highlightEpisodeTvdb ? highlightKey : null,
+            show: show,
+            season: season,
+            episode: episode,
+          ),
       ],
     );
   }
@@ -251,7 +290,10 @@ class _SeasonTile extends ConsumerWidget {
 /// marquer avant (multi-saison).
 class _EpisodeTile extends ConsumerStatefulWidget {
   const _EpisodeTile(
-      {required this.show, required this.season, required this.episode});
+      {super.key,
+      required this.show,
+      required this.season,
+      required this.episode});
 
   final Show show;
   final Season season;

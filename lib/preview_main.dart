@@ -13,6 +13,7 @@ import 'core/theme.dart';
 import 'data/models/movie.dart';
 import 'data/models/show.dart';
 import 'features/home/home_screen.dart';
+import 'features/movies/movie_detail_screen.dart';
 import 'features/shows/show_detail_screen.dart';
 
 const _tmdbImg = 'https://image.tmdb.org/t/p/w500';
@@ -40,9 +41,11 @@ Future<void> main() async {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: _screen == 'detail'
-          ? const ShowDetailScreen(tvdbId: 94997)
-          : const HomeScreen(),
+      home: switch (_screen) {
+        'detail' => const ShowDetailScreen(tvdbId: 94997),
+        'movie' => const MovieDetailScreen(tvdbId: 1),
+        _ => const HomeScreen(),
+      },
     ),
   ));
 }
@@ -135,8 +138,23 @@ final _sampleShows = <Show>[
   ),
 ];
 
+const _dunePoster = '$_tmdbImg/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg';
+const _duneBackdrop = '$_tmdbImg/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg';
+
 final _sampleMovies = <Movie>[
-  const Movie(tvdbId: 1, title: 'Dune : Deuxième partie', year: 2024),
+  const Movie(
+    tvdbId: 1,
+    title: 'Dune : Deuxième partie',
+    year: 2024,
+    runtime: 167,
+    poster: _dunePoster,
+    backdrop: _duneBackdrop,
+    overview:
+        'Paul Atreides s\'unit à Chani et aux Fremen pour mener la révolte '
+        'contre ceux qui ont anéanti sa famille. Hanté par des visions '
+        'inquiétantes, il doit choisir entre l\'amour de sa vie et le sort '
+        'de l\'univers connu.',
+  ),
   const Movie(tvdbId: 2, title: 'The Wild Robot', year: 2024, watched: true),
   const Movie(tvdbId: 3, title: 'Oppenheimer', year: 2023),
 ];

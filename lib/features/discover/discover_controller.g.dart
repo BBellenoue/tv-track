@@ -10,16 +10,31 @@ part of 'discover_controller.dart';
 // ignore_for_file: type=lint, type=warning
 /// File de cartes du deck Découverte : séries populaires / tendances / en
 /// diffusion (TMDB, FR), débarrassées de celles déjà suivies ou déjà swipées.
+///
+/// La file ne se reconstruit PAS à chaque swipe : l'avancement est piloté par
+/// un curseur local dans l'UI. Ici on ne fait qu'alimenter la file (pagination)
+/// et persister l'historique de swipe. Cela évite tout clignotement au moment
+/// où une carte quitte l'écran.
 
 @ProviderFor(DiscoverDeck)
 final discoverDeckProvider = DiscoverDeckProvider._();
 
 /// File de cartes du deck Découverte : séries populaires / tendances / en
 /// diffusion (TMDB, FR), débarrassées de celles déjà suivies ou déjà swipées.
+///
+/// La file ne se reconstruit PAS à chaque swipe : l'avancement est piloté par
+/// un curseur local dans l'UI. Ici on ne fait qu'alimenter la file (pagination)
+/// et persister l'historique de swipe. Cela évite tout clignotement au moment
+/// où une carte quitte l'écran.
 final class DiscoverDeckProvider
     extends $AsyncNotifierProvider<DiscoverDeck, List<TmdbTv>> {
   /// File de cartes du deck Découverte : séries populaires / tendances / en
   /// diffusion (TMDB, FR), débarrassées de celles déjà suivies ou déjà swipées.
+  ///
+  /// La file ne se reconstruit PAS à chaque swipe : l'avancement est piloté par
+  /// un curseur local dans l'UI. Ici on ne fait qu'alimenter la file (pagination)
+  /// et persister l'historique de swipe. Cela évite tout clignotement au moment
+  /// où une carte quitte l'écran.
   DiscoverDeckProvider._()
     : super(
         from: null,
@@ -39,10 +54,15 @@ final class DiscoverDeckProvider
   DiscoverDeck create() => DiscoverDeck();
 }
 
-String _$discoverDeckHash() => r'0abf05e1b7812703303b3bdfcc07f7c663a0c8b5';
+String _$discoverDeckHash() => r'97ecae0d0729434c9d72d7e46a2218b1cdbb8f87';
 
 /// File de cartes du deck Découverte : séries populaires / tendances / en
 /// diffusion (TMDB, FR), débarrassées de celles déjà suivies ou déjà swipées.
+///
+/// La file ne se reconstruit PAS à chaque swipe : l'avancement est piloté par
+/// un curseur local dans l'UI. Ici on ne fait qu'alimenter la file (pagination)
+/// et persister l'historique de swipe. Cela évite tout clignotement au moment
+/// où une carte quitte l'écran.
 
 abstract class _$DiscoverDeck extends $AsyncNotifier<List<TmdbTv>> {
   FutureOr<List<TmdbTv>> build();

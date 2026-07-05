@@ -70,51 +70,77 @@ class _Deck extends ConsumerStatefulWidget {
 class _DeckState extends ConsumerState<_Deck>
     with SingleTickerProviderStateMixin {
   late final AnimationController _anim;
+  late final CurvedAnimation _curve;
   Offset _drag = Offset.zero;
   Offset _animFrom = Offset.zero;
   Offset _animTo = Offset.zero;
   bool _flyingOut = false;
-  TmdbTv? _flying;
+  int _index = 0;
+  bool _loadingMore = false;
 
-  static const _threshold = 110.0;
+  static const _flyThreshold = 110.0;
+  static const _stampFull = 60.0; // intention à pleine opacité dès ~60px
+
+  static const _likeColor = Color(0xFF6BD08A);
 
   @override
   void initState() {
     super.initState();
     _anim = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 240));
-    // Décélération exponentielle (pas de rebond).
-    final curved = CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic);
+    _curve = CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic);
     _anim
       ..addListener(() {
         setState(() =>
-            _drag = Offset.lerp(_animFrom, _animTo, curved.value) ?? _drag);
+            _drag = Offset.lerp(_animFrom, _animTo, _curve.value) ?? _drag);
       })
       ..addStatusListener((s) {
-        if (s == AnimationStatus.completed) {
-          if (_flyingOut && _flying != null) {
-            final card = _flying!;
-            final liked = _animTo.dx > 0;
-            (liked
-                ? ref.read(discoverDeckProvider.notifier).like(card)
-                : ref.read(discoverDeckProvider.notifier).pass(card));
-          }
-          setState(() {
-            _drag = Offset.zero;
-            _flyingOut = false;
-            _flying = null;
-          });
-        }
+        if (s == AnimationStatus.completed) _onAnimComplete();
       });
   }
 
   @override
   void dispose() {
+    _curve.dispose();
     _anim.dispose();
     super.dispose();
   }
 
-  // Ressort de retour : ease-out doux, un peu plus rapide que le fly-out.
+  TmdbTv? get _top =>
+      _index < widget.cards.length ? widget.cards[_index] : null;
+
+  void _onAnimComplete() {
+    if (_flyingOut) {
+      // Avancement ATOMIQUE : on commit et on passe à la carte suivante dans
+      // le même setState — pas de frame où l'ancienne carte réapparaît.
+      final card = _top;
+      final liked = _animTo.dx > 0;
+      if (card != null) {
+        liked
+            ? ref.read(discoverDeckProvider.notifier).like(card)
+            : ref.read(discoverDeckProvider.notifier).pass(card);
+      }
+      setState(() {
+        _index++;
+        _drag = Offset.zero;
+        _flyingOut = false;
+      });
+      _maybeLoadMore();
+    } else {
+      setState(() => _drag = Offset.zero); // fin du ressort de retour
+    }
+  }
+
+  void _maybeLoadMore() {
+    if (_loadingMore) return;
+    if (widget.cards.length - _index > 4) return;
+    _loadingMore = true;
+    ref
+        .read(discoverDeckProvider.notifier)
+        .loadMore()
+        .whenComplete(() => _loadingMore = false);
+  }
+
   void _springBack() {
     _animFrom = _drag;
     _animTo = Offset.zero;
@@ -123,22 +149,28 @@ class _DeckState extends ConsumerState<_Deck>
     _anim.forward(from: 0);
   }
 
-  void _flyOut(TmdbTv card, bool liked) {
+  void _flyOut(bool liked) {
+    final card = _top;
+    if (card == null) return;
     HapticFeedback.mediumImpact();
-    // Motion réduite : on valide sans animation de sortie.
+
+    // Motion réduite : validation immédiate, sans animation de sortie.
     if (MediaQuery.of(context).disableAnimations) {
       liked
           ? ref.read(discoverDeckProvider.notifier).like(card)
           : ref.read(discoverDeckProvider.notifier).pass(card);
-      setState(() => _drag = Offset.zero);
+      setState(() {
+        _index++;
+        _drag = Offset.zero;
+      });
+      _maybeLoadMore();
       return;
     }
+
     final width = MediaQuery.of(context).size.width;
-    _flying = card;
     _flyingOut = true;
     _animFrom = _drag;
     _animTo = Offset(liked ? width * 1.5 : -width * 1.5, _drag.dy - 40);
-    // Sortie franche et rapide.
     _anim.duration = const Duration(milliseconds: 240);
     _anim.forward(from: 0);
   }
@@ -146,13 +178,20 @@ class _DeckState extends ConsumerState<_Deck>
   @override
   Widget build(BuildContext context) {
     final cards = widget.cards;
-    final top = cards.first;
-    final behind = cards.length > 1 ? cards[1] : null;
+    final top = _top;
+
+    // Plus de cartes chargées : on en redemande et on patiente.
+    if (top == null) {
+      _maybeLoadMore();
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final behind = _index + 1 < cards.length ? cards[_index + 1] : null;
     final busy = _anim.isAnimating;
 
-    final likeT = (_drag.dx / _threshold).clamp(0.0, 1.0);
-    final passT = (-_drag.dx / _threshold).clamp(0.0, 1.0);
-    final dragProgress = (_drag.dx.abs() / _threshold).clamp(0.0, 1.0);
+    final likeT = (_drag.dx / _stampFull).clamp(0.0, 1.0);
+    final passT = (-_drag.dx / _stampFull).clamp(0.0, 1.0);
+    final dragProgress = (_drag.dx.abs() / _flyThreshold).clamp(0.0, 1.0);
 
     return Column(
       children: [
@@ -175,8 +214,8 @@ class _DeckState extends ConsumerState<_Deck>
                   onPanEnd: busy
                       ? null
                       : (_) {
-                          if (_drag.dx.abs() > _threshold) {
-                            _flyOut(top, _drag.dx > 0);
+                          if (_drag.dx.abs() > _flyThreshold) {
+                            _flyOut(_drag.dx > 0);
                           } else {
                             _springBack();
                           }
@@ -188,19 +227,39 @@ class _DeckState extends ConsumerState<_Deck>
                       child: _CardFrame(
                         key: ValueKey('top-${top.id}'),
                         card: top,
-                        likeOpacity: likeT,
-                        passOpacity: passT,
+                        tint: likeT > passT ? likeT : passT,
+                        tintColor: _drag.dx >= 0 ? _likeColor : dust,
                       ),
                     ),
                   ),
+                ),
+                // Tampons d'intention FIXES (hors de la carte), donc toujours
+                // visibles pendant le swipe même quand la carte s'en va.
+                Positioned(
+                  top: 16,
+                  left: 8,
+                  child: _Stamp(
+                      text: 'PLUS TARD',
+                      color: linen,
+                      opacity: passT,
+                      angle: 0.16),
+                ),
+                Positioned(
+                  top: 16,
+                  right: 8,
+                  child: _Stamp(
+                      text: 'ENVIE',
+                      color: _likeColorConst,
+                      opacity: likeT,
+                      angle: -0.16),
                 ),
               ],
             ),
           ),
         ),
         _Actions(
-          onPass: busy ? null : () => _flyOut(top, false),
-          onLike: busy ? null : () => _flyOut(top, true),
+          onPass: busy ? null : () => _flyOut(false),
+          onLike: busy ? null : () => _flyOut(true),
         ),
         const SizedBox(height: 8),
       ],
@@ -213,14 +272,14 @@ class _CardFrame extends StatelessWidget {
     super.key,
     required this.card,
     this.scale = 1,
-    this.likeOpacity = 0,
-    this.passOpacity = 0,
+    this.tint = 0,
+    this.tintColor = const Color(0xFF6BD08A),
   });
 
   final TmdbTv card;
   final double scale;
-  final double likeOpacity;
-  final double passOpacity;
+  final double tint;
+  final Color tintColor;
 
   @override
   Widget build(BuildContext context) {
@@ -250,30 +309,32 @@ class _CardFrame extends StatelessWidget {
                 ),
               ),
             ),
+            // Teinte d'intention sur toute la carte pendant le drag.
+            if (tint > 0)
+              ColoredBox(color: tintColor.withValues(alpha: 0.28 * tint)),
+            // Bordure colorée d'intention.
+            if (tint > 0)
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                      color: tintColor.withValues(alpha: tint), width: 3),
+                ),
+              ),
             Positioned(
               left: 20,
               right: 20,
               bottom: 22,
               child: _CardInfo(card: card),
             ),
-            _Stamp(
-                text: 'ENVIE',
-                color: const Color(0xFF6BD08A),
-                opacity: likeOpacity,
-                alignment: Alignment.topRight,
-                angle: -0.2),
-            _Stamp(
-                text: 'PLUS TARD',
-                color: dust,
-                opacity: passOpacity,
-                alignment: Alignment.topLeft,
-                angle: 0.2),
           ],
         ),
       ),
     );
   }
 }
+
+const _likeColorConst = Color(0xFF6BD08A);
 
 class _CardInfo extends StatelessWidget {
   const _CardInfo({required this.card});
@@ -320,37 +381,31 @@ class _Stamp extends StatelessWidget {
     required this.text,
     required this.color,
     required this.opacity,
-    required this.alignment,
     required this.angle,
   });
 
   final String text;
   final Color color;
   final double opacity;
-  final Alignment alignment;
   final double angle;
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: alignment,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Opacity(
-          opacity: opacity,
-          child: Transform.rotate(
-            angle: angle,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                border: Border.all(color: color, width: 3),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(text,
-                  style: condensed(
-                      size: 24, weight: FontWeight.w700, color: color)
-                      .copyWith(letterSpacing: 2)),
+    return IgnorePointer(
+      child: Opacity(
+        opacity: opacity,
+        child: Transform.rotate(
+          angle: angle,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xCC12100D),
+              border: Border.all(color: color, width: 3),
+              borderRadius: BorderRadius.circular(8),
             ),
+            child: Text(text,
+                style: condensed(size: 22, weight: FontWeight.w700, color: color)
+                    .copyWith(letterSpacing: 2)),
           ),
         ),
       ),

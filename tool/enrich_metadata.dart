@@ -74,10 +74,17 @@ Future<void> _enrichShows(FirestoreRest db, String uid) async {
           final tmdbId = await tmdb.tvIdByTvdb(show.tvdbId);
           if (tmdbId != null) {
             final providers = await tmdb.tvProviders(tmdbId);
-            merged = merged.copyWith(tmdbId: tmdbId, providers: providers);
+            final overviewFr = await tmdb.tvOverviewFr(tmdbId);
+            merged = merged.copyWith(
+              tmdbId: tmdbId,
+              providers: providers,
+              overview: overviewFr ?? merged.overview,
+            );
+            // Résumés + titres d'épisodes en français, saison par saison.
+            merged = await _overlayFrenchEpisodes(merged, tmdb, tmdbId);
           }
         } catch (_) {
-          // Providers best-effort : on garde le reste de l'enrichissement.
+          // Best-effort : on garde le reste de l'enrichissement.
         }
       }
 
@@ -94,6 +101,39 @@ Future<void> _enrichShows(FirestoreRest db, String uid) async {
   }
   stdout.writeln(
       'Séries : $updated enrichies, $missing introuvables, $errors erreurs.');
+}
+
+/// Superpose les titres et résumés d'épisodes en français (TMDB) sur une série
+/// déjà structurée par TVmaze. On ne touche jamais à l'état de visionnage ni
+/// aux dates ; on ne remplace un champ que si TMDB a une valeur française.
+Future<Show> _overlayFrenchEpisodes(
+    Show show, TmdbApi tmdb, int tmdbId) async {
+  final seasons = <Season>[];
+  for (final season in show.seasons) {
+    if (season.isSpecials || season.episodes.isEmpty) {
+      seasons.add(season);
+      continue;
+    }
+    Map<int, ({String? name, String? overview})> fr;
+    try {
+      fr = await tmdb.tvSeasonFr(tmdbId, season.number);
+      await Future.delayed(const Duration(milliseconds: 40));
+    } catch (_) {
+      seasons.add(season);
+      continue;
+    }
+    seasons.add(season.copyWith(episodes: [
+      for (final ep in season.episodes)
+        if (fr[ep.number] case final f?)
+          ep.copyWith(
+            name: f.name ?? ep.name,
+            overview: f.overview ?? ep.overview,
+          )
+        else
+          ep,
+    ]));
+  }
+  return show.copyWith(seasons: seasons);
 }
 
 Future<void> _enrichMovies(FirestoreRest db, String uid) async {
@@ -114,21 +154,26 @@ Future<void> _enrichMovies(FirestoreRest db, String uid) async {
       continue;
     }
     try {
-      final poster = await tmdb.moviePosterByImdb(movie.imdbId!);
+      final d = await tmdb.movieByImdb(movie.imdbId!);
       await Future.delayed(const Duration(milliseconds: 30));
-      if (poster == null) {
+      if (d == null) {
         skipped++;
         continue;
       }
       await db.patch(
         'users/$uid/movies/$id',
-        movie
-            .copyWith(poster: poster, metaRefreshedAt: DateTime.now())
-            .toJson(),
+        movie.copyWith(
+          tmdbId: d.id,
+          poster: d.poster ?? movie.poster,
+          backdrop: d.backdrop,
+          overview: d.overview,
+          runtime: d.runtime,
+          metaRefreshedAt: DateTime.now(),
+        ).toJson(),
       );
       updated++;
       if (updated % 25 == 0) {
-        stdout.writeln('  [${i + 1}/${docs.length}] $updated posters…');
+        stdout.writeln('  [${i + 1}/${docs.length}] $updated films…');
       }
     } catch (e) {
       errors++;
@@ -136,5 +181,5 @@ Future<void> _enrichMovies(FirestoreRest db, String uid) async {
     }
   }
   stdout.writeln(
-      'Films : $updated posters, $skipped sans correspondance, $errors erreurs.');
+      'Films : $updated enrichis, $skipped sans correspondance, $errors erreurs.');
 }

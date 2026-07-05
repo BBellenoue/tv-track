@@ -16,16 +16,41 @@ class TmdbApi {
 
   static const imageBase = 'https://image.tmdb.org/t/p';
 
-  /// Poster d'un film via son ID IMDB (ex: tt29623480), taille w342.
-  Future<String?> moviePosterByImdb(String imdbId) async {
-    final response = await _dio.get<Map<String, dynamic>>(
+  /// Détails d'un film (en français) via son ID IMDB (ex: tt29623480).
+  /// Retourne null si TMDB ne connaît pas le film.
+  Future<TmdbMovie?> movieByImdb(String imdbId) async {
+    final found = await _dio.get<Map<String, dynamic>>(
       '/find/$imdbId',
-      queryParameters: {'external_source': 'imdb_id', 'api_key': _apiKey},
+      queryParameters: {
+        'external_source': 'imdb_id',
+        'api_key': _apiKey,
+        'language': 'fr-FR',
+      },
     );
-    final results = response.data?['movie_results'] as List?;
+    final results = found.data?['movie_results'] as List?;
     if (results == null || results.isEmpty) return null;
-    final path = (results.first as Map<String, dynamic>)['poster_path'];
-    return path == null ? null : '$imageBase/w342$path';
+    final id = (results.first as Map<String, dynamic>)['id'] as int?;
+    if (id == null) return null;
+
+    // /movie/{id} donne le résumé FR complet, le backdrop et la durée.
+    final detail = await _dio.get<Map<String, dynamic>>(
+      '/movie/$id',
+      queryParameters: {'api_key': _apiKey, 'language': 'fr-FR'},
+    );
+    final d = detail.data ?? {};
+    String? img(String key, String size) {
+      final p = d[key] as String?;
+      return p == null ? null : '$imageBase/$size$p';
+    }
+
+    final overview = d['overview'] as String?;
+    return TmdbMovie(
+      id: id,
+      poster: img('poster_path', 'w342'),
+      backdrop: img('backdrop_path', 'w780'),
+      overview: (overview == null || overview.isEmpty) ? null : overview,
+      runtime: d['runtime'] as int?,
+    );
   }
 
   /// ID TMDB d'une série via son ID TVDB.
@@ -78,6 +103,39 @@ class TmdbApi {
     return n.trim();
   }
 
+  /// Résumé d'une série en français (null si TMDB n'en a pas).
+  Future<String?> tvOverviewFr(int tmdbTvId) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/tv/$tmdbTvId',
+      queryParameters: {'api_key': _apiKey, 'language': 'fr-FR'},
+    );
+    final o = response.data?['overview'] as String?;
+    return (o == null || o.isEmpty) ? null : o;
+  }
+
+  /// Épisodes d'une saison en français : numéro d'épisode → (titre, résumé).
+  /// Les champs vides côté TMDB sont laissés à null (pour retomber sur TVmaze).
+  Future<Map<int, ({String? name, String? overview})>> tvSeasonFr(
+      int tmdbTvId, int seasonNumber) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/tv/$tmdbTvId/season/$seasonNumber',
+      queryParameters: {'api_key': _apiKey, 'language': 'fr-FR'},
+    );
+    final episodes = response.data?['episodes'] as List? ?? const [];
+    final out = <int, ({String? name, String? overview})>{};
+    for (final e in episodes.cast<Map<String, dynamic>>()) {
+      final number = e['episode_number'] as int?;
+      if (number == null) continue;
+      String? nn = e['name'] as String?;
+      String? oo = e['overview'] as String?;
+      out[number] = (
+        name: (nn == null || nn.isEmpty) ? null : nn,
+        overview: (oo == null || oo.isEmpty) ? null : oo,
+      );
+    }
+    return out;
+  }
+
   /// Séries populaires (page 1..n), localisées en français, région FR.
   Future<List<TmdbTv>> popularTv({int page = 1}) =>
       _tvList('/tv/popular', page);
@@ -115,6 +173,22 @@ class TmdbApi {
     );
     return response.data?['tvdb_id'] as int?;
   }
+}
+
+class TmdbMovie {
+  const TmdbMovie({
+    required this.id,
+    this.poster,
+    this.backdrop,
+    this.overview,
+    this.runtime,
+  });
+
+  final int id;
+  final String? poster;
+  final String? backdrop;
+  final String? overview;
+  final int? runtime;
 }
 
 class TmdbTv {

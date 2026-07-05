@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../core/providers.dart';
@@ -76,9 +77,11 @@ class _MovieTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-      child: Row(
+    return InkWell(
+      onTap: () => context.push('/movie/${movie.tvdbId}'),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+        child: Row(
         children: [
           Poster(
               title: movie.title,
@@ -104,14 +107,17 @@ class _MovieTile extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 6),
-          IconButton.filledTonal(
-            isSelected: movie.watched,
-            icon: const Icon(Icons.visibility_outlined, size: 22),
-            selectedIcon: const Icon(Icons.check, size: 22),
+          IconButton(
+            icon: Icon(
+              movie.watched ? Icons.check_circle : Icons.check_circle_outline,
+              size: 30,
+              color: movie.watched ? tungsten : dust,
+            ),
             tooltip: movie.watched ? 'Marquer non vu' : 'Marquer vu',
             onPressed: () => _toggle(context, ref),
           ),
         ],
+        ),
       ),
     );
   }

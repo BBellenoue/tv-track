@@ -14,8 +14,12 @@ abstract class Movie with _$Movie {
     DateTime? watchedAt,
     @Default(false) bool isFavorite,
     DateTime? addedAt,
-    // Métadonnées TMDB (enrichies hors app).
+    // Métadonnées TMDB (enrichies hors app), en français.
+    int? tmdbId,
     String? poster,
+    String? backdrop,
+    String? overview,
+    int? runtime,
     DateTime? metaRefreshedAt,
   }) = _Movie;
 

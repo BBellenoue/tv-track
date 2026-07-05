@@ -9,60 +9,71 @@ part 'discover_controller.g.dart';
 
 /// File de cartes du deck Découverte : séries populaires / tendances / en
 /// diffusion (TMDB, FR), débarrassées de celles déjà suivies ou déjà swipées.
+///
+/// La file ne se reconstruit PAS à chaque swipe : l'avancement est piloté par
+/// un curseur local dans l'UI. Ici on ne fait qu'alimenter la file (pagination)
+/// et persister l'historique de swipe. Cela évite tout clignotement au moment
+/// où une carte quitte l'écran.
 @riverpod
 class DiscoverDeck extends _$DiscoverDeck {
   int _page = 0;
   final _loadedIds = <int>{};
+  final _excluded = <int>{};
 
   @override
   Future<List<TmdbTv>> build() async {
-    // Recharge quand le suivi ou l'historique de swipe change.
-    ref.watch(showsProvider);
-    ref.watch(discoverSeenIdsProvider);
-    return _loadMore(initial: true);
-  }
-
-  /// Ensemble des IDs TMDB à exclure : séries déjà suivies + déjà swipées.
-  Set<int> get _excluded {
+    // Lu une seule fois (pas `watch`) pour ne pas se reconstruire au swipe.
     final tracked = (ref.read(showsProvider).value ?? const [])
         .map((s) => s.tmdbId)
-        .whereType<int>()
-        .toSet();
+        .whereType<int>();
     final seen = ref.read(discoverSeenIdsProvider).value ?? const <int>{};
-    return {...tracked, ...seen};
+    _excluded
+      ..addAll(tracked)
+      ..addAll(seen);
+    return _fetch();
   }
 
-  Future<List<TmdbTv>> _loadMore({bool initial = false}) async {
+  Future<List<TmdbTv>> _fetch() async {
     final tmdb = ref.read(tmdbApiProvider);
     if (tmdb == null) return const [];
 
     _page++;
-    // Mélange les trois sources pour un deck varié (populaires en volume,
-    // tendances pour la fraîcheur, on-the-air pour les séries du moment).
+    // Mélange trois sources : populaires (volume), tendances (fraîcheur),
+    // en diffusion (séries du moment).
     final batches = await Future.wait([
       tmdb.trendingTv(page: _page),
       tmdb.popularTv(page: _page),
       tmdb.onTheAirTv(page: _page),
     ]);
 
-    final excluded = _excluded;
     final fresh = <TmdbTv>[];
     for (final card in [
       for (var i = 0; i < 20; i++)
         for (final b in batches)
           if (i < b.length) b[i], // interleave par rang
     ]) {
-      if (excluded.contains(card.id) || !_loadedIds.add(card.id)) continue;
+      if (_excluded.contains(card.id) || !_loadedIds.add(card.id)) continue;
       fresh.add(card);
     }
-    final current = initial ? <TmdbTv>[] : (state.value ?? const []);
-    return [...current, ...fresh];
+    return fresh;
   }
 
-  /// « Envie » : marque vu, rattache la série au suivi (via TVmaze) et retire
-  /// la carte du deck.
+  /// Alimente la file quand le curseur approche de la fin. Ajoute en queue
+  /// sans jamais toucher aux cartes déjà présentes.
+  Future<void> loadMore() async {
+    try {
+      final more = await _fetch();
+      if (more.isNotEmpty) {
+        state = AsyncData([...?state.value, ...more]);
+      }
+    } catch (_) {
+      // Réseau : on réessaiera au prochain appel.
+    }
+  }
+
+  /// « Envie » : marque vu et rattache la série au suivi (via TVmaze).
   Future<void> like(TmdbTv card) async {
-    _removeAndSeen(card, liked: true);
+    _markSeen(card, liked: true);
     final repo = ref.read(trackingRepositoryProvider);
     final tmdb = ref.read(tmdbApiProvider);
     if (repo == null || tmdb == null) return;
@@ -70,13 +81,11 @@ class DiscoverDeck extends _$DiscoverDeck {
     try {
       final tvdbId = await tmdb.tvdbIdByTmdb(card.id);
       if (tvdbId == null) return; // pas rattachable à TVmaze
-      // Déjà suivie ? on ne recrée pas.
       final existing = (ref.read(showsProvider).value ?? const [])
           .any((s) => s.tvdbId == tvdbId);
       if (existing) return;
 
       var show = Show(tvdbId: tvdbId, title: card.name, tmdbId: card.id);
-      // Enrichissement immédiat : poster, saisons, épisodes, résumé.
       final tvmaze = ref.read(tvmazeApiProvider);
       final meta = await tvmaze.lookupByTvdb(tvdbId);
       if (meta != null) {
@@ -88,23 +97,15 @@ class DiscoverDeck extends _$DiscoverDeck {
       );
       await repo.saveShow(show);
     } catch (_) {
-      // Rattachement best-effort : la carte reste marquée vue quoi qu'il arrive.
+      // Rattachement best-effort ; la carte reste marquée vue quoi qu'il arrive.
     }
   }
 
-  /// « Passer » : marque vu et retire la carte, sans autre effet.
-  Future<void> pass(TmdbTv card) async => _removeAndSeen(card, liked: false);
+  /// « Passer » : marque vu, sans autre effet.
+  Future<void> pass(TmdbTv card) async => _markSeen(card, liked: false);
 
-  void _removeAndSeen(TmdbTv card, {required bool liked}) {
+  void _markSeen(TmdbTv card, {required bool liked}) {
+    _excluded.add(card.id);
     ref.read(trackingRepositoryProvider)?.markDiscoverSeen(card.id, liked: liked);
-    final deck = <TmdbTv>[...?state.value]
-      ..removeWhere((c) => c.id == card.id);
-    state = AsyncData(deck);
-    if (deck.length < 5) {
-      // Recharge en tâche de fond quand la pile s'amenuise.
-      _loadMore().then((more) {
-        if (more.length > deck.length) state = AsyncData(more);
-      }).catchError((_) {});
-    }
   }
 }
