@@ -5,6 +5,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/theme.dart';
+import '../../core/widgets/filter_tabs.dart';
 import '../../core/widgets/poster.dart';
 import '../../data/models/movie.dart';
 
@@ -38,23 +40,21 @@ class MoviesTab extends HookConsumerWidget {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: SegmentedButton<bool>(
-                segments: [
-                  ButtonSegment(value: false, label: Text('À voir · $toWatch')),
-                  ButtonSegment(
-                      value: true, label: Text('Vus · ${all.length - toWatch}')),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: FilterTabs<bool>(
+                items: [
+                  (false, 'À voir', toWatch),
+                  (true, 'Vus', all.length - toWatch),
                 ],
-                selected: {showWatched.value},
-                onSelectionChanged: (s) => showWatched.value = s.first,
-                showSelectedIcon: false,
+                selected: showWatched.value,
+                onSelect: (v) => showWatched.value = v,
               ),
             ),
             Expanded(
               child: filtered.isEmpty
                   ? const Center(child: Text('Rien ici pour le moment.'))
                   : ListView.builder(
-                      padding: const EdgeInsets.only(top: 4, bottom: 12),
+                      padding: const EdgeInsets.only(top: 8, bottom: 12),
                       itemCount: filtered.length,
                       itemBuilder: (context, i) => _MovieTile(
                         key: ValueKey(filtered[i].tvdbId),
@@ -76,8 +76,6 @@ class _MovieTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
       child: Row(
@@ -96,16 +94,11 @@ class _MovieTile extends ConsumerWidget {
                   movie.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                  style: condensed(size: 15.5),
                 ),
                 if (movie.year != null) ...[
-                  const SizedBox(height: 2),
-                  Text(
-                    '${movie.year}',
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  ),
+                  const SizedBox(height: 3),
+                  Text('${movie.year}', style: mono(size: 10.5)),
                 ],
               ],
             ),

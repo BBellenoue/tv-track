@@ -7,6 +7,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/providers.dart';
+import '../../core/theme.dart';
+import '../../core/widgets/episode_tag.dart';
+import '../../core/widgets/filter_tabs.dart';
 import '../../core/widgets/poster.dart';
 import '../../data/models/show.dart';
 import 'refresh_controller.dart';
@@ -54,19 +57,14 @@ class ShowsTab extends HookConsumerWidget {
         return Column(
           children: [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-              child: SegmentedButton<ShowFilter>(
-                segments: [
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: FilterTabs<ShowFilter>(
+                items: [
                   for (final f in ShowFilter.values)
-                    ButtonSegment(
-                      value: f,
-                      label:
-                          Text('${f.label} · ${all.where(f.matches).length}'),
-                    ),
+                    (f, f.label, all.where(f.matches).length),
                 ],
-                selected: {filter.value},
-                onSelectionChanged: (s) => filter.value = s.first,
-                showSelectedIcon: false,
+                selected: filter.value,
+                onSelect: (f) => filter.value = f,
               ),
             ),
             Expanded(
@@ -77,7 +75,7 @@ class ShowsTab extends HookConsumerWidget {
                     ? const _NothingHere()
                     : ListView.builder(
                         physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(top: 4, bottom: 12),
+                        padding: const EdgeInsets.only(top: 8, bottom: 12),
                         itemCount: filtered.length,
                         itemBuilder: (context, i) => _ShowTile(
                           key: ValueKey(filtered[i].tvdbId),
@@ -100,24 +98,9 @@ class _ShowTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final next = show.nextEpisode;
     final progress =
         show.totalEpisodes == 0 ? 0.0 : show.watchedEpisodes / show.totalEpisodes;
-
-    final String subtitle;
-    if (next != null) {
-      final name = next.episode.name;
-      subtitle = 'S${_pad(next.season.number)}E${_pad(next.episode.number)}'
-          '${name.isEmpty ? '' : ' · $name'}';
-    } else {
-      final airDate = show.nextAirDate;
-      subtitle = airDate != null
-          ? 'Prochain épisode le ${_date(airDate)}'
-          : show.isEnded
-              ? 'Terminée · ${show.watchedEpisodes} épisodes vus'
-              : 'À jour · en attente de nouveaux épisodes';
-    }
 
     return InkWell(
       onTap: () => context.go('/show/${show.tvdbId}'),
@@ -139,34 +122,28 @@ class _ShowTile extends ConsumerWidget {
                     show.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: condensed(size: 15.5),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                  ),
+                  const SizedBox(height: 4),
+                  _SubtitleLine(show: show, next: next),
                   const SizedBox(height: 7),
                   Row(
                     children: [
                       Expanded(
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 4,
+                        child: ClipRRect(
                           borderRadius: BorderRadius.circular(2),
-                          backgroundColor:
-                              theme.colorScheme.surfaceContainerHighest,
+                          child: LinearProgressIndicator(
+                            value: progress,
+                            minHeight: 4,
+                            backgroundColor: charcoalHigh,
+                            color: tungsten,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
                         '${show.watchedEpisodes}/${show.totalEpisodes}',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant),
+                        style: mono(size: 10.5),
                       ),
                     ],
                   ),
@@ -175,10 +152,9 @@ class _ShowTile extends ConsumerWidget {
             ),
             const SizedBox(width: 6),
             if (next == null)
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Icon(Icons.check_circle,
-                    color: theme.colorScheme.primary, size: 26),
+              const Padding(
+                padding: EdgeInsets.all(10),
+                child: Icon(Icons.check_circle, color: tungsten, size: 26),
               )
             else
               IconButton.filledTonal(
@@ -215,20 +191,65 @@ class _ShowTile extends ConsumerWidget {
   }
 }
 
+class _SubtitleLine extends StatelessWidget {
+  const _SubtitleLine({required this.show, required this.next});
+
+  final Show show;
+  final EpisodeRef? next;
+
+  @override
+  Widget build(BuildContext context) {
+    final bodySmall = Theme.of(context)
+        .textTheme
+        .bodySmall
+        ?.copyWith(color: dust, height: 1.2);
+
+    if (next != null) {
+      return Row(children: [
+        EpisodeTag(
+            'S${_pad(next!.season.number)}E${_pad(next!.episode.number)}'),
+        if (next!.episode.name.isNotEmpty) ...[
+          const SizedBox(width: 7),
+          Expanded(
+            child: Text(next!.episode.name,
+                maxLines: 1, overflow: TextOverflow.ellipsis, style: bodySmall),
+          ),
+        ],
+      ]);
+    }
+
+    final airDate = show.nextAirDate;
+    if (airDate != null) {
+      return Row(children: [
+        EpisodeTag(_date(airDate).toUpperCase(), emphasis: true),
+        const SizedBox(width: 7),
+        Expanded(
+            child: Text('prochain épisode',
+                maxLines: 1, overflow: TextOverflow.ellipsis, style: bodySmall)),
+      ]);
+    }
+
+    return Text(
+      show.isEnded ? 'Terminée' : 'À jour',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: bodySmall,
+    );
+  }
+}
+
 class _EmptyState extends StatelessWidget {
   const _EmptyState();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.live_tv_rounded,
-              size: 56, color: theme.colorScheme.onSurfaceVariant),
+          const Icon(Icons.live_tv_rounded, size: 56, color: dust),
           const SizedBox(height: 12),
-          Text('Bibliothèque vide', style: theme.textTheme.titleMedium),
+          Text('Bibliothèque vide', style: condensed(size: 17)),
         ],
       ),
     );

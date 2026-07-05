@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../core/theme.dart';
 import 'auth_controller.dart';
 
 class SignInScreen extends ConsumerWidget {
@@ -9,7 +10,6 @@ class SignInScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authControllerProvider);
-    final theme = Theme.of(context);
 
     return Scaffold(
       body: Center(
@@ -17,16 +17,20 @@ class SignInScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.live_tv_rounded,
-                  size: 96, color: theme.colorScheme.primary),
-              const SizedBox(height: 16),
-              Text('TV Track', style: theme.textTheme.headlineMedium),
-              const SizedBox(height: 8),
-              Text(
-                'Ton suivi de séries et films',
-                style: theme.textTheme.bodyMedium,
-              ),
+              // Wordmark façon enseigne : condensé, souligné au tungstène.
+              Text('TV TRACK',
+                  style: condensed(
+                      size: 44, weight: FontWeight.w700, letterSpacing: 3)),
+              const SizedBox(height: 6),
+              Container(width: 56, height: 4, color: tungsten),
+              const SizedBox(height: 14),
+              Text('Où tu t\'es arrêté, épisode par épisode.',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium
+                      ?.copyWith(color: dust)),
               const SizedBox(height: 48),
               if (auth.isLoading)
                 const CircularProgressIndicator()
@@ -41,9 +45,11 @@ class SignInScreen extends ConsumerWidget {
               if (auth.hasError) ...[
                 const SizedBox(height: 16),
                 Text(
-                  'Échec de connexion : ${auth.error}',
-                  style: TextStyle(color: theme.colorScheme.error),
-                  textAlign: TextAlign.center,
+                  'Connexion impossible. Réessaie — si ça persiste, '
+                  'vérifie ta connexion.\n($auth)',
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                      fontSize: 12),
                 ),
               ],
             ],

@@ -24,7 +24,7 @@ class HomeScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(tab.value == 0 ? 'Séries' : 'Films'),
+        title: Text(tab.value == 0 ? 'SÉRIES' : 'FILMS'),
         actions: [
           if (refreshing)
             const Padding(

@@ -55,12 +55,13 @@ class _Fallback extends StatelessWidget {
     final hue = (seed % 360).toDouble();
     return DecoratedBox(
       decoration: BoxDecoration(
+        // Teintes désaturées pour rester dans la pénombre de la salle.
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            HSLColor.fromAHSL(1, hue, .45, .30).toColor(),
-            HSLColor.fromAHSL(1, (hue + 40) % 360, .45, .18).toColor(),
+            HSLColor.fromAHSL(1, hue, .28, .26).toColor(),
+            HSLColor.fromAHSL(1, (hue + 40) % 360, .28, .15).toColor(),
           ],
         ),
       ),

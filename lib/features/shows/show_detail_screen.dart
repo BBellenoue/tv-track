@@ -6,6 +6,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/providers.dart';
+import '../../core/theme.dart';
+import '../../core/widgets/season_progress_bar.dart';
 import '../../data/models/show.dart';
 
 class ShowDetailScreen extends ConsumerWidget {
@@ -55,33 +57,31 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final backdrop = show.posterLarge ?? show.poster;
-    final progress =
-        show.totalEpisodes == 0 ? 0.0 : show.watchedEpisodes / show.totalEpisodes;
 
-    final chips = <String>[
-      if (show.network != null) show.network!,
+    // Ligne de données façon guide TV : chaîne · statut · prochaine diffusion.
+    final facts = <String>[
+      '${show.watchedEpisodes}/${show.totalEpisodes}',
+      if (show.network != null) show.network!.toUpperCase(),
       if (show.airStatus == 'Running')
-        'En diffusion'
+        'EN DIFFUSION'
       else if (show.isEnded)
-        'Terminée',
+        'TERMINÉE',
       if (show.nextAirDate != null)
-        'Prochain ép. le ${DateFormat('d MMM', 'fr_FR').format(show.nextAirDate!.toLocal())}',
+        'PROCHAIN ÉP. ${DateFormat('d MMM', 'fr_FR').format(show.nextAirDate!.toLocal()).toUpperCase()}',
     ];
 
     return SliverAppBar(
       expandedHeight: backdrop == null ? 180 : 300,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: const EdgeInsetsDirectional.only(
-            start: 56, bottom: 14, end: 16),
+        titlePadding:
+            const EdgeInsetsDirectional.only(start: 56, bottom: 14, end: 16),
         title: Text(
           show.title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.titleMedium
-              ?.copyWith(fontWeight: FontWeight.w600),
+          style: condensed(size: 17),
         ),
         background: backdrop == null
             ? null
@@ -99,7 +99,11 @@ class _Header extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Colors.black45, Colors.transparent, Color(0xE60D0D17)],
+                        colors: [
+                          Colors.black45,
+                          Colors.transparent,
+                          Color(0xE612100D),
+                        ],
                         stops: [0, .45, 1],
                       ),
                     ),
@@ -108,36 +112,21 @@ class _Header extends StatelessWidget {
               ),
       ),
       bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(64),
+        preferredSize: const Size.fromHeight(58),
         child: Container(
-          color: theme.scaffoldBackgroundColor,
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+          color: screenBlack,
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      [
-                        '${show.watchedEpisodes}/${show.totalEpisodes} épisodes',
-                        ...chips,
-                      ].join('  ·  '),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                  ),
-                ],
+              Text(
+                facts.join('  ·  '),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: mono(size: 10.5, letterSpacing: .4),
               ),
-              const SizedBox(height: 8),
-              LinearProgressIndicator(
-                value: progress,
-                minHeight: 5,
-                borderRadius: BorderRadius.circular(3),
-                backgroundColor: theme.colorScheme.surfaceContainerHighest,
-              ),
+              const SizedBox(height: 9),
+              SeasonProgressBar(show: show),
             ],
           ),
         ),
@@ -160,21 +149,26 @@ class _SeasonTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final repo = ref.read(trackingRepositoryProvider);
 
     return ExpansionTile(
       initiallyExpanded: initiallyExpanded,
-      title: Text('Saison ${season.number}',
-          style: theme.textTheme.titleSmall
-              ?.copyWith(fontWeight: FontWeight.w600)),
-      subtitle: Text(
-        '${season.watchedCount}/${season.episodes.length} vus',
-        style: theme.textTheme.bodySmall
-            ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+      title: Row(
+        children: [
+          Text('S${season.number.toString().padLeft(2, '0')}',
+              style: mono(size: 13, color: linen, weight: FontWeight.w600)),
+          const SizedBox(width: 10),
+          Text('Saison ${season.number}', style: condensed(size: 15)),
+        ],
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 2),
+        child: Text('${season.watchedCount}/${season.episodes.length} vus',
+            style: mono(size: 10.5)),
       ),
       trailing: IconButton(
         icon: Icon(season.isCompleted ? Icons.remove_done : Icons.done_all),
+        color: season.isCompleted ? tungsten : dust,
         tooltip: season.isCompleted
             ? 'Marquer la saison non vue'
             : 'Marquer toute la saison vue',
@@ -201,36 +195,46 @@ class _EpisodeRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     final airDate = episode.airDate;
     final unaired = airDate != null && airDate.isAfter(DateTime.now());
 
     return CheckboxListTile(
       dense: true,
       controlAffinity: ListTileControlAffinity.leading,
+      activeColor: tungsten,
+      checkColor: const Color(0xFF221603),
       value: episode.watched,
       onChanged: unaired
           ? null
           : (v) {
               HapticFeedback.selectionClick();
-              ref
-                  .read(trackingRepositoryProvider)
-                  ?.saveShow(show.withEpisodeWatched(episode.tvdbId, v ?? false));
+              ref.read(trackingRepositoryProvider)?.saveShow(
+                  show.withEpisodeWatched(episode.tvdbId, v ?? false));
             },
-      title: Text(
-        'E${episode.number.toString().padLeft(2, '0')}'
-        '${episode.name.isEmpty ? '' : '  ${episode.name}'}',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: unaired
-            ? theme.textTheme.bodyMedium
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant)
-            : null,
+      title: Row(
+        children: [
+          Text('E${episode.number.toString().padLeft(2, '0')}',
+              style: mono(size: 12, color: unaired ? dust : linen)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              episode.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: unaired ? dust : linen, height: 1.2),
+            ),
+          ),
+        ],
       ),
       subtitle: unaired
-          ? Text('Diffusé le ${DateFormat('d MMMM', 'fr_FR').format(airDate.toLocal())}',
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.primary))
+          ? Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                'diffusé le ${DateFormat('d MMMM', 'fr_FR').format(airDate.toLocal())}',
+                style: mono(size: 10.5, color: tungsten),
+              ),
+            )
           : null,
     );
   }
