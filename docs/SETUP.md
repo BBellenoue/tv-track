@@ -65,6 +65,11 @@ groupe de variables **`firebase`** (les valeurs base64 : `base64 -i <fichier>`) 
 | `ANDROID_KEYSTORE` | base64 du keystore release | oui |
 | `ANDROID_KEYSTORE_PASSWORD` | mot de passe du keystore (alias `tvtrack`) | oui |
 | `FIREBASE_SERVICE_ACCOUNT` | clé JSON d'un service account avec le rôle *Firebase App Distribution Admin* | oui |
+| `TMDB_API_KEY` | clé API TMDB v3 (Découverte, recherche, posters). Injectée au build via `--dart-define`. | oui |
+
+> **Clé TMDB** : gratuite, créée sur [themoviedb.org → Paramètres → API](https://www.themoviedb.org/settings/api).
+> Requise pour Découverte, la recherche et l'enrichissement des métadonnées.
+> En local : `flutter run --dart-define=TMDB_API_KEY=xxxxx`.
 
 Le SHA-1/SHA-256 du keystore **release** doit aussi être déclaré dans Firebase,
 et un groupe de testeurs **`perso`** doit exister dans App Distribution

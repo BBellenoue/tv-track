@@ -103,6 +103,7 @@ header `x-auth-token`), groupe `firebase` :
 | `ANDROID_KEYSTORE` | `base64 -i ~/keystores/tv_track.keystore` | oui |
 | `ANDROID_KEYSTORE_PASSWORD` | mot de passe du keystore | oui |
 | `FIREBASE_SERVICE_ACCOUNT` | clé JSON du service account (§8) | oui |
+| `TMDB_API_KEY` | clé API TMDB v3 (Découverte, recherche, enrichissement) | oui |
 
 ## 8. Service account App Distribution (fait à la main — élévation IAM)
 
