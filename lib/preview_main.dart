@@ -14,6 +14,7 @@ import 'data/models/movie.dart';
 import 'data/models/show.dart';
 import 'features/home/home_screen.dart';
 import 'features/movies/movie_detail_screen.dart';
+import 'features/search/search_screen.dart';
 import 'features/shows/show_detail_screen.dart';
 
 const _tmdbImg = 'https://image.tmdb.org/t/p/w500';
@@ -44,6 +45,7 @@ Future<void> main() async {
       home: switch (_screen) {
         'detail' => const ShowDetailScreen(tvdbId: 94997),
         'movie' => const MovieDetailScreen(tvdbId: 1),
+        'search' => const SearchScreen(),
         _ => const HomeScreen(),
       },
     ),

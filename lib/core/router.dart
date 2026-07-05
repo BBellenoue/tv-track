@@ -4,6 +4,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../features/auth/sign_in_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/movies/movie_detail_screen.dart';
+import '../features/profile/profile_screen.dart';
+import '../features/search/search_screen.dart';
 import '../features/shows/show_detail_screen.dart';
 import 'providers.dart';
 
@@ -38,6 +40,8 @@ GoRouter router(Ref ref) {
               tvdbId: int.parse(state.pathParameters['id']!),
             ),
           ),
+          GoRoute(path: 'search', builder: (_, _) => const SearchScreen()),
+          GoRoute(path: 'profile', builder: (_, _) => const ProfileScreen()),
         ],
       ),
     ],

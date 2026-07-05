@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../auth/auth_controller.dart';
 import '../discover/discover_tab.dart';
 import '../movies/movies_tab.dart';
 import '../shows/refresh_controller.dart';
@@ -39,21 +39,15 @@ class HomeScreen extends HookConsumerWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
             ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'signout') {
-                ref.read(authControllerProvider.notifier).signOut();
-              }
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(
-                value: 'signout',
-                child: ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text('Se déconnecter'),
-                ),
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Rechercher',
+            onPressed: () => context.push('/search'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            tooltip: 'Profil',
+            onPressed: () => context.push('/profile'),
           ),
         ],
       ),
