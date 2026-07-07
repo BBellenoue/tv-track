@@ -8,7 +8,7 @@ part 'show.g.dart';
 /// mots-outils très fréquents en anglais et quasi absents en français (« the »,
 /// « and », « with »… n'existent pas en français). Trois occurrences suffisent
 /// à conclure, ce qui évite les faux positifs sur un nom propre isolé.
-bool _looksEnglish(String? text) {
+bool looksEnglish(String? text) {
   if (text == null || text.isEmpty) return false;
   const markers = {
     'the', 'and', 'with', 'when', 'who', 'she', 'his', 'her', 'they',
@@ -122,7 +122,17 @@ abstract class Show with _$Show {
   /// jamais rattachée à TMDB (`tmdbId == null`), ou résumé visiblement
   /// anglophone. Sert au rafraîchissement automatique pour rebasculer
   /// l'affichage en français (voir [MetadataRefresh]).
-  bool get needsFrenchRepair => tmdbId == null || _looksEnglish(overview);
+  bool get needsFrenchRepair => tmdbId == null || looksEnglish(overview);
+
+  /// Vrai si la fiche a du contenu manquant qu'un rafraîchissement live pourrait
+  /// combler : synopsis absent, aucune affiche, aucune structure d'épisodes, ou
+  /// affichage resté en anglais. Déclenche la réparation à l'ouverture de la
+  /// fiche (voir [LiveRepair]).
+  bool get isIncomplete =>
+      needsFrenchRepair ||
+      (overview?.isEmpty ?? true) ||
+      (poster == null && posterLarge == null) ||
+      regularSeasons.isEmpty;
 
   /// Prochaine diffusion connue (épisode avec une date dans le futur).
   DateTime? get nextAirDate {

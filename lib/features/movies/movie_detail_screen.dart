@@ -8,31 +8,74 @@ import '../../core/providers.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/section_label.dart';
 import '../../data/models/movie.dart';
+import '../shows/live_repair.dart';
 
-class MovieDetailScreen extends ConsumerWidget {
+class MovieDetailScreen extends ConsumerStatefulWidget {
   const MovieDetailScreen({super.key, required this.tvdbId});
 
   final int tvdbId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MovieDetailScreen> createState() => _MovieDetailScreenState();
+}
+
+class _MovieDetailScreenState extends ConsumerState<MovieDetailScreen> {
+  bool _repairTried = false;
+
+  @override
+  Widget build(BuildContext context) {
     final movie = ref
         .watch(moviesProvider)
         .value
-        ?.firstWhereOrNull((m) => m.tvdbId == tvdbId);
+        ?.firstWhereOrNull((m) => m.tvdbId == widget.tvdbId);
 
     if (movie == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // Contenu incomplet : rafraîchissement live de cette seule fiche (une fois
+    // par ouverture ; l'anti-boucle de LiveRepair fait le reste).
+    if (!_repairTried && movie.isIncomplete) {
+      _repairTried = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) ref.read(liveRepairProvider.notifier).repairMovie(movie);
+      });
+    }
+    final repairing =
+        ref.watch(liveRepairProvider).contains('movie-${widget.tvdbId}');
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           _Header(movie: movie),
+          if (repairing) const SliverToBoxAdapter(child: _RepairBanner()),
           SliverToBoxAdapter(child: _Body(movie: movie)),
         ],
       ),
       floatingActionButton: _WatchedButton(movie: movie),
+    );
+  }
+}
+
+/// Bandeau discret signalant un rafraîchissement live en cours de la fiche.
+class _RepairBanner extends StatelessWidget {
+  const _RepairBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 13,
+            height: 13,
+            child: CircularProgressIndicator(strokeWidth: 1.6, color: dust),
+          ),
+          const SizedBox(width: 10),
+          Text('Mise à jour des infos…', style: mono(size: 11, color: dust)),
+        ],
+      ),
     );
   }
 }
