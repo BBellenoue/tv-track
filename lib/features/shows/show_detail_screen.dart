@@ -11,6 +11,7 @@ import '../../core/widgets/expandable_text.dart';
 import '../../core/widgets/season_progress_bar.dart';
 import '../../core/widgets/section_label.dart';
 import '../../data/models/show.dart';
+import 'live_repair.dart';
 
 class ShowDetailScreen extends ConsumerStatefulWidget {
   const ShowDetailScreen({super.key, required this.tvdbId});
@@ -25,6 +26,7 @@ class _ShowDetailScreenState extends ConsumerState<ShowDetailScreen> {
   // Clé posée sur le prochain épisode à voir, pour s'y positionner à l'ouverture.
   final _nextEpisodeKey = GlobalKey();
   bool _scrolled = false;
+  bool _repairTried = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +38,17 @@ class _ShowDetailScreenState extends ConsumerState<ShowDetailScreen> {
     if (show == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
+    // Contenu incomplet : on tente un rafraîchissement live de cette seule
+    // fiche (une fois par ouverture ; l'anti-boucle de LiveRepair fait le reste).
+    if (!_repairTried && show.isIncomplete) {
+      _repairTried = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) ref.read(liveRepairProvider.notifier).repairShow(show);
+      });
+    }
+    final repairing =
+        ref.watch(liveRepairProvider).contains('show-${widget.tvdbId}');
 
     final next = show.nextEpisode;
     final nextSeasonNumber = next?.season.number;
@@ -62,6 +75,8 @@ class _ShowDetailScreenState extends ConsumerState<ShowDetailScreen> {
       body: CustomScrollView(
         slivers: [
           _Header(show: show),
+          if (repairing)
+            const SliverToBoxAdapter(child: _RepairBanner()),
           if (show.providers.isNotEmpty || (show.overview?.isNotEmpty ?? false))
             SliverToBoxAdapter(child: _Overview(show: show)),
           SliverPadding(
@@ -164,6 +179,29 @@ class _Header extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Bandeau discret signalant un rafraîchissement live en cours de la fiche.
+class _RepairBanner extends StatelessWidget {
+  const _RepairBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 13,
+            height: 13,
+            child: CircularProgressIndicator(strokeWidth: 1.6, color: dust),
+          ),
+          const SizedBox(width: 10),
+          Text('Mise à jour des infos…', style: mono(size: 11, color: dust)),
+        ],
       ),
     );
   }

@@ -70,6 +70,31 @@ class TmdbApi {
     );
   }
 
+  /// Détails d'un film (en français) via son ID TMDB. Sert au rafraîchissement
+  /// live des fiches films déjà rattachées à TMDB (résumé, images, durée).
+  /// Retourne null si TMDB ne répond pas.
+  Future<TmdbMovie?> movieDetailsFr(int tmdbMovieId) async {
+    final detail = await _dio.get<Map<String, dynamic>>(
+      '/movie/$tmdbMovieId',
+      queryParameters: {'api_key': _apiKey, 'language': 'fr-FR'},
+    );
+    final d = detail.data;
+    if (d == null) return null;
+    String? img(String key, String size) {
+      final p = d[key] as String?;
+      return p == null ? null : '$imageBase/$size$p';
+    }
+
+    final overview = d['overview'] as String?;
+    return TmdbMovie(
+      id: tmdbMovieId,
+      poster: img('poster_path', 'w342'),
+      backdrop: img('backdrop_path', 'w780'),
+      overview: (overview == null || overview.isEmpty) ? null : overview,
+      runtime: d['runtime'] as int?,
+    );
+  }
+
   /// ID TMDB d'une série via son ID TVDB.
   Future<int?> tvIdByTvdb(int tvdbId) async {
     final response = await _dio.get<Map<String, dynamic>>(

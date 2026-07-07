@@ -221,8 +221,8 @@ return $default(_that.tvdbId,_that.imdbId,_that.title,_that.year,_that.watched,_
 /// @nodoc
 @JsonSerializable()
 
-class _Movie implements Movie {
-  const _Movie({required this.tvdbId, this.imdbId, required this.title, this.year, this.watched = false, this.watchedAt, this.isFavorite = false, this.addedAt, this.tmdbId, this.poster, this.backdrop, this.overview, this.runtime, this.metaRefreshedAt});
+class _Movie extends Movie {
+  const _Movie({required this.tvdbId, this.imdbId, required this.title, this.year, this.watched = false, this.watchedAt, this.isFavorite = false, this.addedAt, this.tmdbId, this.poster, this.backdrop, this.overview, this.runtime, this.metaRefreshedAt}): super._();
   factory _Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);
 
 @override final  int tvdbId;
