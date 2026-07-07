@@ -12,7 +12,6 @@ import '../../core/widgets/episode_tag.dart';
 import '../../core/widgets/filter_tabs.dart';
 import '../../core/widgets/poster.dart';
 import '../../data/models/show.dart';
-import 'refresh_controller.dart';
 
 enum ShowFilter {
   watching('En cours'),
@@ -68,22 +67,16 @@ class ShowsTab extends HookConsumerWidget {
               ),
             ),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: () => ref
-                    .read(metadataRefreshProvider.notifier)
-                    .run(force: true),
-                child: filtered.isEmpty
-                    ? const _NothingHere()
-                    : ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.only(top: 8, bottom: 12),
-                        itemCount: filtered.length,
-                        itemBuilder: (context, i) => _ShowTile(
-                          key: ValueKey(filtered[i].tvdbId),
-                          show: filtered[i],
-                        ),
+              child: filtered.isEmpty
+                  ? const _NothingHere()
+                  : ListView.builder(
+                      padding: const EdgeInsets.only(top: 8, bottom: 12),
+                      itemCount: filtered.length,
+                      itemBuilder: (context, i) => _ShowTile(
+                        key: ValueKey(filtered[i].tvdbId),
+                        show: filtered[i],
                       ),
-              ),
+                    ),
             ),
           ],
         );
@@ -291,14 +284,7 @@ class _NothingHere extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ListView pour rester "pullable" avec le RefreshIndicator.
-    return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      children: const [
-        SizedBox(height: 120),
-        Center(child: Text('Rien ici pour le moment.')),
-      ],
-    );
+    return const Center(child: Text('Rien ici pour le moment.'));
   }
 }
 
