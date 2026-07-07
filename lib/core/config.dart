@@ -21,3 +21,12 @@ const googleServerClientId = String.fromEnvironment(
 /// Clé en lecture seule et à faible sensibilité — l'onglet Découverte se
 /// désactive proprement si elle est absente.
 const tmdbApiKey = String.fromEnvironment('TMDB_API_KEY');
+
+/// Clé API TheTVDB v4, **source principale** d'enrichissement des séries
+/// (structure des saisons, titres/résumés d'épisodes en français, images,
+/// dates, statut, chaîne). Injectée au build :
+///   flutter run --dart-define=TVDB_API_KEY=xxxxx
+/// En CI, fournie par la variable sécurisée Codemagic du même nom. Si absente,
+/// l'enrichissement des séries se désactive proprement (l'app reste utilisable
+/// avec les données déjà en base).
+const tvdbApiKey = String.fromEnvironment('TVDB_API_KEY');

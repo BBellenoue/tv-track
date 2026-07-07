@@ -92,7 +92,7 @@ final class LiveRepairProvider
   }
 }
 
-String _$liveRepairHash() => r'f4ddeb5de8d5c5bcd96d5ad0a8462f9bc8180e34';
+String _$liveRepairHash() => r'd439726deb2257b68591f34de94868145c21a6b4';
 
 /// Réparation « live » d'une fiche isolée, déclenchée à l'ouverture de son écran
 /// de détail quand le contenu est incomplet (voir [Show.isIncomplete] /

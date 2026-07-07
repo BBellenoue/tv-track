@@ -6,7 +6,7 @@ import '../data/models/movie.dart';
 import '../data/models/show.dart';
 import '../data/repositories/tracking_repository.dart';
 import '../data/tmdb/tmdb_api.dart';
-import '../data/tvmaze/tvmaze_api.dart';
+import '../data/tvdb/tvdb_api.dart';
 import 'config.dart';
 
 part 'providers.g.dart';
@@ -39,8 +39,10 @@ Stream<List<Movie>> movies(Ref ref) {
   return repo.watchMovies();
 }
 
+/// Client TheTVDB si une clé est configurée (sinon null → enrichissement des
+/// séries désactivé). keepAlive pour conserver le jeton d'auth sur la session.
 @Riverpod(keepAlive: true)
-TvmazeApi tvmazeApi(Ref ref) => TvmazeApi();
+TvdbApi? tvdbApi(Ref ref) => tvdbApiKey.isEmpty ? null : TvdbApi(tvdbApiKey);
 
 /// Client TMDB si une clé est configurée (sinon null → Découverte désactivée).
 @Riverpod(keepAlive: true)

@@ -208,46 +208,54 @@ final class MoviesProvider
 
 String _$moviesHash() => r'e6ead94bc7fb43e0f148b5d2a13b41237512ba5e';
 
-@ProviderFor(tvmazeApi)
-final tvmazeApiProvider = TvmazeApiProvider._();
+/// Client TheTVDB si une clé est configurée (sinon null → enrichissement des
+/// séries désactivé). keepAlive pour conserver le jeton d'auth sur la session.
 
-final class TvmazeApiProvider
-    extends $FunctionalProvider<TvmazeApi, TvmazeApi, TvmazeApi>
-    with $Provider<TvmazeApi> {
-  TvmazeApiProvider._()
+@ProviderFor(tvdbApi)
+final tvdbApiProvider = TvdbApiProvider._();
+
+/// Client TheTVDB si une clé est configurée (sinon null → enrichissement des
+/// séries désactivé). keepAlive pour conserver le jeton d'auth sur la session.
+
+final class TvdbApiProvider
+    extends $FunctionalProvider<TvdbApi?, TvdbApi?, TvdbApi?>
+    with $Provider<TvdbApi?> {
+  /// Client TheTVDB si une clé est configurée (sinon null → enrichissement des
+  /// séries désactivé). keepAlive pour conserver le jeton d'auth sur la session.
+  TvdbApiProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'tvmazeApiProvider',
+        name: r'tvdbApiProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$tvmazeApiHash();
+  String debugGetCreateSourceHash() => _$tvdbApiHash();
 
   @$internal
   @override
-  $ProviderElement<TvmazeApi> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<TvdbApi?> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  TvmazeApi create(Ref ref) {
-    return tvmazeApi(ref);
+  TvdbApi? create(Ref ref) {
+    return tvdbApi(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(TvmazeApi value) {
+  Override overrideWithValue(TvdbApi? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<TvmazeApi>(value),
+      providerOverride: $SyncValueProvider<TvdbApi?>(value),
     );
   }
 }
 
-String _$tvmazeApiHash() => r'0d803ce39312d4d471352ee9c2e500c169049749';
+String _$tvdbApiHash() => r'035af157611dba3f8a96bf390d69cb4ebad77045';
 
 /// Client TMDB si une clé est configurée (sinon null → Découverte désactivée).
 
