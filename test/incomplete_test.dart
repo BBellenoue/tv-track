@@ -5,7 +5,16 @@ import 'package:tv_track/data/models/show.dart';
 void main() {
   // Une série « complète » de référence : rattachée à TMDB, synopsis FR,
   // affiche, et une saison avec un épisode.
-  Show completeShow() => const Show(
+  final airedEpisode = Episode(
+    tvdbId: 10,
+    number: 1,
+    name: 'Pilote',
+    airDate: DateTime(2020, 1, 1),
+    still: 'https://img/still.jpg',
+    overview: 'Un épisode enrichi.',
+  );
+
+  Show completeShow() => Show(
         tvdbId: 1,
         title: 'X',
         tmdbId: 42,
@@ -13,7 +22,7 @@ void main() {
             'un secret enfoui depuis des années.',
         poster: 'https://img/poster.jpg',
         seasons: [
-          Season(number: 1, episodes: [Episode(tvdbId: 10, number: 1)]),
+          Season(number: 1, episodes: [airedEpisode]),
         ],
       );
 
@@ -43,6 +52,30 @@ void main() {
 
     test('sans épisodes → à réparer', () {
       expect(completeShow().copyWith(seasons: const []).isIncomplete, isTrue);
+    });
+
+    test('saison nue (épisodes sans date/vignette/résumé) → à réparer', () {
+      // Cas Berlin S2 : saison sortie mais qu'aucune source n'a enrichie.
+      final withBareS2 = completeShow().copyWith(seasons: [
+        ...completeShow().seasons,
+        const Season(number: 2, episodes: [
+          Episode(tvdbId: 20, number: 1, name: 'Stendhal Syndrome'),
+          Episode(tvdbId: 21, number: 2, name: 'Oranges from China'),
+        ]),
+      ]);
+      expect(withBareS2.isIncomplete, isTrue);
+    });
+
+    test('épisode à venir (date seule, sans vignette/résumé) → pas nu', () {
+      // Un épisode simplement pas encore diffusé a au moins une date : il ne
+      // doit pas déclencher de réparation en boucle.
+      final upcoming = completeShow().copyWith(seasons: [
+        Season(number: 1, episodes: [
+          airedEpisode,
+          Episode(tvdbId: 11, number: 2, airDate: DateTime(2035, 1, 1)),
+        ]),
+      ]);
+      expect(upcoming.isIncomplete, isFalse);
     });
 
     test('synopsis resté en anglais → à réparer', () {

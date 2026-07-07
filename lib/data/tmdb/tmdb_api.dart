@@ -174,24 +174,31 @@ class TmdbApi {
     );
   }
 
-  /// Épisodes d'une saison en français : numéro d'épisode → (titre, résumé).
-  /// Les champs vides côté TMDB sont laissés à null (pour retomber sur TVmaze).
-  Future<Map<int, ({String? name, String? overview})>> tvSeasonFr(
+  /// Épisodes d'une saison en français : numéro d'épisode → (titre, résumé,
+  /// date de diffusion, vignette). Les champs vides côté TMDB sont laissés à
+  /// null. Sert de source principale ET de **repli** quand TVmaze ne connaît pas
+  /// la saison (ex. saison sortie sur Netflix mais absente de TVmaze) : on peut
+  /// alors reconstruire dates et vignettes depuis TMDB.
+  Future<Map<int, TmdbEpisode>> tvSeasonFr(
       int tmdbTvId, int seasonNumber) async {
     final response = await _dio.get<Map<String, dynamic>>(
       '/tv/$tmdbTvId/season/$seasonNumber',
       queryParameters: {'api_key': _apiKey, 'language': 'fr-FR'},
     );
     final episodes = response.data?['episodes'] as List? ?? const [];
-    final out = <int, ({String? name, String? overview})>{};
+    final out = <int, TmdbEpisode>{};
     for (final e in episodes.cast<Map<String, dynamic>>()) {
       final number = e['episode_number'] as int?;
       if (number == null) continue;
-      String? nn = e['name'] as String?;
-      String? oo = e['overview'] as String?;
-      out[number] = (
+      final nn = e['name'] as String?;
+      final oo = e['overview'] as String?;
+      final air = e['air_date'] as String?;
+      final still = e['still_path'] as String?;
+      out[number] = TmdbEpisode(
         name: (nn == null || nn.isEmpty) ? null : nn,
         overview: (oo == null || oo.isEmpty) ? null : oo,
+        airDate: (air == null || air.isEmpty) ? null : DateTime.tryParse(air),
+        still: still == null ? null : '$imageBase/w300$still',
       );
     }
     return out;
@@ -331,6 +338,18 @@ class TmdbMovie {
   final String? backdrop;
   final String? overview;
   final int? runtime;
+}
+
+/// Épisode TMDB localisé (titre/résumé FR) avec date et vignette. Chaque champ
+/// est null si TMDB ne l'a pas, pour ne jamais écraser une valeur TVmaze
+/// existante lors de la fusion.
+class TmdbEpisode {
+  const TmdbEpisode({this.name, this.overview, this.airDate, this.still});
+
+  final String? name;
+  final String? overview;
+  final DateTime? airDate;
+  final String? still;
 }
 
 class TmdbTv {

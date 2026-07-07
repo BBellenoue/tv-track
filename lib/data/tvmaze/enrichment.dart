@@ -129,7 +129,7 @@ Future<Show> _overlayFrenchEpisodes(
       seasons.add(season);
       continue;
     }
-    Map<int, ({String? name, String? overview})> fr;
+    Map<int, TmdbEpisode> fr;
     try {
       fr = await tmdb.tvSeasonFr(tmdbId, season.number);
       await Future.delayed(const Duration(milliseconds: 40));
@@ -143,6 +143,10 @@ Future<Show> _overlayFrenchEpisodes(
           ep.copyWith(
             name: f.name ?? ep.name,
             overview: f.overview ?? ep.overview,
+            // Date et vignette : repli TMDB uniquement si TVmaze n'a rien fourni
+            // (cas d'une saison inconnue de TVmaze, ex. Berlin S2 sur Netflix).
+            airDate: ep.airDate ?? f.airDate,
+            still: ep.still ?? f.still,
           )
         else
           ep,

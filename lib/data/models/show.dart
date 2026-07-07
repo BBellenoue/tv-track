@@ -22,6 +22,12 @@ bool looksEnglish(String? text) {
   return false;
 }
 
+/// Épisode « nu » : ni date de diffusion, ni vignette, ni résumé — signe qu'il
+/// n'a jamais été enrichi (à distinguer d'un épisode simplement à venir, qui a
+/// au moins une date). Sert à déclencher la réparation live d'une série.
+bool _episodeBare(Episode e) =>
+    e.airDate == null && e.still == null && (e.overview?.isEmpty ?? true);
+
 @freezed
 abstract class Episode with _$Episode {
   const factory Episode({
@@ -125,14 +131,18 @@ abstract class Show with _$Show {
   bool get needsFrenchRepair => tmdbId == null || looksEnglish(overview);
 
   /// Vrai si la fiche a du contenu manquant qu'un rafraîchissement live pourrait
-  /// combler : synopsis absent, aucune affiche, aucune structure d'épisodes, ou
-  /// affichage resté en anglais. Déclenche la réparation à l'ouverture de la
-  /// fiche (voir [LiveRepair]).
+  /// combler : synopsis absent, aucune affiche, aucune structure d'épisodes,
+  /// affichage resté en anglais, ou **au moins un épisode entièrement nu**
+  /// (sans date, sans vignette et sans résumé) — typiquement une saison sortie
+  /// mais qu'aucune source n'avait encore enrichie (ex. Berlin S2 côté Netflix,
+  /// absente de TVmaze). Déclenche la réparation à l'ouverture (voir
+  /// [LiveRepair]).
   bool get isIncomplete =>
       needsFrenchRepair ||
       (overview?.isEmpty ?? true) ||
       (poster == null && posterLarge == null) ||
-      regularSeasons.isEmpty;
+      regularSeasons.isEmpty ||
+      regularSeasons.any((s) => s.episodes.any(_episodeBare));
 
   /// Prochaine diffusion connue (épisode avec une date dans le futur).
   DateTime? get nextAirDate {
