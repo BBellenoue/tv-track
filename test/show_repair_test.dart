@@ -6,11 +6,13 @@ void main() {
       Show(tvdbId: 1, title: 'X', tmdbId: tmdbId, overview: overview);
 
   group('needsFrenchRepair', () {
-    test('série jamais rattachée à TMDB → à réparer', () {
+    test('résumé français sans ID TMDB → rien à faire (TMDB ≠ source FR)', () {
+      // Depuis la migration TheTVDB, l'absence d'ID TMDB n'implique plus un
+      // affichage anglais : seul un synopsis anglophone déclenche la réparation.
       expect(
-        show(tmdbId: null, overview: 'Un synopsis en français.')
+        show(tmdbId: null, overview: 'Un synopsis en français bien tourné.')
             .needsFrenchRepair,
-        isTrue,
+        isFalse,
       );
     });
 

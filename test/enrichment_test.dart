@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tv_track/data/models/show.dart';
-import 'package:tv_track/data/tvmaze/enrichment.dart';
-import 'package:tv_track/data/tvmaze/tvmaze_api.dart';
+import 'package:tv_track/data/tvdb/enrichment.dart';
+import 'package:tv_track/data/tvdb/tvdb_api.dart';
 
 void main() {
   final now = DateTime(2026, 7, 5);
@@ -11,64 +11,63 @@ void main() {
     title: 'Série En Cours',
     seasons: [
       const Season(number: 1, episodes: [
-        Episode(tvdbId: 90001, number: 1, name: 'Pilote', watched: true),
+        // Titre resté en anglais + épisode vu : TheTVDB doit franciser le titre
+        // sans toucher l'état vu.
+        Episode(tvdbId: 90001, number: 1, name: 'Pilot', watched: true),
         Episode(tvdbId: 90002, number: 2, watched: false),
       ]),
     ],
   );
 
-  const meta = TvmazeShow(
-    id: 555,
+  final series = TvdbSeries(
     name: 'Série En Cours',
-    status: 'Running',
+    overview: 'Le synopsis de la série.',
+    poster: 'https://artworks.thetvdb.com/banners/p.jpg',
+    status: 'Continuing',
     network: 'HBO',
-    imageMedium: 'https://img.example/m.jpg',
-    imageOriginal: 'https://img.example/o.jpg',
-    summary: 'Le synopsis de la série.',
+    episodes: [
+      TvdbEpisode(
+          season: 1, number: 1, name: 'Pilote', airDate: DateTime(2020, 1, 1)),
+      TvdbEpisode(
+          season: 1,
+          number: 2,
+          name: 'Deux',
+          airDate: DateTime(2020, 1, 8),
+          overview: "Résumé de l'épisode deux.",
+          still: 'https://artworks.thetvdb.com/banners/s2.jpg'),
+      TvdbEpisode(
+          season: 2, number: 1, name: 'Reprise', airDate: DateTime(2026, 9, 1)),
+      const TvdbEpisode(season: 0, number: 1, name: 'Bonus'),
+    ],
   );
 
-  final episodes = [
-    TvmazeEpisode(season: 1, number: 1, name: 'Pilot', airstamp: DateTime(2020, 1, 1)),
-    TvmazeEpisode(
-        season: 1,
-        number: 2,
-        name: 'Deux',
-        airstamp: DateTime(2020, 1, 8),
-        summary: 'Résumé de l\'épisode deux.'),
-    TvmazeEpisode(season: 2, number: 1, name: 'Reprise', airstamp: DateTime(2026, 9, 1)),
-    TvmazeEpisode(
-        season: 0, number: 1, name: 'Special', type: 'significant_special'),
-  ];
+  group('mergeTvdb', () {
+    final merged = mergeTvdb(show, series, now: now);
 
-  group('mergeTvmaze', () {
-    final merged = mergeTvmaze(show, meta, episodes, now: now);
-
-    test('métadonnées appliquées', () {
-      expect(merged.tvmazeId, 555);
-      expect(merged.poster, 'https://img.example/m.jpg');
-      expect(merged.airStatus, 'Running');
+    test('métadonnées série appliquées + statut mappé', () {
+      expect(merged.poster, 'https://artworks.thetvdb.com/banners/p.jpg');
+      expect(merged.posterLarge, 'https://artworks.thetvdb.com/banners/p.jpg');
+      expect(merged.airStatus, 'Running'); // Continuing → Running
       expect(merged.network, 'HBO');
       expect(merged.overview, 'Le synopsis de la série.');
       expect(merged.metaRefreshedAt, now);
       expect(merged.isEnded, isFalse);
     });
 
-    test('résumés d\'épisodes fusionnés', () {
-      final s1e2 = merged.regularSeasons.first.episodes[1];
-      expect(s1e2.overview, 'Résumé de l\'épisode deux.');
-    });
-
-    test('état de visionnage préservé, nom local prioritaire', () {
+    test('titre anglais francisé par TheTVDB, état vu préservé', () {
       final s1e1 = merged.regularSeasons.first.episodes.first;
+      expect(s1e1.name, 'Pilote'); // "Pilot" remplacé par le FR
       expect(s1e1.watched, isTrue);
-      expect(s1e1.name, 'Pilote'); // pas écrasé par "Pilot"
       expect(s1e1.tvdbId, 90001);
       expect(s1e1.airDate, DateTime(2020, 1, 1));
     });
 
-    test('nom manquant complété', () {
+    test('résumé + vignette + date fusionnés', () {
       final s1e2 = merged.regularSeasons.first.episodes[1];
       expect(s1e2.name, 'Deux');
+      expect(s1e2.overview, "Résumé de l'épisode deux.");
+      expect(s1e2.still, 'https://artworks.thetvdb.com/banners/s2.jpg');
+      expect(s1e2.airDate, DateTime(2020, 1, 8));
       expect(s1e2.watched, isFalse);
     });
 
@@ -81,8 +80,7 @@ void main() {
       expect(merged.watchedEpisodes, 1);
     });
 
-    test('specials TVmaze ignorés', () {
-      expect(merged.seasons.where((s) => s.isSpecials), isEmpty);
+    test('specials (saison 0) ignorés', () {
       expect(merged.seasons.where((s) => s.number == 0), isEmpty);
     });
 
@@ -91,7 +89,7 @@ void main() {
     });
 
     test('idempotent : re-merger ne change ni IDs ni progression', () {
-      final again = mergeTvmaze(merged, meta, episodes, now: now);
+      final again = mergeTvdb(merged, series, now: now);
       expect(again.totalEpisodes, merged.totalEpisodes);
       expect(again.watchedEpisodes, merged.watchedEpisodes);
       expect(
@@ -100,17 +98,8 @@ void main() {
       );
     });
 
-    test('round-trip Firestore avec les nouveaux champs', () {
+    test('round-trip Firestore', () {
       expect(Show.fromJson(merged.toJson()), equals(merged));
-    });
-  });
-
-  group('stripHtml', () {
-    test('retire les balises et décode les entités', () {
-      expect(stripHtml('<p>Bonjour &amp; bienvenue.</p>'),
-          'Bonjour & bienvenue.');
-      expect(stripHtml('<p></p>'), isNull);
-      expect(stripHtml(null), isNull);
     });
   });
 }

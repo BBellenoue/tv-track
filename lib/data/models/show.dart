@@ -124,11 +124,11 @@ abstract class Show with _$Show {
 
   bool get isEnded => airStatus == 'Ended';
 
-  /// Vrai si la fiche semble être restée en anglais / sans métadonnées FR :
-  /// jamais rattachée à TMDB (`tmdbId == null`), ou résumé visiblement
-  /// anglophone. Sert au rafraîchissement automatique pour rebasculer
-  /// l'affichage en français (voir [MetadataRefresh]).
-  bool get needsFrenchRepair => tmdbId == null || looksEnglish(overview);
+  /// Vrai si le synopsis est visiblement resté en anglais. Sert au
+  /// rafraîchissement automatique pour rebasculer l'affichage en français
+  /// (voir [MetadataRefresh]). Depuis que TheTVDB est la source FR principale,
+  /// ce signal ne dépend plus de TMDB.
+  bool get needsFrenchRepair => looksEnglish(overview);
 
   /// Vrai si la fiche a du contenu manquant qu'un rafraîchissement live pourrait
   /// combler : synopsis absent, aucune affiche, aucune structure d'épisodes,

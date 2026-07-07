@@ -46,7 +46,7 @@ final class LibraryAddProvider extends $NotifierProvider<LibraryAdd, void> {
   }
 }
 
-String _$libraryAddHash() => r'db9bdf7a76dd51ad37814cc6362e3a72330a7fe9';
+String _$libraryAddHash() => r'fe47b727ee0df6a34258afbb4f9528f0497911ad';
 
 /// Ajout d'un élément de catalogue (série ou film) à la liste de l'utilisateur.
 /// Réutilisé par le deck, les rails, la grille et la recherche.

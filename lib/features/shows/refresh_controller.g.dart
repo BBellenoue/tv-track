@@ -12,17 +12,16 @@ part of 'refresh_controller.dart';
 ///
 /// Deux déclencheurs :
 /// - **automatique** (ouverture de l'app) : séries non terminées dont les
-///   métas datent de plus de 24 h, **plus** toute série dont l'affichage est
-///   resté en anglais (`needsFrenchRepair`) — au plus une tentative / 24 h ;
-/// - **manuel** (pull-to-refresh) : idem, mais on force les réparations FR
+///   métas datent de plus de 24 h, **plus** toute fiche incomplète
+///   (`isIncomplete` : contenu manquant ou resté en anglais) — au plus une
+///   tentative / 24 h ;
+/// - **manuel** (pull-to-refresh) : idem, mais on force les fiches incomplètes
 ///   même si elles ne sont pas encore périmées.
 ///
-/// Chaque série est enrichie via TVmaze (structure, dates, vignettes) **puis**
-/// TMDB en français (synopsis, poster, plateformes, titres/résumés d'épisodes),
-/// pour ne jamais rebasculer l'affichage en anglais. Les séries en échec de
-/// réparation (TMDB muet) sont tamponnées pour ne pas boucler à chaque
-/// ouverture. Lots de 8, réparations d'abord, pour respecter le rate limit
-/// TVmaze (~20 req/10 s).
+/// Chaque série est enrichie via **TheTVDB** (structure, titres/résumés FR,
+/// images, dates, statut, chaîne) puis TMDB pour les seules plateformes de
+/// streaming (voir [enrichShowFromTvdb]). Les séries introuvables côté TheTVDB
+/// sont tamponnées pour ne pas boucler. Lots de 8, incomplètes d'abord.
 
 @ProviderFor(MetadataRefresh)
 final metadataRefreshProvider = MetadataRefreshProvider._();
@@ -31,34 +30,32 @@ final metadataRefreshProvider = MetadataRefreshProvider._();
 ///
 /// Deux déclencheurs :
 /// - **automatique** (ouverture de l'app) : séries non terminées dont les
-///   métas datent de plus de 24 h, **plus** toute série dont l'affichage est
-///   resté en anglais (`needsFrenchRepair`) — au plus une tentative / 24 h ;
-/// - **manuel** (pull-to-refresh) : idem, mais on force les réparations FR
+///   métas datent de plus de 24 h, **plus** toute fiche incomplète
+///   (`isIncomplete` : contenu manquant ou resté en anglais) — au plus une
+///   tentative / 24 h ;
+/// - **manuel** (pull-to-refresh) : idem, mais on force les fiches incomplètes
 ///   même si elles ne sont pas encore périmées.
 ///
-/// Chaque série est enrichie via TVmaze (structure, dates, vignettes) **puis**
-/// TMDB en français (synopsis, poster, plateformes, titres/résumés d'épisodes),
-/// pour ne jamais rebasculer l'affichage en anglais. Les séries en échec de
-/// réparation (TMDB muet) sont tamponnées pour ne pas boucler à chaque
-/// ouverture. Lots de 8, réparations d'abord, pour respecter le rate limit
-/// TVmaze (~20 req/10 s).
+/// Chaque série est enrichie via **TheTVDB** (structure, titres/résumés FR,
+/// images, dates, statut, chaîne) puis TMDB pour les seules plateformes de
+/// streaming (voir [enrichShowFromTvdb]). Les séries introuvables côté TheTVDB
+/// sont tamponnées pour ne pas boucler. Lots de 8, incomplètes d'abord.
 final class MetadataRefreshProvider
     extends $NotifierProvider<MetadataRefresh, bool> {
   /// Rafraîchissement incrémental des métadonnées depuis l'app.
   ///
   /// Deux déclencheurs :
   /// - **automatique** (ouverture de l'app) : séries non terminées dont les
-  ///   métas datent de plus de 24 h, **plus** toute série dont l'affichage est
-  ///   resté en anglais (`needsFrenchRepair`) — au plus une tentative / 24 h ;
-  /// - **manuel** (pull-to-refresh) : idem, mais on force les réparations FR
+  ///   métas datent de plus de 24 h, **plus** toute fiche incomplète
+  ///   (`isIncomplete` : contenu manquant ou resté en anglais) — au plus une
+  ///   tentative / 24 h ;
+  /// - **manuel** (pull-to-refresh) : idem, mais on force les fiches incomplètes
   ///   même si elles ne sont pas encore périmées.
   ///
-  /// Chaque série est enrichie via TVmaze (structure, dates, vignettes) **puis**
-  /// TMDB en français (synopsis, poster, plateformes, titres/résumés d'épisodes),
-  /// pour ne jamais rebasculer l'affichage en anglais. Les séries en échec de
-  /// réparation (TMDB muet) sont tamponnées pour ne pas boucler à chaque
-  /// ouverture. Lots de 8, réparations d'abord, pour respecter le rate limit
-  /// TVmaze (~20 req/10 s).
+  /// Chaque série est enrichie via **TheTVDB** (structure, titres/résumés FR,
+  /// images, dates, statut, chaîne) puis TMDB pour les seules plateformes de
+  /// streaming (voir [enrichShowFromTvdb]). Les séries introuvables côté TheTVDB
+  /// sont tamponnées pour ne pas boucler. Lots de 8, incomplètes d'abord.
   MetadataRefreshProvider._()
     : super(
         from: null,
@@ -86,23 +83,22 @@ final class MetadataRefreshProvider
   }
 }
 
-String _$metadataRefreshHash() => r'd6f9d68f9fdd47e334a2e554ef542219c63fbe69';
+String _$metadataRefreshHash() => r'd90ffc2ba83288aa4af00d198f32f2dc80990d3e';
 
 /// Rafraîchissement incrémental des métadonnées depuis l'app.
 ///
 /// Deux déclencheurs :
 /// - **automatique** (ouverture de l'app) : séries non terminées dont les
-///   métas datent de plus de 24 h, **plus** toute série dont l'affichage est
-///   resté en anglais (`needsFrenchRepair`) — au plus une tentative / 24 h ;
-/// - **manuel** (pull-to-refresh) : idem, mais on force les réparations FR
+///   métas datent de plus de 24 h, **plus** toute fiche incomplète
+///   (`isIncomplete` : contenu manquant ou resté en anglais) — au plus une
+///   tentative / 24 h ;
+/// - **manuel** (pull-to-refresh) : idem, mais on force les fiches incomplètes
 ///   même si elles ne sont pas encore périmées.
 ///
-/// Chaque série est enrichie via TVmaze (structure, dates, vignettes) **puis**
-/// TMDB en français (synopsis, poster, plateformes, titres/résumés d'épisodes),
-/// pour ne jamais rebasculer l'affichage en anglais. Les séries en échec de
-/// réparation (TMDB muet) sont tamponnées pour ne pas boucler à chaque
-/// ouverture. Lots de 8, réparations d'abord, pour respecter le rate limit
-/// TVmaze (~20 req/10 s).
+/// Chaque série est enrichie via **TheTVDB** (structure, titres/résumés FR,
+/// images, dates, statut, chaîne) puis TMDB pour les seules plateformes de
+/// streaming (voir [enrichShowFromTvdb]). Les séries introuvables côté TheTVDB
+/// sont tamponnées pour ne pas boucler. Lots de 8, incomplètes d'abord.
 
 abstract class _$MetadataRefresh extends $Notifier<bool> {
   bool build();

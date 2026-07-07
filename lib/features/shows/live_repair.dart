@@ -4,7 +4,7 @@ import '../../core/providers.dart';
 import '../../data/models/movie.dart';
 import '../../data/models/show.dart';
 import '../../data/tmdb/tmdb_api.dart';
-import '../../data/tvmaze/enrichment.dart';
+import '../../data/tvdb/enrichment.dart';
 
 part 'live_repair.g.dart';
 
@@ -35,32 +35,28 @@ class LiveRepair extends _$LiveRepair {
 
   bool isRepairing(String key) => _inFlight.contains(key);
 
-  /// Répare une série : structure/dates via TVmaze puis synopsis, affiche,
-  /// plateformes et épisodes en français via TMDB. Ne dégrade jamais un champ
-  /// déjà renseigné (voir [mergeTvmaze] / [applyTmdbFrench]).
+  /// Répare une série : structure, titres/résumés d'épisodes en français,
+  /// images, dates, statut et chaîne via **TheTVDB** (source principale), puis
+  /// les plateformes de streaming via TMDB. Ne dégrade jamais un champ déjà
+  /// renseigné (voir [enrichShowFromTvdb]).
   Future<void> repairShow(Show show) async {
     final key = 'show-${show.tvdbId}';
     if (_attempted.contains(key) || _inFlight.contains(key)) return;
     final repo = ref.read(trackingRepositoryProvider);
-    if (repo == null) return;
+    final tvdb = ref.read(tvdbApiProvider);
+    if (repo == null || tvdb == null) return;
 
     _attempted.add(key);
     _begin(key);
     try {
-      final tvmaze = ref.read(tvmazeApiProvider);
-      final tmdb = ref.read(tmdbApiProvider);
-      var merged = show;
-
-      final meta = await tvmaze.lookupByTvdb(show.tvdbId);
-      if (meta != null) {
-        final episodes = await tvmaze.episodes(meta.id);
-        merged = mergeTvmaze(show, meta, episodes, now: DateTime.now());
-      }
-      if (tmdb != null) merged = await applyTmdbFrench(merged, tmdb);
-
-      // Toujours tamponner pour cohérence avec le refresh par lots, même si
-      // rien n'a changé (fiche introuvable côté sources).
-      await repo.saveShow(merged.copyWith(metaRefreshedAt: DateTime.now()));
+      final merged = await enrichShowFromTvdb(
+        show,
+        tvdb,
+        tmdb: ref.read(tmdbApiProvider),
+      );
+      // Toujours tamponner (enrichShowFromTvdb le fait), même si la fiche est
+      // introuvable côté TheTVDB, pour rester cohérent avec le refresh par lots.
+      await repo.saveShow(merged);
     } catch (_) {
       // Réseau/API : on réessaiera à la prochaine session.
     } finally {

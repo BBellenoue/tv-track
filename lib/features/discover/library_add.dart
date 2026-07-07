@@ -4,7 +4,7 @@ import '../../core/providers.dart';
 import '../../data/models/movie.dart';
 import '../../data/models/show.dart';
 import '../../data/tmdb/catalog_item.dart';
-import '../../data/tvmaze/enrichment.dart';
+import '../../data/tvdb/enrichment.dart';
 
 part 'library_add.g.dart';
 
@@ -32,15 +32,16 @@ class LibraryAdd extends _$LibraryAdd {
   Future<bool> _addTv(CatalogItem item) async {
     final repo = ref.read(trackingRepositoryProvider);
     final tmdb = ref.read(tmdbApiProvider);
+    final tvdb = ref.read(tvdbApiProvider);
     if (repo == null || tmdb == null) return false;
     try {
       final tvdbId = await tmdb.tvdbIdByTmdb(item.tmdbId);
-      if (tvdbId == null) return false; // non rattachable à TVmaze
+      if (tvdbId == null) return false; // non rattachable à TheTVDB
       if ((ref.read(showsProvider).value ?? const [])
           .any((s) => s.tvdbId == tvdbId)) {
         return false;
       }
-      // Résumé FR déjà présent sur la carte ; structure via TVmaze.
+      // Fiche de base depuis la carte Découverte (déjà en FR)…
       var show = Show(
         tvdbId: tvdbId,
         title: item.title,
@@ -48,17 +49,15 @@ class LibraryAdd extends _$LibraryAdd {
         overview: item.overview,
         posterLarge: item.backdropUrl,
       );
-      final tvmaze = ref.read(tvmazeApiProvider);
-      final meta = await tvmaze.lookupByTvdb(tvdbId);
-      if (meta != null) {
-        final episodes = await tvmaze.episodes(meta.id);
-        show = mergeTvmaze(show, meta, episodes, now: DateTime.now());
-        // Garde le résumé FR de TMDB plutôt que l'anglais de TVmaze.
-        show = show.copyWith(overview: item.overview ?? show.overview);
+      // …puis structure + épisodes FR via TheTVDB, plateformes via TMDB.
+      if (tvdb != null) {
+        show = await enrichShowFromTvdb(show, tvdb, tmdb: tmdb);
+      } else {
+        show = show.copyWith(
+          providers:
+              await tmdb.tvProviders(item.tmdbId).catchError((_) => <String>[]),
+        );
       }
-      show = show.copyWith(
-        providers: await tmdb.tvProviders(item.tmdbId).catchError((_) => <String>[]),
-      );
       await repo.saveShow(show);
       return true;
     } catch (_) {
