@@ -368,9 +368,25 @@ class _EpisodeTileState extends ConsumerState<_EpisodeTile> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('E${ep.number.toString().padLeft(2, '0')}',
-                            style: mono(
-                                size: 11, color: unaired ? dust : tungsten)),
+                        Row(
+                          children: [
+                            Text('E${ep.number.toString().padLeft(2, '0')}',
+                                style: mono(
+                                    size: 11,
+                                    color: unaired ? dust : tungsten)),
+                            // Date de diffusion des épisodes déjà sortis (y
+                            // compris ceux déjà vus) ; les épisodes à venir
+                            // affichent leur date dans la ligne secondaire.
+                            if (airDate != null && !unaired) ...[
+                              const SizedBox(width: 8),
+                              Text(
+                                DateFormat('d MMM y', 'fr_FR')
+                                    .format(airDate.toLocal()),
+                                style: mono(size: 11, color: dust),
+                              ),
+                            ],
+                          ],
+                        ),
                         const SizedBox(height: 3),
                         Text(
                           ep.name.isEmpty ? 'Épisode ${ep.number}' : ep.name,

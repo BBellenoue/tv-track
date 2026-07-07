@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 
 import '../models/show.dart';
+import '../tmdb/tmdb_api.dart';
 import 'tvmaze_api.dart';
 
 /// Fusionne les métadonnées TVmaze dans un [Show] existant.
@@ -79,4 +80,73 @@ Show mergeTvmaze(
     overview: meta.summary ?? show.overview,
     metaRefreshedAt: now,
   );
+}
+
+/// Superpose l'enrichissement TMDB **français** sur une série déjà structurée
+/// par TVmaze : rattache l'ID TMDB, remplace le résumé et (à défaut d'affiche)
+/// le poster par leurs versions FR, renseigne les plateformes de streaming, et
+/// localise titres + résumés d'épisodes. Best-effort : chaque appel qui échoue
+/// laisse le champ existant intact — on ne dégrade jamais vers l'anglais.
+///
+/// C'est l'étape qui manquait au rafraîchissement in-app : sans elle, un pull
+/// TVmaze réécrivait le synopsis français en anglais. Utilisée aussi par
+/// `tool/enrich_metadata.dart` pour garantir un comportement identique.
+Future<Show> applyTmdbFrench(Show show, TmdbApi tmdb) async {
+  final tmdbId = show.tmdbId ?? await tmdb.tvIdByTvdb(show.tvdbId);
+  if (tmdbId == null) return show;
+  var out = show.copyWith(tmdbId: tmdbId);
+
+  try {
+    final d = await tmdb.tvDetailsFr(tmdbId);
+    out = out.copyWith(
+      overview: d.overview ?? out.overview,
+      // Le poster TVmaze prime s'il existe ; TMDB comble les fiches sans image.
+      poster: out.poster ?? d.poster,
+      posterLarge: out.posterLarge ?? d.posterLarge,
+    );
+  } catch (_) {
+    // Réseau/API : on garde le reste de l'enrichissement.
+  }
+
+  try {
+    final providers = await tmdb.tvProviders(tmdbId);
+    if (providers.isNotEmpty) out = out.copyWith(providers: providers);
+  } catch (_) {
+    // Plateformes indisponibles : non bloquant.
+  }
+
+  return _overlayFrenchEpisodes(out, tmdb, tmdbId);
+}
+
+/// Superpose les titres et résumés d'épisodes en français (TMDB) sur une série
+/// déjà structurée par TVmaze. On ne touche jamais à l'état de visionnage ni
+/// aux dates ; on ne remplace un champ que si TMDB a une valeur française.
+Future<Show> _overlayFrenchEpisodes(
+    Show show, TmdbApi tmdb, int tmdbId) async {
+  final seasons = <Season>[];
+  for (final season in show.seasons) {
+    if (season.isSpecials || season.episodes.isEmpty) {
+      seasons.add(season);
+      continue;
+    }
+    Map<int, ({String? name, String? overview})> fr;
+    try {
+      fr = await tmdb.tvSeasonFr(tmdbId, season.number);
+      await Future.delayed(const Duration(milliseconds: 40));
+    } catch (_) {
+      seasons.add(season);
+      continue;
+    }
+    seasons.add(season.copyWith(episodes: [
+      for (final ep in season.episodes)
+        if (fr[ep.number] case final f?)
+          ep.copyWith(
+            name: f.name ?? ep.name,
+            overview: f.overview ?? ep.overview,
+          )
+        else
+          ep,
+    ]));
+  }
+  return show.copyWith(seasons: seasons);
 }

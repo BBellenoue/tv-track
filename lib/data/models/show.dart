@@ -4,6 +4,24 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'show.freezed.dart';
 part 'show.g.dart';
 
+/// Heuristique légère de détection d'un résumé anglophone : on compte les
+/// mots-outils très fréquents en anglais et quasi absents en français (« the »,
+/// « and », « with »… n'existent pas en français). Trois occurrences suffisent
+/// à conclure, ce qui évite les faux positifs sur un nom propre isolé.
+bool _looksEnglish(String? text) {
+  if (text == null || text.isEmpty) return false;
+  const markers = {
+    'the', 'and', 'with', 'when', 'who', 'she', 'his', 'her', 'they',
+    'their', 'about', 'which', 'while', 'has', 'have', 'been', 'from',
+    'after', 'before', 'that', 'this', 'him', 'are', 'was', 'were',
+  };
+  var hits = 0;
+  for (final word in text.toLowerCase().split(RegExp(r'[^a-z]+'))) {
+    if (markers.contains(word) && ++hits >= 3) return true;
+  }
+  return false;
+}
+
 @freezed
 abstract class Episode with _$Episode {
   const factory Episode({
@@ -99,6 +117,12 @@ abstract class Show with _$Show {
       .maxOrNull;
 
   bool get isEnded => airStatus == 'Ended';
+
+  /// Vrai si la fiche semble être restée en anglais / sans métadonnées FR :
+  /// jamais rattachée à TMDB (`tmdbId == null`), ou résumé visiblement
+  /// anglophone. Sert au rafraîchissement automatique pour rebasculer
+  /// l'affichage en français (voir [MetadataRefresh]).
+  bool get needsFrenchRepair => tmdbId == null || _looksEnglish(overview);
 
   /// Prochaine diffusion connue (épisode avec une date dans le futur).
   DateTime? get nextAirDate {

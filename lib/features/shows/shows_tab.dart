@@ -69,8 +69,9 @@ class ShowsTab extends HookConsumerWidget {
             ),
             Expanded(
               child: RefreshIndicator(
-                onRefresh: () =>
-                    ref.read(metadataRefreshProvider.notifier).run(),
+                onRefresh: () => ref
+                    .read(metadataRefreshProvider.notifier)
+                    .run(force: true),
                 child: filtered.isEmpty
                     ? const _NothingHere()
                     : ListView.builder(
