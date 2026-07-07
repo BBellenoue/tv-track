@@ -130,6 +130,25 @@ class TmdbApi {
     return (o == null || o.isEmpty) ? null : o;
   }
 
+  /// Détails FR d'une série : résumé + affiche (poster), chacun null si TMDB
+  /// n'en a pas. Sert à rebasculer une fiche restée en anglais vers le français
+  /// depuis l'app (résumé et poster localisés).
+  Future<({String? overview, String? poster, String? posterLarge})>
+      tvDetailsFr(int tmdbTvId) async {
+    final response = await _dio.get<Map<String, dynamic>>(
+      '/tv/$tmdbTvId',
+      queryParameters: {'api_key': _apiKey, 'language': 'fr-FR'},
+    );
+    final d = response.data ?? const {};
+    final o = d['overview'] as String?;
+    final p = d['poster_path'] as String?;
+    return (
+      overview: (o == null || o.isEmpty) ? null : o,
+      poster: p == null ? null : '$imageBase/w342$p',
+      posterLarge: p == null ? null : '$imageBase/original$p',
+    );
+  }
+
   /// Épisodes d'une saison en français : numéro d'épisode → (titre, résumé).
   /// Les champs vides côté TMDB sont laissés à null (pour retomber sur TVmaze).
   Future<Map<int, ({String? name, String? overview})>> tvSeasonFr(

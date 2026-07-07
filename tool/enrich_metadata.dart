@@ -70,22 +70,9 @@ Future<void> _enrichShows(FirestoreRest db, String uid) async {
       var merged = mergeTvmaze(show, meta, episodes, now: DateTime.now());
 
       if (tmdb != null) {
-        try {
-          final tmdbId = await tmdb.tvIdByTvdb(show.tvdbId);
-          if (tmdbId != null) {
-            final providers = await tmdb.tvProviders(tmdbId);
-            final overviewFr = await tmdb.tvOverviewFr(tmdbId);
-            merged = merged.copyWith(
-              tmdbId: tmdbId,
-              providers: providers,
-              overview: overviewFr ?? merged.overview,
-            );
-            // Résumés + titres d'épisodes en français, saison par saison.
-            merged = await _overlayFrenchEpisodes(merged, tmdb, tmdbId);
-          }
-        } catch (_) {
-          // Best-effort : on garde le reste de l'enrichissement.
-        }
+        // Synopsis, poster, plateformes et épisodes en français (même logique
+        // que le rafraîchissement in-app, cf. applyTmdbFrench).
+        merged = await applyTmdbFrench(merged, tmdb);
       }
 
       await db.patch('users/$uid/shows/$id', merged.toJson());
@@ -101,39 +88,6 @@ Future<void> _enrichShows(FirestoreRest db, String uid) async {
   }
   stdout.writeln(
       'Séries : $updated enrichies, $missing introuvables, $errors erreurs.');
-}
-
-/// Superpose les titres et résumés d'épisodes en français (TMDB) sur une série
-/// déjà structurée par TVmaze. On ne touche jamais à l'état de visionnage ni
-/// aux dates ; on ne remplace un champ que si TMDB a une valeur française.
-Future<Show> _overlayFrenchEpisodes(
-    Show show, TmdbApi tmdb, int tmdbId) async {
-  final seasons = <Season>[];
-  for (final season in show.seasons) {
-    if (season.isSpecials || season.episodes.isEmpty) {
-      seasons.add(season);
-      continue;
-    }
-    Map<int, ({String? name, String? overview})> fr;
-    try {
-      fr = await tmdb.tvSeasonFr(tmdbId, season.number);
-      await Future.delayed(const Duration(milliseconds: 40));
-    } catch (_) {
-      seasons.add(season);
-      continue;
-    }
-    seasons.add(season.copyWith(episodes: [
-      for (final ep in season.episodes)
-        if (fr[ep.number] case final f?)
-          ep.copyWith(
-            name: f.name ?? ep.name,
-            overview: f.overview ?? ep.overview,
-          )
-        else
-          ep,
-    ]));
-  }
-  return show.copyWith(seasons: seasons);
 }
 
 Future<void> _enrichMovies(FirestoreRest db, String uid) async {
