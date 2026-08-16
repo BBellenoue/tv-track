@@ -1,0 +1,182 @@
+{
+  "@@locale": "en",
+
+  "cancel": "Cancel",
+  "undo": "Undo",
+  "delete": "Delete",
+  "titleGenres": "Genres",
+  "directedBy": "Directed by",
+  "createdBy": "Created by",
+  "starring": "Starring",
+  "synopsis": "Synopsis",
+  "loadFailed": "Couldn't load.",
+  "errorWithMessage": "Error: {message}",
+  "@errorWithMessage": {
+    "placeholders": { "message": { "type": "String" } }
+  },
+  "updatingInfo": "Updating…",
+  "removeFromList": "Remove from my list",
+  "libraryEmpty": "Your library is empty",
+  "nothingHere": "Nothing here yet.",
+
+  "tabUpcoming": "Upcoming",
+  "tabShows": "Shows",
+  "tabMovies": "Movies",
+  "tabDiscover": "Discover",
+  "search": "Search",
+  "profile": "Profile",
+
+  "signInTagline": "Where you left off, episode by episode.",
+  "signInWithGoogle": "Continue with Google",
+  "signInFailed": "Sign-in failed. Try again — if it keeps happening, check your connection.",
+
+  "filterWatching": "Watching",
+  "filterUpToDate": "Up to date",
+  "filterToWatch": "To watch",
+  "filterWatched": "Watched",
+  "statusEnded": "Ended",
+  "statusAiring": "Airing",
+  "statusToWatch": "To watch",
+  "nextEpisodeLabel": "next episode",
+
+  "markEpisodeWatched": "Mark {code} as watched",
+  "@markEpisodeWatched": {
+    "placeholders": { "code": { "type": "String" } }
+  },
+  "episodeMarkedWatched": "{title} — {code} watched",
+  "@episodeMarkedWatched": {
+    "placeholders": {
+      "title": { "type": "String" },
+      "code": { "type": "String" }
+    }
+  },
+  "showRemoved": "{title} removed from your list",
+  "@showRemoved": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "movieRemoved": "{title} removed from your list",
+  "@movieRemoved": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+
+  "markWatched": "Mark as watched",
+  "markUnwatched": "Mark as unwatched",
+  "watched": "Watched",
+  "movieMarkedWatched": "{title} — watched",
+  "@movieMarkedWatched": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "movieMarkedToWatch": "{title} — back in \"To watch\"",
+  "@movieMarkedToWatch": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "noOverview": "No overview available.",
+  "deleteMovieTitle": "Delete this movie?",
+  "deleteMovieBody": "“{title}” will be removed from your list.",
+  "@deleteMovieBody": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+
+  "noUpcoming": "Nothing scheduled",
+  "noUpcomingBody": "The next episodes of the shows you follow will show up here.",
+  "tonight": "Tonight",
+  "tomorrow": "Tomorrow",
+  "today": "Today",
+  "nextAiring": "Next airing · {when}",
+  "@nextAiring": {
+    "placeholders": { "when": { "type": "String" } }
+  },
+
+  "searchHint": "Search for a show or a movie…",
+  "searchMinChars": "Type at least 2 letters.",
+  "myLibrary": "My library",
+  "searchUnavailable": "Search unavailable.",
+  "noResults": "No results.",
+  "kindShow": "Show",
+  "kindMovie": "Movie",
+  "showProgress": "Show · {watched}/{total}",
+  "@showProgress": {
+    "placeholders": {
+      "watched": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+
+  "daysOnScreen": "Days on screen",
+  "hoursWatched": "Hours watched",
+  "statEpisodesWatched": "episodes watched",
+  "statMoviesWatched": "movies watched",
+  "statShowsTracked": "shows tracked",
+  "statShowsInProgress": "shows in progress",
+  "mostWatchedShow": "Your most watched show",
+  "episodeCount": "{count, plural, =1{1 episode} other{{count} episodes}}",
+  "@episodeCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "signOut": "Sign out",
+  "you": "You",
+  "language": "Language",
+
+  "discoverUnavailable": "Discover unavailable",
+  "discoverNoKey": "No TMDB API key configured.",
+  "swipeMode": "Swipe",
+  "browseMode": "Browse",
+  "deckEmpty": "Nothing left to discover right now.",
+  "stampSkip": "NOT FOR ME",
+  "stampWant": "WANT",
+  "railTrending": "Trending",
+  "seeAll": "See all ›",
+  "sortPopular": "Popular",
+  "sortRecent": "Recent",
+  "sortTopRated": "Top rated",
+  "alreadyInList": "Already in your list",
+  "addToList": "Add to my list",
+  "addedToList": "{title} added to your list",
+  "@addedToList": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "addFailed": "Couldn't add {title}",
+  "@addFailed": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+
+  "deleteShowTitle": "Delete this show?",
+  "deleteShowBody": "“{title}” will be removed from your list.",
+  "@deleteShowBody": {
+    "placeholders": { "title": { "type": "String" } }
+  },
+  "nextEpisodeOn": "NEXT EP. {date}",
+  "@nextEpisodeOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "whereToWatch": "Where to watch",
+  "seasonNumber": "Season {number}",
+  "@seasonNumber": {
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "seasonWatchedCount": "{watched}/{total} watched",
+  "@seasonWatchedCount": {
+    "placeholders": {
+      "watched": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "markSeasonWatched": "Mark the whole season as watched",
+  "markSeasonUnwatched": "Mark the season as unwatched",
+  "episodeNumber": "Episode {number}",
+  "@episodeNumber": {
+    "placeholders": { "number": { "type": "int" } }
+  },
+  "airsOn": "airs {date}",
+  "@airsOn": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "unwatchedBefore": "{count, plural, =1{1 unwatched episode before this one} other{{count} unwatched episodes before this one}}",
+  "@unwatchedBefore": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "markAllPrevious": "Mark all",
+
+  "more": "more",
+  "less": "less"
+}

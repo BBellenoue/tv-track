@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  google_sign_in reads default_web_client_id through Resources.getIdentifier(),
+  so the release resource shrinker sees no reference and strips it. Sign-in then
+  works in debug and fails on release builds with "serverClientId must be
+  provided on Android".
+-->
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/default_web_client_id" />
