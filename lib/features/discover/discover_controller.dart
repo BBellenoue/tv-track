@@ -73,7 +73,7 @@ List<CatalogItem> rankDeck({
 /// is trending regardless of the profile, so the suggestions do not close in
 /// on themselves.
 ///
-/// The queue deliberately does not rebuild on each swipe — the UI holds a
+/// The queue deliberately does not rebuild on each swipe: the UI holds a
 /// cursor instead, which keeps a card from flickering as it flies out.
 @riverpod
 class DiscoverDeck extends _$DiscoverDeck {

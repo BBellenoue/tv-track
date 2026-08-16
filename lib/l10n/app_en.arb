@@ -28,7 +28,7 @@
 
   "signInTagline": "Where you left off, episode by episode.",
   "signInWithGoogle": "Continue with Google",
-  "signInFailed": "Sign-in failed. Try again — if it keeps happening, check your connection.",
+  "signInFailed": "Sign-in failed. Try again. If it keeps happening, check your connection.",
 
   "filterWatching": "Watching",
   "filterUpToDate": "Up to date",
@@ -43,7 +43,7 @@
   "@markEpisodeWatched": {
     "placeholders": { "code": { "type": "String" } }
   },
-  "episodeMarkedWatched": "{title} — {code} watched",
+  "episodeMarkedWatched": "{title}: {code} watched",
   "@episodeMarkedWatched": {
     "placeholders": {
       "title": { "type": "String" },
@@ -62,11 +62,11 @@
   "markWatched": "Mark as watched",
   "markUnwatched": "Mark as unwatched",
   "watched": "Watched",
-  "movieMarkedWatched": "{title} — watched",
+  "movieMarkedWatched": "{title}: watched",
   "@movieMarkedWatched": {
     "placeholders": { "title": { "type": "String" } }
   },
-  "movieMarkedToWatch": "{title} — back in \"To watch\"",
+  "movieMarkedToWatch": "{title}: back in \"To watch\"",
   "@movieMarkedToWatch": {
     "placeholders": { "title": { "type": "String" } }
   },

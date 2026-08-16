@@ -78,7 +78,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get signInFailed =>
-      'Connexion impossible. Réessaie — si ça persiste, vérifie ta connexion.';
+      'Connexion impossible. Réessaie. Si ça persiste, vérifie ta connexion.';
 
   @override
   String get filterWatching => 'En cours';
@@ -111,7 +111,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String episodeMarkedWatched(String title, String code) {
-    return '$title — $code vu';
+    return '$title : $code vu';
   }
 
   @override
@@ -135,12 +135,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String movieMarkedWatched(String title) {
-    return '$title — vu';
+    return '$title : vu';
   }
 
   @override
   String movieMarkedToWatch(String title) {
-    return '$title — remis dans « À voir »';
+    return '$title : remis dans « À voir »';
   }
 
   @override

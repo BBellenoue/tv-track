@@ -92,7 +92,7 @@ Show mergeTvdb(Show show, TvdbSeries series, {required DateTime now}) {
 }
 
 /// Enriches a show end to end: structure, text and artwork from TheTVDB, then
-/// streaming providers from TMDB — the one thing TheTVDB does not carry.
+/// streaming providers from TMDB, the one thing TheTVDB does not carry.
 ///
 /// Best effort throughout: a call that fails leaves the existing field alone.
 Future<Show> enrichShowFromTvdb(
@@ -126,7 +126,7 @@ Future<Show> enrichShowFromTvdb(
 
 /// Firestore caps a document at 1,048,576 bytes. Shows with a very large
 /// episode count (One Piece and friends) blow past that once every episode
-/// carries an overview and a still, so drop weight in stages — overviews
+/// carries an overview and a still, so drop weight in stages: overviews
 /// first, then stills. Titles, dates and progress are small and always kept.
 Show _fitFirestore(Show show) {
   const maxBytes = 1000000; // headroom under the hard limit

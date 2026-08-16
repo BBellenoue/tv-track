@@ -6,7 +6,7 @@ welcome.
 ## Getting set up
 
 The repository ships no Firebase configuration, so building the app means
-pointing it at a project of your own — the walkthrough is in
+pointing it at a project of your own: the walkthrough is in
 [docs/SETUP.md](docs/SETUP.md). To work on the UI alone you can skip Firebase
 entirely and use the preview entrypoint:
 
@@ -27,7 +27,7 @@ flutter test                  # must pass
 
 The same four steps run in CI on every pull request.
 
-A fresh clone does not analyze until `lib/firebase_options.dart` exists —
+A fresh clone does not analyze until `lib/firebase_options.dart` exists:
 `lib/main.dart` imports it and it is generated per project, so run
 `flutterfire configure` as described in [docs/SETUP.md](docs/SETUP.md). CI
 stands in for it with a stub.
@@ -55,7 +55,7 @@ no prefix or ticket number:
 Hide titles already in the library from Browse
 ```
 
-Use the body to explain *why* — the constraint, the failure it avoids, what you
+Use the body to explain *why*: the constraint, the failure it avoids, what you
 verified. The code says what changed; the message is where the reasoning is
 kept, so it does not need to be repeated in comments.
 
@@ -64,7 +64,7 @@ kept, so it does not need to be repeated in comments.
 Open an [issue](https://github.com/BBellenoue/tv-track/issues) with the template.
 Include the platform, the commit or version you built from, and the steps that
 reproduce it. If it involves a specific title, the show or movie name helps a
-lot — most metadata bugs come down to one entry on the provider side.
+lot. Most metadata bugs come down to one entry on the provider side.
 
 For anything security-related, follow [SECURITY.md](SECURITY.md) instead of
 opening a public issue.

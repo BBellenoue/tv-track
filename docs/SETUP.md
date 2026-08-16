@@ -12,7 +12,7 @@ accordingly.
 
 1. Create a project on [console.firebase.google.com](https://console.firebase.google.com).
 2. **Authentication → Sign-in method**: enable **Google**. This step has to be
-   done in the console — it provisions the OAuth web client for you.
+   done in the console: it provisions the OAuth web client for you.
 3. Create the database and deploy the security rules:
    ```sh
    gcloud services enable firestore.googleapis.com --project=<your-project>
@@ -45,7 +45,7 @@ flutter run --dart-define=METADATA_PROXY_URL=https://europe-west1-xxx.cloudfunct
 ```
 
 `GOOGLE_SERVER_CLIENT_ID` is the OAuth **web** client ID that Firebase created
-when you enabled the Google provider — find it under *Google Cloud Console →
+when you enabled the Google provider. Find it under *Google Cloud Console →
 Credentials*, or as the `client_type: 3` entry in `google-services.json`.
 Google Sign-In on Android needs it; without it the app builds fine and then
 fails at sign-in with `serverClientId must be provided on Android`.
@@ -112,7 +112,7 @@ Two things also need to exist on the Firebase side:
 
 - the SHA-1 and SHA-256 of the **release** keystore, registered like the debug
   ones in step 1.5;
-- a tester group named **`testers`** in App Distribution — that alias is what
+- a tester group named **`testers`** in App Distribution: that alias is what
   `.github/workflows/release.yml` publishes to.
 
 ### 3.1 Metadata proxy
@@ -122,7 +122,7 @@ TheTVDB, appending the provider credentials server-side. Anything shipped in an
 APK is extractable, so the keys never leave the server; the function answers
 callers presenting a valid Firebase ID token only.
 
-Cloud Functions requires the **Blaze** plan — at this volume the monthly bill
+Cloud Functions requires the **Blaze** plan. At this volume the monthly bill
 stays within the free grant, but a card must be on file.
 
 ```sh

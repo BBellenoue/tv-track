@@ -50,7 +50,7 @@ tvtime-export/
 firebase-debug.log
 
 # Firebase configuration is project-specific and never committed.
-# CI restores it from secure variables — see docs/SETUP.md.
+# CI restores it from secure variables. See docs/SETUP.md.
 lib/firebase_options.dart
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
@@ -58,7 +58,7 @@ ios/Runner/GoogleService-Info.plist
 # Personal data: TV Time export, imported through the in-app file picker
 assets/tvtime/
 
-# Keystores and credentials — never commit these
+# Keystores and credentials: never commit these
 *.keystore
 *.jks
 *service-account*.json

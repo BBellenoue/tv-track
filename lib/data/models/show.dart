@@ -18,7 +18,7 @@ const _frenchMarkers = {
 
 /// Guesses whether stored text is English by counting function words that are
 /// frequent in one language and absent from the other. Returns null when
-/// neither side wins clearly — callers then leave the text alone instead of
+/// neither side wins clearly: callers then leave the text alone instead of
 /// re-fetching it on every pass.
 ///
 /// Three hits is enough to decide, which avoids tripping on a lone proper noun.
@@ -34,7 +34,7 @@ bool? looksEnglish(String? text) {
   return null;
 }
 
-/// A "bare" episode has no air date, still or overview at all — a sign it was
+/// A "bare" episode has no air date, still or overview at all, a sign it was
 /// never enriched, as opposed to a merely upcoming one, which at least has a
 /// date. Used to trigger a live repair of the show.
 bool _episodeBare(Episode e) =>
@@ -138,7 +138,7 @@ abstract class Show with _$Show {
   bool get isEnded => airStatus == 'Ended';
 
   /// True when a refresh could fill something in: no overview, no artwork, no
-  /// season structure, or **at least one entirely bare episode** — typically a
+  /// season structure, or **at least one entirely bare episode**, typically a
   /// season that aired but that no provider had indexed when the record was
   /// last written.
   bool get isIncomplete =>
@@ -207,7 +207,7 @@ abstract class Show with _$Show {
   }
 
   /// Counts unwatched episodes strictly before (season, number), across
-  /// seasons — what the "mark everything before this" prompt is based on.
+  /// seasons, what the "mark everything before this" prompt is based on.
   int unwatchedBefore(int seasonNumber, int episodeNumber) {
     var count = 0;
     for (final season in regularSeasons) {

@@ -25,7 +25,7 @@
 
   "signInTagline": "Où tu t'es arrêté, épisode par épisode.",
   "signInWithGoogle": "Continuer avec Google",
-  "signInFailed": "Connexion impossible. Réessaie — si ça persiste, vérifie ta connexion.",
+  "signInFailed": "Connexion impossible. Réessaie. Si ça persiste, vérifie ta connexion.",
 
   "filterWatching": "En cours",
   "filterUpToDate": "À jour",
@@ -37,15 +37,15 @@
   "nextEpisodeLabel": "prochain épisode",
 
   "markEpisodeWatched": "Marquer {code} vu",
-  "episodeMarkedWatched": "{title} — {code} vu",
+  "episodeMarkedWatched": "{title} : {code} vu",
   "showRemoved": "{title} retirée de ta liste",
   "movieRemoved": "{title} retiré de ta liste",
 
   "markWatched": "Marquer vu",
   "markUnwatched": "Marquer non vu",
   "watched": "Vu",
-  "movieMarkedWatched": "{title} — vu",
-  "movieMarkedToWatch": "{title} — remis dans « À voir »",
+  "movieMarkedWatched": "{title} : vu",
+  "movieMarkedToWatch": "{title} : remis dans « À voir »",
   "noOverview": "Pas de résumé disponible.",
   "deleteMovieTitle": "Supprimer le film ?",
   "deleteMovieBody": "« {title} » sera retiré de ta liste.",

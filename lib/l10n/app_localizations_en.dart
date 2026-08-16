@@ -78,7 +78,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInFailed =>
-      'Sign-in failed. Try again — if it keeps happening, check your connection.';
+      'Sign-in failed. Try again. If it keeps happening, check your connection.';
 
   @override
   String get filterWatching => 'Watching';
@@ -111,7 +111,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String episodeMarkedWatched(String title, String code) {
-    return '$title — $code watched';
+    return '$title: $code watched';
   }
 
   @override
@@ -135,12 +135,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String movieMarkedWatched(String title) {
-    return '$title — watched';
+    return '$title: watched';
   }
 
   @override
   String movieMarkedToWatch(String title) {
-    return '$title — back in \"To watch\"';
+    return '$title: back in \"To watch\"';
   }
 
   @override

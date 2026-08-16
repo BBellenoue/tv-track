@@ -12,7 +12,7 @@ library;
 ///   flutter run --dart-define=GOOGLE_SERVER_CLIENT_ID=xxx.apps.googleusercontent.com
 ///
 /// Left empty, the plugin falls back to the `default_web_client_id` string
-/// resource generated from `google-services.json` — which requires a
+/// resource generated from `google-services.json`, which requires a
 /// `client_type: 3` entry in that file, and survives release builds only
 /// because `android/app/src/main/res/raw/keep.xml` holds it against the
 /// resource shrinker.

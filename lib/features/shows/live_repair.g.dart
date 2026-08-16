@@ -13,7 +13,7 @@ part of 'live_repair.dart';
 /// one record the user is looking at right now.
 ///
 /// Each record is attempted at most once per session even if it stays
-/// incomplete — a provider may simply have nothing — which keeps a rebuild or
+/// incomplete (a provider may simply have nothing), which keeps a rebuild or
 /// a reopen from hammering the API.
 ///
 /// The exposed state is the set of in-flight keys (`show-<id>` / `movie-<id>`),
@@ -27,7 +27,7 @@ final liveRepairProvider = LiveRepairProvider._();
 /// one record the user is looking at right now.
 ///
 /// Each record is attempted at most once per session even if it stays
-/// incomplete — a provider may simply have nothing — which keeps a rebuild or
+/// incomplete (a provider may simply have nothing), which keeps a rebuild or
 /// a reopen from hammering the API.
 ///
 /// The exposed state is the set of in-flight keys (`show-<id>` / `movie-<id>`),
@@ -39,7 +39,7 @@ final class LiveRepairProvider
   /// one record the user is looking at right now.
   ///
   /// Each record is attempted at most once per session even if it stays
-  /// incomplete — a provider may simply have nothing — which keeps a rebuild or
+  /// incomplete (a provider may simply have nothing), which keeps a rebuild or
   /// a reopen from hammering the API.
   ///
   /// The exposed state is the set of in-flight keys (`show-<id>` / `movie-<id>`),
@@ -78,7 +78,7 @@ String _$liveRepairHash() => r'bdef98d274722e486f73ec751a0328fade02ccc8';
 /// one record the user is looking at right now.
 ///
 /// Each record is attempted at most once per session even if it stays
-/// incomplete — a provider may simply have nothing — which keeps a rebuild or
+/// incomplete (a provider may simply have nothing), which keeps a rebuild or
 /// a reopen from hammering the API.
 ///
 /// The exposed state is the set of in-flight keys (`show-<id>` / `movie-<id>`),
