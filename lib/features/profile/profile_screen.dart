@@ -149,7 +149,7 @@ class ProfileScreen extends ConsumerWidget {
 }
 
 /// Switches the interface language, and with it the language metadata is
-/// fetched in — show and episode text follows on the next refresh.
+/// fetched in: show and episode text follows on the next refresh.
 class _LanguagePicker extends ConsumerWidget {
   const _LanguagePicker();
 

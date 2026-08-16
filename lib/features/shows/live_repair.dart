@@ -14,7 +14,7 @@ part 'live_repair.g.dart';
 /// one record the user is looking at right now.
 ///
 /// Each record is attempted at most once per session even if it stays
-/// incomplete — a provider may simply have nothing — which keeps a rebuild or
+/// incomplete (a provider may simply have nothing), which keeps a rebuild or
 /// a reopen from hammering the API.
 ///
 /// The exposed state is the set of in-flight keys (`show-<id>` / `movie-<id>`),

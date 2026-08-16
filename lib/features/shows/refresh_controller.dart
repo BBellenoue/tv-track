@@ -48,7 +48,7 @@ class MetadataRefresh extends _$MetadataRefresh {
     final batch = shows
         .where(eligible)
         .sorted((a, b) {
-          // Broken records first — that is the problem worth fixing.
+          // Broken records first: that is the problem worth fixing.
           final ra = needsRepair(a) ? 0 : 1;
           final rb = needsRepair(b) ? 0 : 1;
           if (ra != rb) return ra - rb;

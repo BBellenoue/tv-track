@@ -16,7 +16,7 @@ part of 'discover_controller.dart';
 /// is trending regardless of the profile, so the suggestions do not close in
 /// on themselves.
 ///
-/// The queue deliberately does not rebuild on each swipe — the UI holds a
+/// The queue deliberately does not rebuild on each swipe: the UI holds a
 /// cursor instead, which keeps a card from flickering as it flies out.
 
 @ProviderFor(DiscoverDeck)
@@ -30,7 +30,7 @@ final discoverDeckProvider = DiscoverDeckFamily._();
 /// is trending regardless of the profile, so the suggestions do not close in
 /// on themselves.
 ///
-/// The queue deliberately does not rebuild on each swipe — the UI holds a
+/// The queue deliberately does not rebuild on each swipe: the UI holds a
 /// cursor instead, which keeps a card from flickering as it flies out.
 final class DiscoverDeckProvider
     extends $AsyncNotifierProvider<DiscoverDeck, List<CatalogItem>> {
@@ -42,7 +42,7 @@ final class DiscoverDeckProvider
   /// is trending regardless of the profile, so the suggestions do not close in
   /// on themselves.
   ///
-  /// The queue deliberately does not rebuild on each swipe — the UI holds a
+  /// The queue deliberately does not rebuild on each swipe: the UI holds a
   /// cursor instead, which keeps a card from flickering as it flies out.
   DiscoverDeckProvider._({
     required DiscoverDeckFamily super.from,
@@ -90,7 +90,7 @@ String _$discoverDeckHash() => r'ba717692b8b12e53ff34fc324f8fd5065070db33';
 /// is trending regardless of the profile, so the suggestions do not close in
 /// on themselves.
 ///
-/// The queue deliberately does not rebuild on each swipe — the UI holds a
+/// The queue deliberately does not rebuild on each swipe: the UI holds a
 /// cursor instead, which keeps a card from flickering as it flies out.
 
 final class DiscoverDeckFamily extends $Family
@@ -119,7 +119,7 @@ final class DiscoverDeckFamily extends $Family
   /// is trending regardless of the profile, so the suggestions do not close in
   /// on themselves.
   ///
-  /// The queue deliberately does not rebuild on each swipe — the UI holds a
+  /// The queue deliberately does not rebuild on each swipe: the UI holds a
   /// cursor instead, which keeps a card from flickering as it flies out.
 
   DiscoverDeckProvider call(MediaKind kind) =>
@@ -137,7 +137,7 @@ final class DiscoverDeckFamily extends $Family
 /// is trending regardless of the profile, so the suggestions do not close in
 /// on themselves.
 ///
-/// The queue deliberately does not rebuild on each swipe — the UI holds a
+/// The queue deliberately does not rebuild on each swipe: the UI holds a
 /// cursor instead, which keeps a card from flickering as it flies out.
 
 abstract class _$DiscoverDeck extends $AsyncNotifier<List<CatalogItem>> {

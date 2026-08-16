@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @signInFailed.
   ///
   /// In en, this message translates to:
-  /// **'Sign-in failed. Try again — if it keeps happening, check your connection.'**
+  /// **'Sign-in failed. Try again. If it keeps happening, check your connection.'**
   String get signInFailed;
 
   /// No description provided for @filterWatching.
@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @episodeMarkedWatched.
   ///
   /// In en, this message translates to:
-  /// **'{title} — {code} watched'**
+  /// **'{title}: {code} watched'**
   String episodeMarkedWatched(String title, String code);
 
   /// No description provided for @showRemoved.
@@ -329,13 +329,13 @@ abstract class AppLocalizations {
   /// No description provided for @movieMarkedWatched.
   ///
   /// In en, this message translates to:
-  /// **'{title} — watched'**
+  /// **'{title}: watched'**
   String movieMarkedWatched(String title);
 
   /// No description provided for @movieMarkedToWatch.
   ///
   /// In en, this message translates to:
-  /// **'{title} — back in \"To watch\"'**
+  /// **'{title}: back in \"To watch\"'**
   String movieMarkedToWatch(String title);
 
   /// No description provided for @noOverview.

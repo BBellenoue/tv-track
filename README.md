@@ -9,7 +9,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/licence-MIT-blue.svg" alt="Licence: MIT"></a>
 </p>
 
-A Flutter app for tracking the TV shows and movies you watch — built as a
+A Flutter app for tracking the TV shows and movies you watch, built as a
 replacement for TV Time after it shut down, and for importing the export it
 left behind.
 
@@ -19,16 +19,16 @@ show and episode text follows on the next refresh.
 
 ## Features
 
-- **Upcoming** — a schedule of the next airings across everything you follow,
+- **Upcoming**: a schedule of the next airings across everything you follow,
   with a hero card for the closest one and the rest grouped by day
-- **Shows / Movies** — filtered lists, per-season progress, and detail pages
+- **Shows / Movies**: filtered lists, per-season progress, and detail pages
   with the synopsis, episode rows with stills, and where to stream it; catch up
   on a backlog with "mark everything before this", or swipe a row to remove it
-- **Discover** — shows or movies, two ways:
+- **Discover**: shows or movies, two ways:
   - *Swipe*: a card deck, where a like adds the title to your library
   - *Browse*: genre rails plus a sortable, infinitely scrolling category grid
-- **Search** — your library and the TMDB catalog, in one list
-- **Profile** — account, language, and watch-time stats
+- **Search**: your library and the TMDB catalog, in one list
+- **Profile**: account, language, and watch-time stats
 
 ## Scope
 
@@ -39,8 +39,8 @@ Firebase project of your own, with your own provider keys, as described in
 [docs/SETUP.md](docs/SETUP.md). Everything it needs fits in the free tiers, and
 each deployment carries its own quota.
 
-There is no community layer either — no feed, comments, ratings, friends or
-sharing — and none is planned. Moderating a public space is a permanent cost,
+There is no community layer either (no feed, comments, ratings, friends or
+sharing) and none is planned. Moderating a public space is a permanent cost,
 and tracking what you watch gains nothing from an audience. Tracking data stays
 under `users/{uid}`, readable by that user alone.
 
@@ -137,7 +137,7 @@ tool/                # one-shot CLI: import an export, bulk-enrich a library
 
 [A second workflow](.github/workflows/release.yml) builds a signed APK for every
 `v*` tag and ships it to Firebase App Distribution. Firebase config and the
-keystore are never committed; CI restores them from repository secrets — see
+keystore are never committed; CI restores them from repository secrets. See
 [docs/SETUP.md](docs/SETUP.md).
 
 The app reaches TMDB and TheTVDB through the proxy in [`functions/`](functions/),
@@ -146,7 +146,7 @@ no API key ships inside the APK.
 
 ## Contributing
 
-Bug reports, translations and pull requests are welcome —
+Bug reports, translations and pull requests are welcome.
 [CONTRIBUTING.md](CONTRIBUTING.md) covers the local checks and the conventions.
 Vulnerabilities go through [SECURITY.md](SECURITY.md) rather than a public
 issue. Released changes are listed in [CHANGELOG.md](CHANGELOG.md). The app is

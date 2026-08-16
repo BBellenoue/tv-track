@@ -40,7 +40,7 @@ Future<void> main() async {
         ),
       ],
       child: MaterialApp(
-        title: 'TV Track — preview',
+        title: 'TV Track preview',
         debugShowCheckedModeBanner: false,
         theme: buildTheme(),
         supportedLocales: AppLocalizations.supportedLocales,

@@ -1,7 +1,7 @@
 // Bulk metadata enrichment of an existing Firestore library, outside the app.
 //
-// Shows are enriched from TheTVDB — seasons, episode titles and overviews,
-// artwork, air dates, status, network — plus TMDB for streaming providers.
+// Shows are enriched from TheTVDB: seasons, episode titles and overviews,
+// artwork, air dates, status, network, plus TMDB for streaming providers.
 // Watch state is never touched. Movies are enriched from TMDB alone.
 //
 // Environment: TVDB_API_KEY (required for shows), TMDB_API_KEY (providers and
