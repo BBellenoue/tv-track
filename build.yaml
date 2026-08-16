@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # Serialize nested objects (Show → Season → Episode) all the way
+          # down to Maps, which is what Firestore writes need.
+          explicit_to_json: true

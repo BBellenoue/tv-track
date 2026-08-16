@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup problem
+    url: https://github.com/BBellenoue/tv-track/blob/main/docs/SETUP.md
+    about: Firebase project, API keys and CI configuration are covered step by step here.
+  - name: Security vulnerability
+    url: https://github.com/BBellenoue/tv-track/blob/main/SECURITY.md
+    about: Report it privately rather than in a public issue.

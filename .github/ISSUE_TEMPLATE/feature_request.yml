@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest something the app should do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: The situation you run into, before any solution.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything you already tried
+      description: Existing screens or settings that come close but do not quite work.

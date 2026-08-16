@@ -1,0 +1,75 @@
+name: Bug report
+description: Something in the app does not behave as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For a security vulnerability, do not open an issue — follow
+        [SECURITY.md](https://github.com/BBellenoue/tv-track/blob/main/SECURITY.md).
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you expected, and what the app did instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Discover → Browse
+        2. Sort by rating
+        3. Scroll to the third page
+    validations:
+      required: true
+
+  - type: input
+    id: title-affected
+    attributes:
+      label: Show or movie affected
+      description: If the bug involves one title, naming it usually pins the cause down to a single metadata entry.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Upcoming
+        - Shows
+        - Movies
+        - Discover
+        - Search
+        - Profile
+        - Sign-in
+        - TV Time import
+        - Metadata (TheTVDB / TMDB)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: Android 15, Pixel 7
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: App version or commit
+      placeholder: 1.0.0, or the commit you built from
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant output from `flutter run`, if you have it. Strip API keys and your Firebase project id.
+      render: shell
