@@ -6,6 +6,15 @@ Notable changes to TV Track. The format follows
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-08-29
+
+### Fixed
+
+- Adding a title from Discover or Search failed now and then and went through
+  on a second try. Reads through the metadata proxy retry a timeout, a dropped
+  connection or an upstream 5xx, and an add no longer depends on the
+  enrichment call succeeding.
+
 ## [1.0.1] - 2026-08-29
 
 ### Added
@@ -53,6 +62,7 @@ First public release.
   a server-side proxy that holds the credentials and serves signed-in callers
   only.
 
-[Unreleased]: https://github.com/BBellenoue/tv-track/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/BBellenoue/tv-track/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/BBellenoue/tv-track/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/BBellenoue/tv-track/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/BBellenoue/tv-track/releases/tag/v1.0.0
