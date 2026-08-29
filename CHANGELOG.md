@@ -6,6 +6,22 @@ Notable changes to TV Track. The format follows
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-08-29
+
+### Added
+
+- Pull to refresh on a show and on the Shows list, which re-fetches metadata
+  there and then instead of waiting for the daily pass
+
+### Fixed
+
+- A show could sit forever with a season listed as bare "Episode 1", "Episode
+  2": the daily refresh filled its batch with records that stay incomplete
+  whatever happens, so the rest of the library was never revisited
+- Episode titles and overviews for a season that has no translation yet, which
+  TheTVDB serves empty rather than falling back on its own. They now come back
+  in English instead of not at all.
+
 ## [1.0.0] - 2026-08-16
 
 First public release.
@@ -37,5 +53,6 @@ First public release.
   a server-side proxy that holds the credentials and serves signed-in callers
   only.
 
-[Unreleased]: https://github.com/BBellenoue/tv-track/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/BBellenoue/tv-track/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/BBellenoue/tv-track/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/BBellenoue/tv-track/releases/tag/v1.0.0
