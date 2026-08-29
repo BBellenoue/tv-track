@@ -18,6 +18,10 @@ class TvdbApi {
 
   static const _base = 'https://api4.thetvdb.com/v4';
 
+  /// TheTVDB serves a translated record with its untranslated fields left
+  /// empty rather than falling back on its own, so English fills the gaps.
+  static const _fallback = 'eng';
+
   final Dio _dio;
 
   /// ISO 639-2/T code used for translation endpoints.
@@ -39,10 +43,16 @@ class TvdbApi {
   Future<TvdbSeries?> series(int tvdbId) async {
     final (extended, translation, episodes) = await (
       _extended(tvdbId),
-      _translation(tvdbId),
+      _translation(tvdbId, language),
       _episodes(tvdbId),
     ).wait;
     if (extended == null) return null;
+
+    final overview =
+        translation.overview ??
+        (language == _fallback
+            ? null
+            : (await _translation(tvdbId, _fallback)).overview);
 
     final status =
         (extended['status'] as Map<String, dynamic>?)?['name'] as String?;
@@ -52,7 +62,7 @@ class TvdbApi {
 
     return TvdbSeries(
       name: translation.name ?? (extended['name'] as String? ?? ''),
-      overview: translation.overview,
+      overview: overview,
       poster: _img(extended['image'] as String?),
       status: status,
       network: network,
@@ -76,10 +86,13 @@ class TvdbApi {
 
   /// Both fields null when no translation exists, so the caller keeps the
   /// original text.
-  Future<({String? name, String? overview})> _translation(int tvdbId) async {
+  Future<({String? name, String? overview})> _translation(
+    int tvdbId,
+    String lang,
+  ) async {
     try {
       final r = await _dio.get<Map<String, dynamic>>(
-        '/series/$tvdbId/translations/$language',
+        '/series/$tvdbId/translations/$lang',
       );
       final d = r.data?['data'] as Map<String, dynamic>?;
       return (
@@ -93,14 +106,39 @@ class TvdbApi {
 
   /// Specials (season 0) are returned here; the merge step is what drops them
   /// from progress tracking.
+  ///
+  /// A season nobody has translated yet comes back with blank titles and no
+  /// overviews, so the English listing is fetched to fill them in, but only
+  /// when something is actually missing.
   Future<List<TvdbEpisode>> _episodes(int tvdbId) async {
+    final translated = await _episodePages(tvdbId, language);
+    if (language == _fallback) return translated;
+    if (!translated.any((e) => e.name.isEmpty || e.overview == null)) {
+      return translated;
+    }
+
+    final english = await _episodePages(tvdbId, _fallback);
+    if (english.isEmpty) return translated;
+
+    final byNumber = {for (final e in english) (e.season, e.number): e};
+    final out = [
+      for (final e in translated)
+        e.filledFrom(byNumber.remove((e.season, e.number))),
+    ];
+    // A season the translated listing does not carry at all still belongs in
+    // the show.
+    out.addAll(byNumber.values);
+    return out;
+  }
+
+  Future<List<TvdbEpisode>> _episodePages(int tvdbId, String lang) async {
     final out = <TvdbEpisode>[];
     var page = 0;
     while (true) {
       Response<Map<String, dynamic>> r;
       try {
         r = await _dio.get<Map<String, dynamic>>(
-          '/series/$tvdbId/episodes/official/$language',
+          '/series/$tvdbId/episodes/official/$lang',
           queryParameters: {'page': page},
         );
       } on DioException catch (e) {
@@ -207,4 +245,17 @@ class TvdbEpisode {
   final DateTime? airDate;
 
   bool get isSpecial => season == 0;
+
+  /// This episode with every empty field taken from [other], the same episode
+  /// in another language.
+  TvdbEpisode filledFrom(TvdbEpisode? other) => other == null
+      ? this
+      : TvdbEpisode(
+          season: season,
+          number: number,
+          name: name.isNotEmpty ? name : other.name,
+          overview: overview ?? other.overview,
+          still: still ?? other.still,
+          airDate: airDate ?? other.airDate,
+        );
 }
