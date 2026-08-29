@@ -79,34 +79,39 @@ class _ShowDetailScreenState extends ConsumerState<ShowDetailScreen> {
     }
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          _Header(
-            show: show,
-            // Deleting is only offered before a show is started: past that,
-            // it would destroy watch history.
-            onDelete: show.isStarted ? null : () => _confirmDelete(show),
-          ),
-          if (repairing) const SliverToBoxAdapter(child: _RepairBanner()),
-          if (show.providers.isNotEmpty || (show.overview?.isNotEmpty ?? false))
-            SliverToBoxAdapter(child: _Overview(show: show)),
-          SliverPadding(
-            padding: const EdgeInsets.only(bottom: 24),
-            sliver: SliverList.list(
-              children: [
-                for (final season in show.regularSeasons)
-                  _SeasonTile(
-                    key: PageStorageKey('season-${season.number}'),
-                    show: show,
-                    season: season,
-                    initiallyExpanded: season.number == nextSeasonNumber,
-                    highlightEpisodeTvdb: nextEpisodeTvdb,
-                    highlightKey: _nextEpisodeKey,
-                  ),
-              ],
+      body: RefreshIndicator(
+        onRefresh: () =>
+            ref.read(liveRepairProvider.notifier).repairShow(show, force: true),
+        child: CustomScrollView(
+          slivers: [
+            _Header(
+              show: show,
+              // Deleting is only offered before a show is started: past that,
+              // it would destroy watch history.
+              onDelete: show.isStarted ? null : () => _confirmDelete(show),
             ),
-          ),
-        ],
+            if (repairing) const SliverToBoxAdapter(child: _RepairBanner()),
+            if (show.providers.isNotEmpty ||
+                (show.overview?.isNotEmpty ?? false))
+              SliverToBoxAdapter(child: _Overview(show: show)),
+            SliverPadding(
+              padding: const EdgeInsets.only(bottom: 24),
+              sliver: SliverList.list(
+                children: [
+                  for (final season in show.regularSeasons)
+                    _SeasonTile(
+                      key: PageStorageKey('season-${season.number}'),
+                      show: show,
+                      season: season,
+                      initiallyExpanded: season.number == nextSeasonNumber,
+                      highlightEpisodeTvdb: nextEpisodeTvdb,
+                      highlightKey: _nextEpisodeKey,
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

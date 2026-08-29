@@ -13,6 +13,7 @@ import '../../core/widgets/filter_tabs.dart';
 import '../../core/widgets/poster.dart';
 import '../../data/models/show.dart';
 import '../../l10n/app_localizations.dart';
+import 'refresh_controller.dart';
 
 enum ShowFilter {
   watching,
@@ -72,16 +73,21 @@ class ShowsTab extends HookConsumerWidget {
               ),
             ),
             Expanded(
-              child: filtered.isEmpty
-                  ? const _NothingHere()
-                  : ListView.builder(
-                      padding: const EdgeInsets.only(top: 8, bottom: 12),
-                      itemCount: filtered.length,
-                      itemBuilder: (context, i) => _ShowTile(
-                        key: ValueKey(filtered[i].tvdbId),
-                        show: filtered[i],
+              child: RefreshIndicator(
+                onRefresh: () =>
+                    ref.read(metadataRefreshProvider.notifier).run(force: true),
+                child: filtered.isEmpty
+                    ? const _NothingHere()
+                    : ListView.builder(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.only(top: 8, bottom: 12),
+                        itemCount: filtered.length,
+                        itemBuilder: (context, i) => _ShowTile(
+                          key: ValueKey(filtered[i].tvdbId),
+                          show: filtered[i],
+                        ),
                       ),
-                    ),
+              ),
             ),
           ],
         );

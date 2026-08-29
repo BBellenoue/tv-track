@@ -29,9 +29,12 @@ class LiveRepair extends _$LiveRepair {
 
   bool isRepairing(String key) => _inFlight.contains(key);
 
-  Future<void> repairShow(Show show) async {
+  /// [force] is what a pull-to-refresh passes: it retries a record already
+  /// attempted this session.
+  Future<void> repairShow(Show show, {bool force = false}) async {
     final key = 'show-${show.tvdbId}';
-    if (_attempted.contains(key) || _inFlight.contains(key)) return;
+    if (_inFlight.contains(key)) return;
+    if (!force && _attempted.contains(key)) return;
     final repo = ref.read(trackingRepositoryProvider);
     final tvdb = ref.read(tvdbApiProvider);
     if (repo == null || tvdb == null) return;

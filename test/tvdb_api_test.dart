@@ -37,8 +37,8 @@ class _FakeTvdbAdapter implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-TvdbApi _api(_FakeTvdbAdapter adapter) =>
-    TvdbApi.proxied(Dio()..httpClientAdapter = adapter);
+TvdbApi _api(_FakeTvdbAdapter adapter, {String language = 'eng'}) =>
+    TvdbApi.proxied(Dio()..httpClientAdapter = adapter, language: language);
 
 const _extended = {
   'data': {
@@ -110,6 +110,88 @@ void main() {
       );
 
       expect((await _api(adapter).series(1))!.name, 'Berlin');
+    });
+
+    test('an untranslated season takes its text from English', () async {
+      // What TheTVDB serves for a season nobody has translated yet: the
+      // episodes are listed, their text is not.
+      Map<String, dynamic> episodes({required bool french}) => {
+        'data': {
+          'episodes': [
+            {
+              'seasonNumber': '5',
+              'number': '1',
+              'name': french ? '' : 'The Lost Fleet',
+              'overview': french ? null : 'The Pogues sail south.',
+              'aired': '2026-08-01',
+            },
+            if (!french)
+              {
+                'seasonNumber': '5',
+                'number': '2',
+                'name': 'Dead Reckoning',
+                'aired': '2026-08-08',
+              },
+          ],
+        },
+        'links': {'next': null},
+      };
+
+      final adapter = _FakeTvdbAdapter((r) async {
+        if (r.path.contains('/extended')) return (200, _extended);
+        if (r.path.contains('/translations/')) {
+          return (
+            200,
+            {
+              'data': {
+                'name': 'Outer Banks',
+                'overview': r.path.endsWith('/fra')
+                    ? null
+                    : 'Chasse au trésor.',
+              },
+            },
+          );
+        }
+        return (200, episodes(french: r.path.endsWith('/fra')));
+      });
+
+      final series = await _api(adapter, language: 'fra').series(1);
+
+      final first = series!.episodes.first;
+      expect(first.name, 'The Lost Fleet');
+      expect(first.overview, 'The Pogues sail south.');
+      // An episode the French listing does not carry at all still shows up.
+      expect(series.episodes.map((e) => e.number), [1, 2]);
+      // And the show overview, missing in French, comes from English too.
+      expect(series.overview, 'Chasse au trésor.');
+    });
+
+    test('a complete translation asks English for nothing', () async {
+      final adapter = _FakeTvdbAdapter(
+        (r) async => r.path.contains('/episodes/')
+            ? (
+                200,
+                {
+                  'data': {
+                    'episodes': [
+                      {
+                        'seasonNumber': '1',
+                        'number': '1',
+                        'name': 'Pilote',
+                        'overview': 'Le début.',
+                        'aired': '2024-01-01',
+                      },
+                    ],
+                  },
+                  'links': {'next': null},
+                },
+              )
+            : _route(r),
+      );
+
+      await _api(adapter, language: 'fra').series(1);
+
+      expect(adapter.requests.where((r) => r.path.endsWith('/eng')), isEmpty);
     });
 
     test('the three calls fly together', () async {
