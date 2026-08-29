@@ -47,17 +47,21 @@ class LibraryAdd extends _$LibraryAdd {
         title: item.title,
         tmdbId: item.tmdbId,
         overview: item.overview,
+        poster: item.posterUrl,
         posterLarge: item.backdropUrl,
       );
       // …then fill in seasons and episodes from TheTVDB, providers from TMDB.
-      if (tvdb != null) {
-        show = await enrichShowFromTvdb(show, tvdb, tmdb: tmdb);
-      } else {
-        show = show.copyWith(
-          providers: await tmdb
-              .tvProviders(item.tmdbId)
-              .catchError((_) => <String>[]),
-        );
+      // A provider that fails here must not lose the add: the record goes in
+      // with what the card carries, and a refresh completes it later.
+      try {
+        if (tvdb != null) {
+          show = await enrichShowFromTvdb(show, tvdb, tmdb: tmdb);
+        } else {
+          show = show.copyWith(providers: await tmdb.tvProviders(item.tmdbId));
+        }
+      } catch (_) {
+        // Left incomplete on purpose, which is what makes the refresh pick it
+        // up first.
       }
       await repo.saveShow(show);
       return true;
