@@ -25,7 +25,9 @@ void main() {
   }) => ProviderContainer.test(
     overrides: [
       tmdbApiProvider.overrideWithValue(fakeTmdbApi(adapter)),
-      trackedShowTmdbIdsProvider.overrideWithValue(tracked),
+      trackedShowIdsByTmdbProvider.overrideWithValue({
+        for (final id in tracked) id: id,
+      }),
     ],
   );
 

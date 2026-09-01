@@ -15,11 +15,15 @@ class LibraryAdd extends _$LibraryAdd {
   @override
   void build() {}
 
-  bool isTracked(CatalogItem item) {
+  bool isTracked(CatalogItem item) => libraryId(item) != null;
+
+  /// Id of the library record this catalog entry is already tracked as, null
+  /// when it is not tracked.
+  int? libraryId(CatalogItem item) {
     final ids = item.kind.isTv
-        ? ref.read(trackedShowTmdbIdsProvider)
-        : ref.read(trackedMovieTmdbIdsProvider);
-    return ids.contains(item.tmdbId);
+        ? ref.read(trackedShowIdsByTmdbProvider)
+        : ref.read(trackedMovieIdsByTmdbProvider);
+    return ids[item.tmdbId];
   }
 
   /// Returns false when the entry is already tracked or the add failed.

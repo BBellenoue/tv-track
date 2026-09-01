@@ -282,6 +282,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alreadyInList => 'Already in your list';
 
   @override
+  String get openRecord => 'Open the record';
+
+  @override
   String get addToList => 'Add to my list';
 
   @override

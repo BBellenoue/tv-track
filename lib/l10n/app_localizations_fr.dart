@@ -282,6 +282,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get alreadyInList => 'Déjà dans ta liste';
 
   @override
+  String get openRecord => 'Ouvrir la fiche';
+
+  @override
   String get addToList => 'Ajouter à ma liste';
 
   @override

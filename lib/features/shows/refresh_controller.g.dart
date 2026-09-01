@@ -8,30 +8,27 @@ part of 'refresh_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Incremental metadata refresh, in batches, running shows that need it most
-/// first.
+/// Incremental metadata refresh, one batch at a time.
 ///
 /// Fires on app open for running shows whose metadata is over a day old, plus
 /// any record with something missing. A pull-to-refresh passes `force`, which
-/// also picks up incomplete records that are not stale yet.
+/// takes the age condition out of the way.
 
 @ProviderFor(MetadataRefresh)
 final metadataRefreshProvider = MetadataRefreshProvider._();
 
-/// Incremental metadata refresh, in batches, running shows that need it most
-/// first.
+/// Incremental metadata refresh, one batch at a time.
 ///
 /// Fires on app open for running shows whose metadata is over a day old, plus
 /// any record with something missing. A pull-to-refresh passes `force`, which
-/// also picks up incomplete records that are not stale yet.
+/// takes the age condition out of the way.
 final class MetadataRefreshProvider
     extends $NotifierProvider<MetadataRefresh, bool> {
-  /// Incremental metadata refresh, in batches, running shows that need it most
-  /// first.
+  /// Incremental metadata refresh, one batch at a time.
   ///
   /// Fires on app open for running shows whose metadata is over a day old, plus
   /// any record with something missing. A pull-to-refresh passes `force`, which
-  /// also picks up incomplete records that are not stale yet.
+  /// takes the age condition out of the way.
   MetadataRefreshProvider._()
     : super(
         from: null,
@@ -59,14 +56,13 @@ final class MetadataRefreshProvider
   }
 }
 
-String _$metadataRefreshHash() => r'b9a82fa1c7256520b311d4dbade8ddf18837c542';
+String _$metadataRefreshHash() => r'200f5f528fcc633ede2eb5551f5f9a48ac21a8e8';
 
-/// Incremental metadata refresh, in batches, running shows that need it most
-/// first.
+/// Incremental metadata refresh, one batch at a time.
 ///
 /// Fires on app open for running shows whose metadata is over a day old, plus
 /// any record with something missing. A pull-to-refresh passes `force`, which
-/// also picks up incomplete records that are not stale yet.
+/// takes the age condition out of the way.
 
 abstract class _$MetadataRefresh extends $Notifier<bool> {
   bool build();

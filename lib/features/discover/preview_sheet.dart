@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../core/theme.dart';
@@ -29,7 +30,7 @@ class _PreviewSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final tracked = ref.watch(libraryAddProvider.notifier).isTracked(item);
+    final libraryId = ref.watch(libraryAddProvider.notifier).libraryId(item);
     final backdrop = item.backdropUrl ?? item.posterUrl;
 
     final meta = [
@@ -85,13 +86,16 @@ class _PreviewSheet extends ConsumerWidget {
                 ],
                 SizedBox(
                   width: double.infinity,
-                  child: tracked
+                  child: libraryId != null
                       ? OutlinedButton.icon(
-                          onPressed: null,
+                          onPressed: () => _open(context, libraryId),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
                           icon: const Icon(Icons.check, color: tungsten),
                           label: Text(
-                            l10n.alreadyInList,
-                            style: condensed(size: 15, color: dust),
+                            l10n.openRecord,
+                            style: condensed(size: 15, color: linen),
                           ),
                         )
                       : FilledButton.icon(
@@ -118,6 +122,12 @@ class _PreviewSheet extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void _open(BuildContext context, int libraryId) {
+    final router = GoRouter.of(context);
+    Navigator.of(context).pop();
+    router.push('/${item.kind.isTv ? 'show' : 'movie'}/$libraryId');
   }
 
   Future<void> _add(BuildContext context, WidgetRef ref) async {

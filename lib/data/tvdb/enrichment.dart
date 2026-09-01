@@ -82,6 +82,9 @@ Show mergeTvdb(Show show, TvdbSeries series, {required DateTime now}) {
 
   return show.copyWith(
     seasons: seasons,
+    // TheTVDB serves the title in the app's language, so a record imported
+    // under its international name follows the rest of the interface.
+    title: series.name.isNotEmpty ? series.name : show.title,
     overview: series.overview ?? show.overview,
     poster: series.poster ?? show.poster,
     posterLarge: series.poster ?? show.posterLarge,

@@ -584,6 +584,12 @@ abstract class AppLocalizations {
   /// **'Already in your list'**
   String get alreadyInList;
 
+  /// No description provided for @openRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the record'**
+  String get openRecord;
+
   /// No description provided for @addToList.
   ///
   /// In en, this message translates to:
