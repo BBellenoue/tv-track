@@ -111,17 +111,18 @@ Stream<Set<String>> discoverSeenKeys(Ref ref) {
   return repo.watchSeenKeys();
 }
 
-/// TMDB ids of tracked shows, used to grey out entries already in the library.
+/// Library record id for every tracked show, keyed by TMDB id. Membership greys
+/// out catalog entries already in the library, and the value is what opens the
+/// record: the two ids differ, and a record imported under another name can be
+/// found no other way.
 @riverpod
-Set<int> trackedShowTmdbIds(Ref ref) =>
-    (ref.watch(showsProvider).value ?? const [])
-        .map((s) => s.tmdbId)
-        .whereType<int>()
-        .toSet();
+Map<int, int> trackedShowIdsByTmdb(Ref ref) => {
+  for (final show in ref.watch(showsProvider).value ?? const <Show>[])
+    if (show.tmdbId != null) show.tmdbId!: show.tvdbId,
+};
 
 @riverpod
-Set<int> trackedMovieTmdbIds(Ref ref) =>
-    (ref.watch(moviesProvider).value ?? const [])
-        .map((m) => m.tmdbId)
-        .whereType<int>()
-        .toSet();
+Map<int, int> trackedMovieIdsByTmdb(Ref ref) => {
+  for (final movie in ref.watch(moviesProvider).value ?? const <Movie>[])
+    if (movie.tmdbId != null) movie.tmdbId!: movie.tvdbId,
+};

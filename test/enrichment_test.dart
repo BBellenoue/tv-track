@@ -5,6 +5,9 @@ import 'package:tv_track/data/tvdb/tvdb_api.dart';
 
 void main() {
   final now = DateTime(2026, 7, 5);
+  // nextAirDate compares against the real clock, so this one has to stay
+  // ahead of it whenever the suite runs.
+  final upcoming = DateTime.now().add(const Duration(days: 30));
 
   final show = Show(
     tvdbId: 1001,
@@ -43,12 +46,7 @@ void main() {
         overview: 'Overview of episode two.',
         still: 'https://artworks.thetvdb.com/banners/s2.jpg',
       ),
-      TvdbEpisode(
-        season: 2,
-        number: 1,
-        name: 'Return',
-        airDate: DateTime(2026, 9, 1),
-      ),
+      TvdbEpisode(season: 2, number: 1, name: 'Return', airDate: upcoming),
       const TvdbEpisode(season: 0, number: 1, name: 'Bonus'),
     ],
   );
@@ -96,8 +94,23 @@ void main() {
       expect(merged.seasons.where((s) => s.number == 0), isEmpty);
     });
 
+    test('takes the show title from TheTVDB, in the requested language', () {
+      final imported = show.copyWith(title: 'Rhythm + Flow France');
+      final translated = TvdbSeries(
+        name: 'Nouvelle École',
+        overview: series.overview,
+        episodes: series.episodes,
+      );
+      expect(mergeTvdb(imported, translated, now: now).title, 'Nouvelle École');
+    });
+
+    test('keeps the stored title when TheTVDB has none', () {
+      final untitled = TvdbSeries(name: '', episodes: series.episodes);
+      expect(mergeTvdb(show, untitled, now: now).title, 'Show In Progress');
+    });
+
     test('derives the next air date from the merged episodes', () {
-      expect(merged.nextAirDate, DateTime(2026, 9, 1));
+      expect(merged.nextAirDate, upcoming);
     });
 
     test('is idempotent: ids and progress survive a second merge', () {

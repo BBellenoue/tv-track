@@ -71,7 +71,7 @@ final class LiveRepairProvider
   }
 }
 
-String _$liveRepairHash() => r'bdef98d274722e486f73ec751a0328fade02ccc8';
+String _$liveRepairHash() => r'd3c1b4dcdff7ffe7a86c91954ad68c792c2c38fb';
 
 /// Repairs a single record on demand, when its detail screen opens and finds
 /// something missing. Complements the batch [MetadataRefresh] by fixing the

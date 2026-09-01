@@ -535,91 +535,100 @@ final class DiscoverSeenKeysProvider
 
 String _$discoverSeenKeysHash() => r'b79470ef6f7bf8236c4925f3168e5811a1950e4a';
 
-/// TMDB ids of tracked shows, used to grey out entries already in the library.
+/// Library record id for every tracked show, keyed by TMDB id. Membership greys
+/// out catalog entries already in the library, and the value is what opens the
+/// record: the two ids differ, and a record imported under another name can be
+/// found no other way.
 
-@ProviderFor(trackedShowTmdbIds)
-final trackedShowTmdbIdsProvider = TrackedShowTmdbIdsProvider._();
+@ProviderFor(trackedShowIdsByTmdb)
+final trackedShowIdsByTmdbProvider = TrackedShowIdsByTmdbProvider._();
 
-/// TMDB ids of tracked shows, used to grey out entries already in the library.
+/// Library record id for every tracked show, keyed by TMDB id. Membership greys
+/// out catalog entries already in the library, and the value is what opens the
+/// record: the two ids differ, and a record imported under another name can be
+/// found no other way.
 
-final class TrackedShowTmdbIdsProvider
-    extends $FunctionalProvider<Set<int>, Set<int>, Set<int>>
-    with $Provider<Set<int>> {
-  /// TMDB ids of tracked shows, used to grey out entries already in the library.
-  TrackedShowTmdbIdsProvider._()
+final class TrackedShowIdsByTmdbProvider
+    extends $FunctionalProvider<Map<int, int>, Map<int, int>, Map<int, int>>
+    with $Provider<Map<int, int>> {
+  /// Library record id for every tracked show, keyed by TMDB id. Membership greys
+  /// out catalog entries already in the library, and the value is what opens the
+  /// record: the two ids differ, and a record imported under another name can be
+  /// found no other way.
+  TrackedShowIdsByTmdbProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'trackedShowTmdbIdsProvider',
+        name: r'trackedShowIdsByTmdbProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$trackedShowTmdbIdsHash();
+  String debugGetCreateSourceHash() => _$trackedShowIdsByTmdbHash();
 
   @$internal
   @override
-  $ProviderElement<Set<int>> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<Map<int, int>> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  Set<int> create(Ref ref) {
-    return trackedShowTmdbIds(ref);
+  Map<int, int> create(Ref ref) {
+    return trackedShowIdsByTmdb(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Set<int> value) {
+  Override overrideWithValue(Map<int, int> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<Set<int>>(value),
+      providerOverride: $SyncValueProvider<Map<int, int>>(value),
     );
   }
 }
 
-String _$trackedShowTmdbIdsHash() =>
-    r'69a12f276928e2c31f3730eed12192353cc69621';
+String _$trackedShowIdsByTmdbHash() =>
+    r'b369bfb0cad800524904f963cdfcde523321760d';
 
-@ProviderFor(trackedMovieTmdbIds)
-final trackedMovieTmdbIdsProvider = TrackedMovieTmdbIdsProvider._();
+@ProviderFor(trackedMovieIdsByTmdb)
+final trackedMovieIdsByTmdbProvider = TrackedMovieIdsByTmdbProvider._();
 
-final class TrackedMovieTmdbIdsProvider
-    extends $FunctionalProvider<Set<int>, Set<int>, Set<int>>
-    with $Provider<Set<int>> {
-  TrackedMovieTmdbIdsProvider._()
+final class TrackedMovieIdsByTmdbProvider
+    extends $FunctionalProvider<Map<int, int>, Map<int, int>, Map<int, int>>
+    with $Provider<Map<int, int>> {
+  TrackedMovieIdsByTmdbProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'trackedMovieTmdbIdsProvider',
+        name: r'trackedMovieIdsByTmdbProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$trackedMovieTmdbIdsHash();
+  String debugGetCreateSourceHash() => _$trackedMovieIdsByTmdbHash();
 
   @$internal
   @override
-  $ProviderElement<Set<int>> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<Map<int, int>> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  Set<int> create(Ref ref) {
-    return trackedMovieTmdbIds(ref);
+  Map<int, int> create(Ref ref) {
+    return trackedMovieIdsByTmdb(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Set<int> value) {
+  Override overrideWithValue(Map<int, int> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<Set<int>>(value),
+      providerOverride: $SyncValueProvider<Map<int, int>>(value),
     );
   }
 }
 
-String _$trackedMovieTmdbIdsHash() =>
-    r'77cd99727062c31c674efbbd3dff258d6c50402d';
+String _$trackedMovieIdsByTmdbHash() =>
+    r'42faa00793dabdfdebdcbe157d5464143d90bcd9';

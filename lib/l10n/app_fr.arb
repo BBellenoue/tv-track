@@ -91,6 +91,7 @@
   "sortRecent": "Récentes",
   "sortTopRated": "Mieux notées",
   "alreadyInList": "Déjà dans ta liste",
+  "openRecord": "Ouvrir la fiche",
   "addToList": "Ajouter à ma liste",
   "addedToList": "{title} ajouté à ta liste",
   "addFailed": "Impossible d'ajouter {title}",

@@ -130,6 +130,7 @@
   "sortRecent": "Recent",
   "sortTopRated": "Top rated",
   "alreadyInList": "Already in your list",
+  "openRecord": "Open the record",
   "addToList": "Add to my list",
   "addedToList": "{title} added to your list",
   "@addedToList": {

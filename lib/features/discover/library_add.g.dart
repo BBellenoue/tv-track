@@ -46,7 +46,7 @@ final class LibraryAddProvider extends $NotifierProvider<LibraryAdd, void> {
   }
 }
 
-String _$libraryAddHash() => r'fe47b727ee0df6a34258afbb4f9528f0497911ad';
+String _$libraryAddHash() => r'c2cff210d0a25c1a9013cdfbf11245abb45947a1';
 
 /// Adds a catalog entry to the user's library. Shared by the swipe deck, the
 /// browse rails, the category grid and search.

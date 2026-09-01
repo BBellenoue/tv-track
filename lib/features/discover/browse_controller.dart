@@ -15,9 +15,12 @@ Future<List<Genre>> catalogGenres(Ref ref, MediaKind kind) async {
 
 /// TMDB ids already in the library for one media kind. Watched rather than
 /// read, so adding a title makes it disappear from Browse straight away.
-Set<int> _tracked(Ref ref, MediaKind kind) => kind.isTv
-    ? ref.watch(trackedShowTmdbIdsProvider)
-    : ref.watch(trackedMovieTmdbIdsProvider);
+Set<int> _tracked(Ref ref, MediaKind kind) =>
+    (kind.isTv
+            ? ref.watch(trackedShowIdsByTmdbProvider)
+            : ref.watch(trackedMovieIdsByTmdbProvider))
+        .keys
+        .toSet();
 
 /// One Browse rail: first page only. A null [genreId] means this week's
 /// trending entries.

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../core/providers.dart';
+import '../../core/search_match.dart';
 import '../../core/theme.dart';
 import '../../core/widgets/poster.dart';
 import '../../core/widgets/section_label.dart';
@@ -34,18 +35,18 @@ class SearchScreen extends HookConsumerWidget {
       return t.cancel;
     }, [raw.value]);
 
-    final q = query.value.toLowerCase();
+    final q = searchFold(query.value);
     final shows = (ref.watch(showsProvider).value ?? const <Show>[])
-        .where((s) => q.length >= 2 && s.title.toLowerCase().contains(q))
+        .where((s) => q.length >= 2 && searchFold(s.title).contains(q))
         .take(20)
         .toList();
     final movies = (ref.watch(moviesProvider).value ?? const <Movie>[])
-        .where((m) => q.length >= 2 && m.title.toLowerCase().contains(q))
+        .where((m) => q.length >= 2 && searchFold(m.title).contains(q))
         .take(20)
         .toList();
     final tmdb = ref.watch(tmdbSearchProvider(query.value));
-    final trackedTv = ref.watch(trackedShowTmdbIdsProvider);
-    final trackedMv = ref.watch(trackedMovieTmdbIdsProvider);
+    final trackedTv = ref.watch(trackedShowIdsByTmdbProvider);
+    final trackedMv = ref.watch(trackedMovieIdsByTmdbProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -128,8 +129,8 @@ class SearchScreen extends HookConsumerWidget {
                               posterUrl: item.posterUrlSmall,
                               seed: item.tmdbId,
                               tracked: item.kind.isTv
-                                  ? trackedTv.contains(item.tmdbId)
-                                  : trackedMv.contains(item.tmdbId),
+                                  ? trackedTv.containsKey(item.tmdbId)
+                                  : trackedMv.containsKey(item.tmdbId),
                               onTap: () => showCatalogPreview(context, item),
                             ),
                         ],
