@@ -6,6 +6,19 @@ Notable changes to TV Track. The format follows
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-09-01
+
+### Fixed
+
+- A show imported from the TV Time export kept the export's title for good, so
+  searching the name the rest of the app displays never reached it. Show titles
+  now follow TheTVDB in the language the app runs in, as overviews and episode
+  titles already did.
+- The preview sheet of a title already in the library was a dead end: it said
+  so on a disabled button and offered no way through. It opens the record now.
+- Search through the library ignores case and accents, so "nouvelle ecole"
+  finds "Nouvelle École".
+
 ## [1.0.2] - 2026-08-29
 
 ### Fixed
@@ -62,7 +75,8 @@ First public release.
   a server-side proxy that holds the credentials and serves signed-in callers
   only.
 
-[Unreleased]: https://github.com/BBellenoue/tv-track/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/BBellenoue/tv-track/compare/v1.0.3...HEAD
+[1.0.3]: https://github.com/BBellenoue/tv-track/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/BBellenoue/tv-track/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/BBellenoue/tv-track/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/BBellenoue/tv-track/releases/tag/v1.0.0
