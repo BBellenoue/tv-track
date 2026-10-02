@@ -10,3 +10,14 @@ updates:
     directory: /
     schedule:
       interval: monthly
+
+  # The Cloud Functions and the Android build have their own lockfiles and were not tracked.
+  - package-ecosystem: npm
+    directory: /functions
+    schedule:
+      interval: monthly
+
+  - package-ecosystem: gradle
+    directory: /android
+    schedule:
+      interval: monthly
