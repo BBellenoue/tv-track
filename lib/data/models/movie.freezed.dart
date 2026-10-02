@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'movie.dart';
@@ -9,6 +9,7 @@ part of 'movie.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -28,16 +29,21 @@ $MovieCopyWith<Movie> get copyWith => _$MovieCopyWithImpl<Movie>(this as Movie, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Movie&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.imdbId, imdbId) || other.imdbId == imdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.year, year) || other.year == year)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&(identical(other.tmdbId, tmdbId) || other.tmdbId == tmdbId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.backdrop, backdrop) || other.backdrop == backdrop)&&(identical(other.overview, overview) || other.overview == overview)&&(identical(other.runtime, runtime) || other.runtime == runtime)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
+  final _this = this as Movie;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Movie&&(identical(other.tvdbId, _this.tvdbId) || other.tvdbId == _this.tvdbId)&&(identical(other.imdbId, _this.imdbId) || other.imdbId == _this.imdbId)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.year, _this.year) || other.year == _this.year)&&(identical(other.watched, _this.watched) || other.watched == _this.watched)&&(identical(other.watchedAt, _this.watchedAt) || other.watchedAt == _this.watchedAt)&&(identical(other.isFavorite, _this.isFavorite) || other.isFavorite == _this.isFavorite)&&(identical(other.addedAt, _this.addedAt) || other.addedAt == _this.addedAt)&&(identical(other.tmdbId, _this.tmdbId) || other.tmdbId == _this.tmdbId)&&(identical(other.poster, _this.poster) || other.poster == _this.poster)&&(identical(other.backdrop, _this.backdrop) || other.backdrop == _this.backdrop)&&(identical(other.overview, _this.overview) || other.overview == _this.overview)&&(identical(other.runtime, _this.runtime) || other.runtime == _this.runtime)&&(identical(other.metaRefreshedAt, _this.metaRefreshedAt) || other.metaRefreshedAt == _this.metaRefreshedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,imdbId,title,year,watched,watchedAt,isFavorite,addedAt,tmdbId,poster,backdrop,overview,runtime,metaRefreshedAt);
+int get hashCode {
+  final _this = this as Movie;
+  return Object.hash(runtimeType,_this.tvdbId,_this.imdbId,_this.title,_this.year,_this.watched,_this.watchedAt,_this.isFavorite,_this.addedAt,_this.tmdbId,_this.poster,_this.backdrop,_this.overview,_this.runtime,_this.metaRefreshedAt);
+}
 
 @override
 String toString() {
-  return 'Movie(tvdbId: $tvdbId, imdbId: $imdbId, title: $title, year: $year, watched: $watched, watchedAt: $watchedAt, isFavorite: $isFavorite, addedAt: $addedAt, tmdbId: $tmdbId, poster: $poster, backdrop: $backdrop, overview: $overview, runtime: $runtime, metaRefreshedAt: $metaRefreshedAt)';
+  final _this = this as Movie;
+  return 'Movie(tvdbId: ${_this.tvdbId}, imdbId: ${_this.imdbId}, title: ${_this.title}, year: ${_this.year}, watched: ${_this.watched}, watchedAt: ${_this.watchedAt}, isFavorite: ${_this.isFavorite}, addedAt: ${_this.addedAt}, tmdbId: ${_this.tmdbId}, poster: ${_this.poster}, backdrop: ${_this.backdrop}, overview: ${_this.overview}, runtime: ${_this.runtime}, metaRefreshedAt: ${_this.metaRefreshedAt})';
 }
 
 
@@ -66,7 +72,7 @@ class _$MovieCopyWithImpl<$Res>
 /// Create a copy of Movie
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? imdbId = freezed,Object? title = null,Object? year = freezed,Object? watched = null,Object? watchedAt = freezed,Object? isFavorite = null,Object? addedAt = freezed,Object? tmdbId = freezed,Object? poster = freezed,Object? backdrop = freezed,Object? overview = freezed,Object? runtime = freezed,Object? metaRefreshedAt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(Movie(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,imdbId: freezed == imdbId ? _self.imdbId : imdbId // ignore: cast_nullable_to_non_nullable
 as String?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -253,16 +259,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Movie&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.imdbId, imdbId) || other.imdbId == imdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.year, year) || other.year == year)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&(identical(other.tmdbId, tmdbId) || other.tmdbId == tmdbId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.backdrop, backdrop) || other.backdrop == backdrop)&&(identical(other.overview, overview) || other.overview == overview)&&(identical(other.runtime, runtime) || other.runtime == runtime)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Movie&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.imdbId, imdbId) || other.imdbId == imdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.year, year) || other.year == year)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&(identical(other.tmdbId, tmdbId) || other.tmdbId == tmdbId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.backdrop, backdrop) || other.backdrop == backdrop)&&(identical(other.overview, overview) || other.overview == overview)&&(identical(other.runtime, runtime) || other.runtime == runtime)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,imdbId,title,year,watched,watchedAt,isFavorite,addedAt,tmdbId,poster,backdrop,overview,runtime,metaRefreshedAt);
+int get hashCode {
+    return Object.hash(runtimeType,tvdbId,imdbId,title,year,watched,watchedAt,isFavorite,addedAt,tmdbId,poster,backdrop,overview,runtime,metaRefreshedAt);
+}
 
 @override
 String toString() {
-  return 'Movie(tvdbId: $tvdbId, imdbId: $imdbId, title: $title, year: $year, watched: $watched, watchedAt: $watchedAt, isFavorite: $isFavorite, addedAt: $addedAt, tmdbId: $tmdbId, poster: $poster, backdrop: $backdrop, overview: $overview, runtime: $runtime, metaRefreshedAt: $metaRefreshedAt)';
+    return 'Movie(tvdbId: $tvdbId, imdbId: $imdbId, title: $title, year: $year, watched: $watched, watchedAt: $watchedAt, isFavorite: $isFavorite, addedAt: $addedAt, tmdbId: $tmdbId, poster: $poster, backdrop: $backdrop, overview: $overview, runtime: $runtime, metaRefreshedAt: $metaRefreshedAt)';
 }
 
 
