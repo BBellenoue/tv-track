@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // coverage:ignore-file
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'show.dart';
@@ -9,6 +9,7 @@ part of 'show.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
 // dart format off
 T _$identity<T>(T value) => value;
 
@@ -31,16 +32,21 @@ $EpisodeCopyWith<Episode> get copyWith => _$EpisodeCopyWithImpl<Episode>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview)&&(identical(other.still, still) || other.still == still));
+  final _this = this as Episode;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Episode&&(identical(other.tvdbId, _this.tvdbId) || other.tvdbId == _this.tvdbId)&&(identical(other.number, _this.number) || other.number == _this.number)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.special, _this.special) || other.special == _this.special)&&(identical(other.watched, _this.watched) || other.watched == _this.watched)&&(identical(other.watchedAt, _this.watchedAt) || other.watchedAt == _this.watchedAt)&&(identical(other.airDate, _this.airDate) || other.airDate == _this.airDate)&&(identical(other.overview, _this.overview) || other.overview == _this.overview)&&(identical(other.still, _this.still) || other.still == _this.still));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview,still);
+int get hashCode {
+  final _this = this as Episode;
+  return Object.hash(runtimeType,_this.tvdbId,_this.number,_this.name,_this.special,_this.watched,_this.watchedAt,_this.airDate,_this.overview,_this.still);
+}
 
 @override
 String toString() {
-  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview, still: $still)';
+  final _this = this as Episode;
+  return 'Episode(tvdbId: ${_this.tvdbId}, number: ${_this.number}, name: ${_this.name}, special: ${_this.special}, watched: ${_this.watched}, watchedAt: ${_this.watchedAt}, airDate: ${_this.airDate}, overview: ${_this.overview}, still: ${_this.still})';
 }
 
 
@@ -69,7 +75,7 @@ class _$EpisodeCopyWithImpl<$Res>
 /// Create a copy of Episode
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? number = null,Object? name = null,Object? special = null,Object? watched = null,Object? watchedAt = freezed,Object? airDate = freezed,Object? overview = freezed,Object? still = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(Episode(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -249,16 +255,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview)&&(identical(other.still, still) || other.still == still));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Episode&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.number, number) || other.number == number)&&(identical(other.name, name) || other.name == name)&&(identical(other.special, special) || other.special == special)&&(identical(other.watched, watched) || other.watched == watched)&&(identical(other.watchedAt, watchedAt) || other.watchedAt == watchedAt)&&(identical(other.airDate, airDate) || other.airDate == airDate)&&(identical(other.overview, overview) || other.overview == overview)&&(identical(other.still, still) || other.still == still));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview,still);
+int get hashCode {
+    return Object.hash(runtimeType,tvdbId,number,name,special,watched,watchedAt,airDate,overview,still);
+}
 
 @override
 String toString() {
-  return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview, still: $still)';
+    return 'Episode(tvdbId: $tvdbId, number: $number, name: $name, special: $special, watched: $watched, watchedAt: $watchedAt, airDate: $airDate, overview: $overview, still: $still)';
 }
 
 
@@ -321,16 +329,21 @@ $SeasonCopyWith<Season> get copyWith => _$SeasonCopyWithImpl<Season>(this as Sea
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Season&&(identical(other.number, number) || other.number == number)&&(identical(other.isSpecials, isSpecials) || other.isSpecials == isSpecials)&&const DeepCollectionEquality().equals(other.episodes, episodes));
+  final _this = this as Season;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Season&&(identical(other.number, _this.number) || other.number == _this.number)&&(identical(other.isSpecials, _this.isSpecials) || other.isSpecials == _this.isSpecials)&&const DeepCollectionEquality().equals(other.episodes, _this.episodes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,number,isSpecials,const DeepCollectionEquality().hash(episodes));
+int get hashCode {
+  final _this = this as Season;
+  return Object.hash(runtimeType,_this.number,_this.isSpecials,const DeepCollectionEquality().hash(_this.episodes));
+}
 
 @override
 String toString() {
-  return 'Season(number: $number, isSpecials: $isSpecials, episodes: $episodes)';
+  final _this = this as Season;
+  return 'Season(number: ${_this.number}, isSpecials: ${_this.isSpecials}, episodes: ${_this.episodes})';
 }
 
 
@@ -359,7 +372,7 @@ class _$SeasonCopyWithImpl<$Res>
 /// Create a copy of Season
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? number = null,Object? isSpecials = null,Object? episodes = null,}) {
-  return _then(_self.copyWith(
+  return _then(Season(
 number: null == number ? _self.number : number // ignore: cast_nullable_to_non_nullable
 as int,isSpecials: null == isSpecials ? _self.isSpecials : isSpecials // ignore: cast_nullable_to_non_nullable
 as bool,episodes: null == episodes ? _self.episodes : episodes // ignore: cast_nullable_to_non_nullable
@@ -504,7 +517,7 @@ return $default(_that.number,_that.isSpecials,_that.episodes);case _:
 @JsonSerializable()
 
 class _Season extends Season {
-  const _Season({required this.number, this.isSpecials = false, final  List<Episode> episodes = const <Episode>[]}): _episodes = episodes,super._();
+  const _Season({required this.number, this.isSpecials = false,  List<Episode> episodes = const <Episode>[]}): _episodes = episodes,super._();
   factory _Season.fromJson(Map<String, dynamic> json) => _$SeasonFromJson(json);
 
 @override final  int number;
@@ -530,16 +543,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Season&&(identical(other.number, number) || other.number == number)&&(identical(other.isSpecials, isSpecials) || other.isSpecials == isSpecials)&&const DeepCollectionEquality().equals(other._episodes, _episodes));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Season&&(identical(other.number, number) || other.number == number)&&(identical(other.isSpecials, isSpecials) || other.isSpecials == isSpecials)&&const DeepCollectionEquality().equals(other.episodes, _episodes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,number,isSpecials,const DeepCollectionEquality().hash(_episodes));
+int get hashCode {
+    return Object.hash(runtimeType,number,isSpecials,const DeepCollectionEquality().hash(_episodes));
+}
 
 @override
 String toString() {
-  return 'Season(number: $number, isSpecials: $isSpecials, episodes: $episodes)';
+    return 'Season(number: $number, isSpecials: $isSpecials, episodes: $episodes)';
 }
 
 
@@ -596,16 +611,21 @@ $ShowCopyWith<Show> get copyWith => _$ShowCopyWithImpl<Show>(this as Show, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Show&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&const DeepCollectionEquality().equals(other.seasons, seasons)&&(identical(other.tvmazeId, tvmazeId) || other.tvmazeId == tvmazeId)&&(identical(other.tmdbId, tmdbId) || other.tmdbId == tmdbId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.posterLarge, posterLarge) || other.posterLarge == posterLarge)&&(identical(other.airStatus, airStatus) || other.airStatus == airStatus)&&(identical(other.network, network) || other.network == network)&&(identical(other.overview, overview) || other.overview == overview)&&const DeepCollectionEquality().equals(other.providers, providers)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
+  final _this = this as Show;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Show&&(identical(other.tvdbId, _this.tvdbId) || other.tvdbId == _this.tvdbId)&&(identical(other.title, _this.title) || other.title == _this.title)&&(identical(other.isFavorite, _this.isFavorite) || other.isFavorite == _this.isFavorite)&&(identical(other.addedAt, _this.addedAt) || other.addedAt == _this.addedAt)&&const DeepCollectionEquality().equals(other.seasons, _this.seasons)&&(identical(other.tvmazeId, _this.tvmazeId) || other.tvmazeId == _this.tvmazeId)&&(identical(other.tmdbId, _this.tmdbId) || other.tmdbId == _this.tmdbId)&&(identical(other.poster, _this.poster) || other.poster == _this.poster)&&(identical(other.posterLarge, _this.posterLarge) || other.posterLarge == _this.posterLarge)&&(identical(other.airStatus, _this.airStatus) || other.airStatus == _this.airStatus)&&(identical(other.network, _this.network) || other.network == _this.network)&&(identical(other.overview, _this.overview) || other.overview == _this.overview)&&const DeepCollectionEquality().equals(other.providers, _this.providers)&&(identical(other.metaRefreshedAt, _this.metaRefreshedAt) || other.metaRefreshedAt == _this.metaRefreshedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,title,isFavorite,addedAt,const DeepCollectionEquality().hash(seasons),tvmazeId,tmdbId,poster,posterLarge,airStatus,network,overview,const DeepCollectionEquality().hash(providers),metaRefreshedAt);
+int get hashCode {
+  final _this = this as Show;
+  return Object.hash(runtimeType,_this.tvdbId,_this.title,_this.isFavorite,_this.addedAt,const DeepCollectionEquality().hash(_this.seasons),_this.tvmazeId,_this.tmdbId,_this.poster,_this.posterLarge,_this.airStatus,_this.network,_this.overview,const DeepCollectionEquality().hash(_this.providers),_this.metaRefreshedAt);
+}
 
 @override
 String toString() {
-  return 'Show(tvdbId: $tvdbId, title: $title, isFavorite: $isFavorite, addedAt: $addedAt, seasons: $seasons, tvmazeId: $tvmazeId, tmdbId: $tmdbId, poster: $poster, posterLarge: $posterLarge, airStatus: $airStatus, network: $network, overview: $overview, providers: $providers, metaRefreshedAt: $metaRefreshedAt)';
+  final _this = this as Show;
+  return 'Show(tvdbId: ${_this.tvdbId}, title: ${_this.title}, isFavorite: ${_this.isFavorite}, addedAt: ${_this.addedAt}, seasons: ${_this.seasons}, tvmazeId: ${_this.tvmazeId}, tmdbId: ${_this.tmdbId}, poster: ${_this.poster}, posterLarge: ${_this.posterLarge}, airStatus: ${_this.airStatus}, network: ${_this.network}, overview: ${_this.overview}, providers: ${_this.providers}, metaRefreshedAt: ${_this.metaRefreshedAt})';
 }
 
 
@@ -634,7 +654,7 @@ class _$ShowCopyWithImpl<$Res>
 /// Create a copy of Show
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? tvdbId = null,Object? title = null,Object? isFavorite = null,Object? addedAt = freezed,Object? seasons = null,Object? tvmazeId = freezed,Object? tmdbId = freezed,Object? poster = freezed,Object? posterLarge = freezed,Object? airStatus = freezed,Object? network = freezed,Object? overview = freezed,Object? providers = null,Object? metaRefreshedAt = freezed,}) {
-  return _then(_self.copyWith(
+  return _then(Show(
 tvdbId: null == tvdbId ? _self.tvdbId : tvdbId // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
@@ -790,7 +810,7 @@ return $default(_that.tvdbId,_that.title,_that.isFavorite,_that.addedAt,_that.se
 @JsonSerializable()
 
 class _Show extends Show {
-  const _Show({required this.tvdbId, required this.title, this.isFavorite = false, this.addedAt, final  List<Season> seasons = const <Season>[], this.tvmazeId, this.tmdbId, this.poster, this.posterLarge, this.airStatus, this.network, this.overview, final  List<String> providers = const <String>[], this.metaRefreshedAt}): _seasons = seasons,_providers = providers,super._();
+  const _Show({required this.tvdbId, required this.title, this.isFavorite = false, this.addedAt,  List<Season> seasons = const <Season>[], this.tvmazeId, this.tmdbId, this.poster, this.posterLarge, this.airStatus, this.network, this.overview,  List<String> providers = const <String>[], this.metaRefreshedAt}): _seasons = seasons,_providers = providers,super._();
   factory _Show.fromJson(Map<String, dynamic> json) => _$ShowFromJson(json);
 
 @override final  int tvdbId;
@@ -833,16 +853,18 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Show&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&const DeepCollectionEquality().equals(other._seasons, _seasons)&&(identical(other.tvmazeId, tvmazeId) || other.tvmazeId == tvmazeId)&&(identical(other.tmdbId, tmdbId) || other.tmdbId == tmdbId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.posterLarge, posterLarge) || other.posterLarge == posterLarge)&&(identical(other.airStatus, airStatus) || other.airStatus == airStatus)&&(identical(other.network, network) || other.network == network)&&(identical(other.overview, overview) || other.overview == overview)&&const DeepCollectionEquality().equals(other._providers, _providers)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Show&&(identical(other.tvdbId, tvdbId) || other.tvdbId == tvdbId)&&(identical(other.title, title) || other.title == title)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt)&&const DeepCollectionEquality().equals(other.seasons, _seasons)&&(identical(other.tvmazeId, tvmazeId) || other.tvmazeId == tvmazeId)&&(identical(other.tmdbId, tmdbId) || other.tmdbId == tmdbId)&&(identical(other.poster, poster) || other.poster == poster)&&(identical(other.posterLarge, posterLarge) || other.posterLarge == posterLarge)&&(identical(other.airStatus, airStatus) || other.airStatus == airStatus)&&(identical(other.network, network) || other.network == network)&&(identical(other.overview, overview) || other.overview == overview)&&const DeepCollectionEquality().equals(other.providers, _providers)&&(identical(other.metaRefreshedAt, metaRefreshedAt) || other.metaRefreshedAt == metaRefreshedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,tvdbId,title,isFavorite,addedAt,const DeepCollectionEquality().hash(_seasons),tvmazeId,tmdbId,poster,posterLarge,airStatus,network,overview,const DeepCollectionEquality().hash(_providers),metaRefreshedAt);
+int get hashCode {
+    return Object.hash(runtimeType,tvdbId,title,isFavorite,addedAt,const DeepCollectionEquality().hash(_seasons),tvmazeId,tmdbId,poster,posterLarge,airStatus,network,overview,const DeepCollectionEquality().hash(_providers),metaRefreshedAt);
+}
 
 @override
 String toString() {
-  return 'Show(tvdbId: $tvdbId, title: $title, isFavorite: $isFavorite, addedAt: $addedAt, seasons: $seasons, tvmazeId: $tvmazeId, tmdbId: $tmdbId, poster: $poster, posterLarge: $posterLarge, airStatus: $airStatus, network: $network, overview: $overview, providers: $providers, metaRefreshedAt: $metaRefreshedAt)';
+    return 'Show(tvdbId: $tvdbId, title: $title, isFavorite: $isFavorite, addedAt: $addedAt, seasons: $seasons, tvmazeId: $tvmazeId, tmdbId: $tmdbId, poster: $poster, posterLarge: $posterLarge, airStatus: $airStatus, network: $network, overview: $overview, providers: $providers, metaRefreshedAt: $metaRefreshedAt)';
 }
 
 
